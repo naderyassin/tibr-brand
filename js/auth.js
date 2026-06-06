@@ -21,6 +21,38 @@ document.addEventListener('DOMContentLoaded', () => {
   let isLoginMode = true;
   let currentUser = null;
 
+  const isEmailNotConfirmedError = (error) => {
+    const message = String(error?.message || '').toLowerCase();
+    const code = String(error?.code || '').toLowerCase();
+    return message.includes('email not confirmed') || code.includes('email_not_confirmed');
+  };
+
+  const parseAuthCallbackError = () => {
+    const params = new URLSearchParams(window.location.search);
+    const error = params.get('error');
+    const errorDescription = params.get('error_description');
+
+    if (!error) {
+      return null;
+    }
+
+    const decodedDescription = errorDescription
+      ? decodeURIComponent(errorDescription.replace(/\+/g, ' '))
+      : '';
+
+    if (decodedDescription.toLowerCase().includes('unable to exchange external code')) {
+      return 'تسجيل الدخول عبر Google لم يكتمل لأن إعداد Google Provider في Supabase ما زال غير صحيح. لازم تضيف Google Client ID و Client Secret وتطابق Redirect URL.';
+    }
+
+    return decodedDescription || 'حدث خطأ أثناء تسجيل الدخول.';
+  };
+
+  const clearAuthCallbackParams = () => {
+    if (!window.location.search) return;
+    const cleanUrl = `${window.location.origin}${window.location.pathname}${window.location.hash}`;
+    window.history.replaceState({}, document.title, cleanUrl);
+  };
+
   const syncModalMode = () => {
     const title = document.getElementById('auth-modal-title');
     const subtitle = document.getElementById('auth-modal-subtitle');
@@ -54,11 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.style.overflow = '';
 
       try {
-        const { data: profile } = await window.supabaseClient
-          .from('profiles')
-          .select('role')
-          .eq('id', session.user.id)
-          .single();
+        const { data: profile } = await window.apiClient.getProfile();
 
         if (profile && profile.role === 'admin') {
           adminPanelBtn.style.display = 'block';
@@ -77,6 +105,12 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const initAuth = async () => {
+    const callbackErrorMessage = parseAuthCallbackError();
+    if (callbackErrorMessage) {
+      alert(callbackErrorMessage);
+      clearAuthCallbackParams();
+    }
+
     const { data: { session } } = await window.supabaseClient.auth.getSession();
     await handleSessionChange(session);
 
@@ -124,7 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (error) throw error;
         alert('تم تسجيل الدخول بنجاح!');
       } else {
-        const { error } = await window.supabaseClient.auth.signUp({
+        const { data, error } = await window.supabaseClient.auth.signUp({
           email,
           password,
           options: {
@@ -136,14 +170,23 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         });
         if (error) throw error;
-        alert('تم إنشاء الحساب بنجاح! يرجى التحقق من بريدك الإلكتروني إذا تطلب الأمر.');
+
+        if (data?.user && !data?.session) {
+          alert('تم إنشاء الحساب، لكن يجب تأكيد البريد الإلكتروني أولاً. افتح Gmail واضغط رابط التأكيد ثم سجّل الدخول.');
+        } else {
+          alert('تم إنشاء الحساب وتسجيل الدخول بنجاح!');
+        }
       }
 
       authModal.classList.remove('active');
       document.body.style.overflow = '';
       authForm.reset();
     } catch (error) {
-      alert(error.message || 'حدث خطأ. حاول مرة أخرى.');
+      if (isEmailNotConfirmedError(error)) {
+        alert('هذا البريد غير مؤكد بعد. افتح Gmail واضغط رابط التأكيد أولاً، أو عطّل Email Confirmation من إعدادات Supabase إذا كان هذا بيئة تطوير.');
+      } else {
+        alert(error.message || 'حدث خطأ. حاول مرة أخرى.');
+      }
     } finally {
       authSubmitBtn.disabled = false;
       authSubmitBtn.textContent = isLoginMode ? 'دخول' : 'إنشاء حساب';
@@ -153,15 +196,19 @@ document.addEventListener('DOMContentLoaded', () => {
   if (authGoogleBtn) {
     authGoogleBtn.addEventListener('click', async () => {
       try {
+        const redirectUrl = `${window.location.origin}${window.location.pathname}`;
         const { error } = await window.supabaseClient.auth.signInWithOAuth({
           provider: 'google',
           options: {
-            redirectTo: window.location.origin
+            redirectTo: redirectUrl
           }
         });
         if (error) throw error;
       } catch (err) {
-        alert(err.message || 'خطأ أثناء تسجيل الدخول عبر Google');
+        alert(
+          err.message ||
+          'تعذر تسجيل الدخول عبر Google. تأكد من تفعيل Google Provider وإضافة رابط الموقع الحالي إلى Redirect URLs في Supabase.'
+        );
       }
     });
   }

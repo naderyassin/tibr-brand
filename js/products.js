@@ -10,11 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Function to load products from Supabase
   const loadProducts = async () => {
     try {
-      const { data, error } = await window.supabaseClient
-        .from('products')
-        .select('*');
-
-      if (error) throw error;
+      const { data } = await window.apiClient.getProducts();
 
       if (data && data.length > 0) {
         products = data.map(item => ({
@@ -22,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
           category: item.category,
           subCategory: item.sub_category,
           gender: item.gender,
-          sizes: item.sizes ? JSON.parse(item.sizes) : null,
+          sizes: Array.isArray(item.sizes) ? item.sizes : [],
           image: item.image,
           accentGlow: item.accent_glow,
           accentColor: item.accent_color,
@@ -654,7 +650,7 @@ document.addEventListener("DOMContentLoaded", () => {
         category: document.getElementById("admin-prod-category").value,
         sub_category: document.getElementById("admin-prod-subcategory").value || null,
         gender: document.getElementById("admin-prod-gender").value,
-        sizes: JSON.stringify(sizesArray),
+        sizes: sizesArray,
         image: document.getElementById("admin-prod-image").value,
         accent_glow: document.getElementById("admin-prod-glow").value || null,
         accent_color: document.getElementById("admin-prod-color").value || null,
@@ -679,11 +675,7 @@ document.addEventListener("DOMContentLoaded", () => {
       };
 
       try {
-        const { error } = await window.supabaseClient
-          .from("products")
-          .insert([newProduct]);
-          
-        if (error) throw error;
+        await window.apiClient.createProduct(newProduct);
         
         alert("تم حفظ وإضافة المنتج بنجاح!");
         adminForm.reset();

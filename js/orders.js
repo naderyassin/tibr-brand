@@ -38,18 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Try to get active product details
-    // Products.js updates the DOM: #modal-perfume-name, size buttons, etc.
-    // We can infer active product from the WhatsApp link or by keeping a global reference.
-    // The easiest robust way is just fetching the name from the modal DOM:
-    const waLink = document.getElementById('modal-whatsapp-link');
-    let productId = 'unknown';
-    // Let's rely on the DOM for the active product name just to attach it,
-    // or better, find the product id from window scope if we exposed it. 
-    // Since we didn't expose it, we can parse it from products if we need exact ID,
-    // but for the sake of simplicity, we'll save the product string info.
-
-    const productName = document.getElementById('modal-perfume-name').textContent;
     let selectedSize = 'Default';
     const activeSizeBtn = document.querySelector('.size-btn.active');
     if (activeSizeBtn) {
@@ -60,17 +48,13 @@ document.addEventListener('DOMContentLoaded', () => {
     orderSubmitBtn.textContent = 'جاري الإرسال...';
 
     try {
-      const { error } = await window.supabaseClient.from('orders').insert({
-        user_id: session.user.id,
+      await window.apiClient.createOrder({
         product_id: window.activeProductId || 'unknown',
         size: selectedSize,
         customer_name: orderName.value,
         customer_phone: orderPhone.value,
-        customer_address: orderAddress.value,
-        status: 'pending'
+        customer_address: orderAddress.value
       });
-
-      if (error) throw error;
 
       alert('تم إرسال طلبك بنجاح! سنتواصل معك قريباً.');
       orderModal.classList.remove('active');

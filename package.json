@@ -2,9 +2,16 @@
   "name": "robabikia-perfumes",
   "version": "1.0.0",
   "description": "روبابيكيا للعطور - عطور مصرية معاصرة تجمع تراث الماضي وفخامة الحاضر.",
-  "main": "index.html",
+  "main": "server.js",
   "scripts": {
-    "dev": "npx -y http-server -p 3000"
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.53.0",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "ws": "^8.18.3"
   },
   "keywords": [
     "perfume",
