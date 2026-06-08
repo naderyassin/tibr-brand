@@ -4,3 +4,7 @@
 node_modules/
 dist/
 .DS_Store
+
+# Local agent / skill tooling (not part of the product)
+.claude/
+.impeccable/

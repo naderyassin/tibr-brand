@@ -224,11 +224,54 @@
    6. MOOD GALLERY (DRAG SCROLL)
    ========================================== */
 .gallery-section {
-  padding: 8rem 0;
+  padding: 5rem 0 8rem;
   background-color: var(--bg-dark);
   position: relative;
   z-index: 10;
   overflow: hidden;
+}
+
+/* Gallery intro row — replaces identical section-header template */
+.gallery-intro-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 4rem 2.5rem;
+  gap: 1.5rem;
+}
+
+.gallery-section-title {
+  font-family: var(--font-arabic);
+  font-size: 2.8rem;
+  color: var(--beige);
+  margin: 0;
+  line-height: 1.1;
+}
+
+.gallery-section-hint {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--beige-dim);
+  white-space: nowrap;
+  padding-top: 0.2rem;
+  opacity: 0.7;
+}
+
+/* Order section heading — title leads, subtitle follows */
+.order-heading-block {
+  text-align: center;
+  margin-bottom: 5rem;
+}
+
+.order-heading-block .section-title {
+  margin-bottom: 0.5rem;
+}
+
+.order-subtitle-text {
+  font-family: var(--font-body);
+  font-size: 1.15rem;
+  color: var(--beige-dim);
+  margin-top: 0.75rem;
 }
 
 /* Custom Cursor */
@@ -347,10 +390,14 @@
    RESPONSIVE DESIGN (STORY & GALLERY)
    ========================================== */
 @media (max-width: 991px) {
+  .gallery-intro-row {
+    padding: 0 2rem 2rem;
+  }
+
   .story-card {
     padding: 3rem 2rem;
   }
-  
+
   .steps-grid {
     grid-template-columns: 1fr;
     gap: 3.5rem;
@@ -372,6 +419,17 @@
 }
 
 @media (max-width: 768px) {
+  .gallery-intro-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+    padding: 0 2rem 1.5rem;
+  }
+
+  .gallery-section-hint {
+    white-space: normal;
+  }
+
   .story-section {
     padding: 5rem 0;
     min-height: auto;

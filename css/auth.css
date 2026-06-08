@@ -139,6 +139,12 @@
   box-shadow: 0 0 0 2px rgba(201,168,76,0.1);
 }
 
+.auth-page-card .form-field input.is-invalid,
+.auth-page-card .form-field select.is-invalid {
+  border-color: var(--burgundy) !important;
+  box-shadow: 0 0 0 2px rgba(123, 45, 62, 0.15) !important;
+}
+
 .auth-page-card .form-field input::placeholder {
   color: rgba(193,181,160,0.4);
 }

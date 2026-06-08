@@ -44,7 +44,12 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         }));
       }
-      
+
+      // Expose the catalog as the single shared source for the Shop PLP,
+      // search, and wishlist; notify any listeners waiting on it.
+      window.catalogProducts = products;
+      document.dispatchEvent(new CustomEvent("productsLoaded", { detail: { products } }));
+
       // Initial render after loading
       renderCatalog(activeLang);
     } catch (error) {
@@ -188,14 +193,14 @@ document.addEventListener("DOMContentLoaded", () => {
   };
   
   // Template: Scent Card Layout (3 columns)
-  const getCardHTML = (product, lang, discoverText) => {
+  const getCardHTML = (product, lang, discoverText, customClass = "") => {
     const data = product[lang];
     const notesSummary = product.category === "perfumes" ? data.specLeftVal : "";
     const visualHTML = product.category === "perfumes"
       ? getPerfumeSceneHTML(product, data, { compact: true, showMeta: false, sceneClass: "product-perfume-scene" })
       : `<img src="${product.image}" alt="${data.name}" class="product-img">`;
     return `
-      <div class="product-card" id="card-${product.id}" style="--accent-glow: ${product.accentGlow};">
+      <div class="product-card ${customClass}" id="card-${product.id}" style="--accent-glow: ${product.accentGlow};">
         <div class="product-img-wrapper">
           ${visualHTML}
         </div>
@@ -207,6 +212,35 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="product-price">${data.price}</div>
           <button class="product-card-btn" data-id="${product.id}">${discoverText}</button>
         </div>
+      </div>
+    `;
+  };
+
+  // Template: Bilingual Card Layout (Masonry Magazine Grid)
+  const getBilingualCardHTML = (product, lang, discoverText, customClass = "") => {
+    const ar = product.ar;
+    const en = product.en;
+    const visualHTML = `<img src="${product.image}" alt="${ar.name}" class="product-img">`;
+    return `
+      <div class="product-card bilingual-card ${customClass}" id="card-${product.id}" style="--accent-glow: ${product.accentGlow || 'rgba(201, 168, 76, 0.15)'};">
+        <div class="product-img-wrapper">
+          ${visualHTML}
+        </div>
+        <div class="bilingual-info-split">
+          <div class="info-split-en">
+            <h3 class="bilingual-title-en">${en.name}</h3>
+            <p class="bilingual-collection-en">${en.collection}</p>
+            <p class="bilingual-desc-en">${en.shortDesc}</p>
+            <div class="bilingual-price-en">${en.price}</div>
+          </div>
+          <div class="info-split-ar">
+            <h3 class="bilingual-title-ar">${ar.name}</h3>
+            <p class="bilingual-collection-ar">${ar.collection}</p>
+            <p class="bilingual-desc-ar">${ar.shortDesc}</p>
+            <div class="bilingual-price-ar">${ar.price}</div>
+          </div>
+        </div>
+        <button class="product-card-btn bilingual-card-btn" data-id="${product.id}">${discoverText}</button>
       </div>
     `;
   };
@@ -591,7 +625,25 @@ document.addEventListener("DOMContentLoaded", () => {
       const filteredClothes = activeClothesGender === null
         ? clothes
         : clothes.filter(c => c.gender === activeClothesGender || c.gender === "unisex");
-      containerClothes.innerHTML = filteredClothes.map((c, idx) => getEditorialHTML(c, lang, idx, discoverText)).join("");
+      
+      if (filteredClothes.length === 0) {
+        containerClothes.innerHTML = "";
+      } else {
+        containerClothes.innerHTML = `
+          <div class="clothes-asymmetric-grid">
+            ${filteredClothes.map((c, idx) => {
+              let modifier = "";
+              // Alternating layout sizes: 1st tall, 3rd wide, others standard
+              if (idx % 4 === 0) {
+                modifier = "grid-card-tall";
+              } else if (idx % 4 === 2) {
+                modifier = "grid-card-wide";
+              }
+              return getBilingualCardHTML(c, lang, discoverText, modifier);
+            }).join("")}
+          </div>
+        `;
+      }
     }
     
     if (gridShoes) {

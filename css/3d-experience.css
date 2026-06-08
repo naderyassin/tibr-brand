@@ -371,7 +371,7 @@
 }
 
 .loader-logo {
-  font-family: var(--font-arabic);
+  font-family: 'Rakkas', serif;
   font-size: 2.4rem;
   color: var(--x-gold);
   letter-spacing: 0.05em;

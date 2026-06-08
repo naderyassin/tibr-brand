@@ -106,6 +106,12 @@
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ── Broken product modal image — hide until JS sets src ─── */
+#modal-perfume-img[src=""],
+#modal-perfume-img:not([src]) {
+  visibility: hidden;
+}
+
 /* ── Empty State ─────────────────────────────────────────── */
 .cart-empty-state {
   text-align: center;

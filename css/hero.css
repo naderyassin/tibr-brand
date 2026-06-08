@@ -45,7 +45,7 @@
 }
 
 .logo-text-ar {
-  font-family: var(--font-arabic);
+  font-family: 'Rakkas', serif;
   font-size: 1.8rem;
   color: var(--gold);
   text-shadow: 0 2px 10px rgba(201, 168, 76, 0.2);
@@ -232,7 +232,7 @@
 }
 
 .hero-title {
-  font-family: var(--font-arabic);
+  font-family: 'Rakkas', serif;
   font-size: 6.5rem;
   color: var(--gold);
   line-height: 1.1;

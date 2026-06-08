@@ -220,7 +220,7 @@
 }
 
 .intro-logo-ar {
-  font-family: var(--font-arabic);
+  font-family: 'Rakkas', serif;
   font-size: clamp(3rem, 10vw, 5rem);
   color: var(--gold);
   letter-spacing: 2px;

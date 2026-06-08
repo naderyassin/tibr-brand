@@ -95,17 +95,48 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  const markFieldInvalid = (id, msg) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.add('is-invalid');
+    let errEl = el.parentElement.querySelector('.field-error');
+    if (!errEl) {
+      errEl = document.createElement('span');
+      errEl.className = 'field-error';
+      el.parentElement.appendChild(errEl);
+    }
+    errEl.textContent = msg;
+    el.addEventListener('input', () => {
+      el.classList.remove('is-invalid');
+      errEl.textContent = '';
+    }, { once: true });
+  };
+
   // Step 1 → Step 2 (review)
   document.getElementById('checkout-to-review-btn')?.addEventListener('click', () => {
-    const name = document.getElementById('co-name')?.value?.trim();
-    const phone = document.getElementById('co-phone')?.value?.trim();
-    const address = document.getElementById('co-address')?.value?.trim();
-    const city = document.getElementById('co-city')?.value?.trim();
+    const nameEl = document.getElementById('co-name');
+    const phoneEl = document.getElementById('co-phone');
+    const addressEl = document.getElementById('co-address');
+    const cityEl = document.getElementById('co-city');
     const lang = window.utils?.getCurrentLang() || 'ar';
 
-    if (!name || !phone || !address || !city) {
-      const msg = lang === 'en' ? 'Please fill all required fields.' : 'يرجى ملء جميع الحقول المطلوبة.';
-      window.utils?.showToast(msg, 'error');
+    const name = nameEl?.value?.trim();
+    const phone = phoneEl?.value?.trim();
+    const address = addressEl?.value?.trim();
+    const city = cityEl?.value?.trim();
+
+    let hasError = false;
+    const req = lang === 'en' ? 'Required' : 'هذا الحقل مطلوب';
+
+    if (!name)    { markFieldInvalid('co-name', req);    hasError = true; }
+    if (!phone)   { markFieldInvalid('co-phone', req);   hasError = true; }
+    if (!city)    { markFieldInvalid('co-city', req);    hasError = true; }
+    if (!address) { markFieldInvalid('co-address', req); hasError = true; }
+
+    if (hasError) {
+      const firstInvalid = document.querySelector('.checkout-step.active .is-invalid');
+      firstInvalid?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      firstInvalid?.focus();
       return;
     }
 

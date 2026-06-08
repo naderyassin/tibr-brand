@@ -152,6 +152,22 @@
   box-shadow: 0 0 0 2px rgba(201, 168, 76, 0.1);
 }
 
+.form-field input.is-invalid,
+.form-field textarea.is-invalid,
+.form-field select.is-invalid {
+  border-color: var(--burgundy) !important;
+  box-shadow: 0 0 0 2px rgba(123, 45, 62, 0.15) !important;
+}
+
+.field-error {
+  display: block;
+  font-family: var(--font-arabic);
+  font-size: 0.75rem;
+  color: var(--burgundy-hover);
+  margin-top: 0.3rem;
+  line-height: 1.4;
+}
+
 .form-field input::placeholder,
 .form-field textarea::placeholder {
   color: rgba(193, 181, 160, 0.4);
@@ -241,38 +257,82 @@
   background: var(--bg-card);
   border: var(--border-gold);
   border-radius: var(--radius-lg);
-  padding: 3rem 2rem;
-  box-shadow: var(--shadow-gold-large);
-  animation: fadeInUp 0.4s ease both;
+  padding: 3.5rem 2.5rem;
+  box-shadow: var(--shadow-gold-large), 0 0 80px rgba(201, 168, 76, 0.04);
+  animation: fadeInUp 0.5s cubic-bezier(0.25, 1, 0.5, 1) both;
+  position: relative;
+  overflow: hidden;
 }
 
-.confirm-icon {
-  font-size: 3.5rem;
-  margin-bottom: 1rem;
-  display: block;
+.confirm-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.confirm-ornament {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.confirm-ornament-line {
+  width: 36px;
+  height: 1px;
+  background: var(--gold);
+  opacity: 0.4;
+}
+
+.confirm-ornament-symbol {
+  font-family: var(--font-arabic);
+  font-size: 2rem;
+  color: var(--gold);
+  line-height: 1;
 }
 
 .confirm-card h1 {
   font-family: var(--font-arabic);
   color: var(--gold);
-  font-size: 1.9rem;
-  margin-bottom: 0.75rem;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+
+.confirm-tagline {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--beige-dim);
+  margin-bottom: 1.5rem;
 }
 
 .confirm-card p {
   font-family: var(--font-arabic);
   color: var(--beige-dim);
-  line-height: 1.75;
+  line-height: 1.8;
   margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.confirm-card p strong {
+  color: var(--beige);
+  font-weight: 600;
 }
 
 .confirm-card .btn {
-  margin-top: 1.5rem;
+  margin-top: 2rem;
 }
 
 .confirm-divider {
   width: 60px;
   height: 2px;
-  background: var(--gold-dim);
-  margin: 1.25rem auto;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 1.5rem auto;
 }

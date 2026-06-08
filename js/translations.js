@@ -23,6 +23,27 @@ const translations = {
     "nav-order": "طريقة الطلب",
     "nav-nostalgia": "النوستالجيا",
     "nav-cta": "اطلب الآن",
+    "nav-shop": "المتجر",
+
+    // Shop — Product Listing Page (PLP)
+    "shop-eyebrow": "المجموعة الكاملة",
+    "shop-title": "كل ما نصنعه بحب",
+    "shop-subtitle": "عطور وأزياء وأحذية مصرية، كل قطعة لها حكاية. تصفّح المجموعة كلها في مكان واحد.",
+    "shop-filter-category": "الفئة",
+    "shop-filter-gender": "النوع",
+    "shop-filter-all": "الكل",
+    "shop-cat-perfumes": "العطور",
+    "shop-cat-clothes": "الملابس",
+    "shop-cat-shoes": "الأحذية",
+    "shop-gender-unisex": "للجميع",
+    "shop-sort-label": "ترتيب",
+    "shop-sort-featured": "المميزة",
+    "shop-sort-price-asc": "السعر: من الأقل",
+    "shop-sort-price-desc": "السعر: من الأعلى",
+    "shop-sort-name": "الاسم",
+    "shop-empty-title": "لا توجد منتجات مطابقة",
+    "shop-empty-hint": "جرّب تغيير الفلاتر لاستكشاف باقي المجموعة.",
+    "shop-reset": "إعادة تعيين الفلاتر",
 
     // Hero Section
     "hero-subtitle": "🌿 بيت العطور والأزياء الراقية 🌿",
@@ -47,6 +68,9 @@ const translations = {
     "clothes-header-title": "الأزياء الفاخرة",
     "shoes-header-subtitle": "خطوات تجمع الراحة والأناقة",
     "shoes-header-title": "الأحذية الجلدية",
+    "perfumes-store-subtitle": "كل قارورة حكاية. اختَر عطرك من المجموعة الكاملة.",
+    "clothes-store-subtitle": "خامات فاخرة وقصّات معاصرة. تصفّح مجموعة الملابس كاملة.",
+    "shoes-store-subtitle": "جلد طبيعي وصناعة يدوية. تصفّح مجموعة الأحذية كاملة.",
 
     // Sub-Categories under Fragrances
     "sub-all": "الكل",
@@ -184,6 +208,27 @@ const translations = {
     "nav-order": "How to Order",
     "nav-nostalgia": "Nostalgia",
     "nav-cta": "Order Now",
+    "nav-shop": "Shop",
+
+    // Shop — Product Listing Page (PLP)
+    "shop-eyebrow": "The Full Collection",
+    "shop-title": "Everything We Make, With Care",
+    "shop-subtitle": "Egyptian fragrances, apparel, and footwear, each piece with its own story. Browse the whole collection in one place.",
+    "shop-filter-category": "Category",
+    "shop-filter-gender": "Audience",
+    "shop-filter-all": "All",
+    "shop-cat-perfumes": "Fragrances",
+    "shop-cat-clothes": "Apparel",
+    "shop-cat-shoes": "Footwear",
+    "shop-gender-unisex": "Unisex",
+    "shop-sort-label": "Sort",
+    "shop-sort-featured": "Featured",
+    "shop-sort-price-asc": "Price: Low to High",
+    "shop-sort-price-desc": "Price: High to Low",
+    "shop-sort-name": "Name",
+    "shop-empty-title": "No matching items",
+    "shop-empty-hint": "Try adjusting the filters to explore the rest of the collection.",
+    "shop-reset": "Reset filters",
 
     // Hero Section
     "hero-subtitle": "🌿 House of Fine Scents & Premium Garments 🌿",
@@ -208,6 +253,9 @@ const translations = {
     "clothes-header-title": "Premium Apparel",
     "shoes-header-subtitle": "Crafted Footwear for Comfort & Elegance",
     "shoes-header-title": "Fine Leatherwear",
+    "perfumes-store-subtitle": "Every bottle tells a story. Pick your scent from the full collection.",
+    "clothes-store-subtitle": "Luxe fabrics, contemporary cuts. Browse the full apparel collection.",
+    "shoes-store-subtitle": "Genuine leather, handcrafted. Browse the full footwear collection.",
 
     // Sub-Categories under Fragrances
     "sub-all": "All",

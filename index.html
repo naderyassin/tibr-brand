@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
@@ -12,23 +12,25 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Rakkas&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Amiri:ital,wght@0,400;0,700;1,400&family=Rakkas&display=swap" rel="stylesheet">
   
   <!-- Stylesheets -->
   <link rel="stylesheet" href="css/reset.css?v=1.2">
-  <link rel="stylesheet" href="css/variables.css?v=1.2">
-  <link rel="stylesheet" href="css/animations.css?v=1.2">
-  <link rel="stylesheet" href="css/hero.css?v=1.2">
+  <link rel="stylesheet" href="css/variables.css?v=1.3">
+  <link rel="stylesheet" href="css/animations.css?v=1.3">
+  <link rel="stylesheet" href="css/hero.css?v=1.4">
   <link rel="stylesheet" href="css/cinematic-ad.css?v=1.0">
-  <link rel="stylesheet" href="css/products.css?v=1.5">
+  <link rel="stylesheet" href="css/products.css?v=1.8">
   <link rel="stylesheet" href="css/story.css?v=1.3">
-  <link rel="stylesheet" href="css/footer.css?v=1.2">
+  <link rel="stylesheet" href="css/footer.css?v=1.3">
   <link rel="stylesheet" href="css/utils.css?v=1.1">
   <link rel="stylesheet" href="css/cart.css?v=1.0">
   <link rel="stylesheet" href="css/checkout.css?v=1.0">
   <link rel="stylesheet" href="css/auth.css?v=1.0">
   <link rel="stylesheet" href="css/account.css?v=1.1">
   <link rel="stylesheet" href="css/search.css?v=1.0">
+  <link rel="stylesheet" href="css/shop.css?v=1.1">
+  <link rel="stylesheet" href="css/3d-experience.css?v=1.5">
 </head>
 <body>
 
@@ -89,6 +91,84 @@
     </div>
 
     <div class="intro-smoke-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;"></div>
+  </div>
+
+  <!-- ==========================================
+       3D EXPERIENCE SHELL (fixed overlay, hidden until #perfumes)
+       ========================================== -->
+  <div id="perfume-3d-shell" class="experience-3d" style="display:none">
+    <div class="progress-track"><div id="progress-bar"></div></div>
+
+    <div class="parallax-bg" id="parallax-bg">
+      <div class="parallax-layer parallax-layer--gradient"></div>
+      <div class="parallax-layer parallax-layer--particles"></div>
+    </div>
+
+    <div class="canvas-wrapper">
+      <canvas id="three-canvas"></canvas>
+    </div>
+
+    <div class="vignette"></div>
+
+    <div class="overlay">
+      <div class="orbit-svg-wrapper" id="orbit-svg">
+        <svg viewBox="-250 -250 500 500" class="orbit-svg" aria-hidden="true">
+          <defs>
+            <path id="textCircle" d="M 0,-180 A 180,180 0 1,1 -0.01,-180" fill="none" />
+          </defs>
+          <g id="orbit-svg-group">
+            <text class="orbit-svg-text">
+              <textPath href="#textCircle" startOffset="0%">
+                عود ✦ مسك ✦ ياسمين ✦ عنبر ✦ فخامة ✦ تراث ✦ أصالة ✦ حصري ✦
+              </textPath>
+            </text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="scene-text" id="scene-1">
+        <p class="scene-eyebrow" data-field="collection"></p>
+        <h2 class="scene-title" data-field="name"></h2>
+        <p class="scene-desc" data-field="shortDesc"></p>
+      </div>
+
+      <div class="scene-text scene-text--end" id="scene-2">
+        <p class="scene-eyebrow">الحكاية</p>
+        <h2 class="scene-title">تفاصيل لا تُنسى</h2>
+        <p class="scene-desc" data-field="desc"></p>
+      </div>
+
+      <div class="scene-text" id="scene-3">
+        <p class="scene-eyebrow">المكوّنات</p>
+        <h2 class="scene-title" data-field="mood"></h2>
+        <ul class="scent-notes" id="scent-notes"></ul>
+      </div>
+
+      <div class="scene-text" id="scene-4">
+        <p class="scene-eyebrow">اقتنِ الآن</p>
+        <h2 class="scene-title" data-field="name"></h2>
+        <div class="scent-meta" id="scent-meta"></div>
+        <div class="scene-cta">
+          <a href="#perfumes-catalog" class="btn-3d" id="cta-shop">تسوّق هذا العطر</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="scroll-hint" id="scroll-hint">
+      <div class="scroll-hint__wheel"></div>
+      <span>اسكرول</span>
+    </div>
+
+    <div class="loader-screen" id="loader-screen">
+      <div class="loader-logo">روبابيكيا</div>
+      <div class="loader-track"><div id="loader-fill"></div></div>
+      <div class="loader-label">جارٍ تحميل التجربة</div>
+    </div>
+
+    <div class="experience-fallback">
+      <h2 class="scene-title">المتصفح لا يدعم العرض ثلاثي الأبعاد</h2>
+      <p class="scene-desc">يمكنك تصفّح المجموعة الكاملة من قسم العطور.</p>
+    </div>
   </div>
 
   <!-- ==========================================
@@ -203,9 +283,6 @@
             <a href="#story" class="btn btn-outline">
               <span data-i18n="hero-cta-story">حكايتنا</span>
             </a>
-            <a href="3d-product.html" class="btn btn-outline">
-              <span data-i18n="hero-cta-3d">التجربة ثلاثية الأبعاد</span>
-            </a>
           </div>
         </div>
 
@@ -316,40 +393,46 @@
          SPA VIEW: PERFUMES (Scent Experience)
          ========================================== -->
     <div id="view-perfumes" class="spa-view">
-      <section class="scents-section page-section">
-        <div class="section-container">
-          <div class="perfume-showcase" id="perfume-showcase">
-            <div class="bg-vignette"></div>
-            <div class="light-beam" id="perfume-light-beam"></div>
-            <canvas class="particles-canvas" id="perfume-particles-canvas"></canvas>
+      <!-- 500vh spacer — drives the 3D GSAP timeline via ScrollTrigger -->
+      <div class="scroll-container" id="scroll-container"></div>
 
-            <div class="showcase-header">
-              <div class="brand-name">ROBABIKIA</div>
-              <div class="divider"></div>
-              <div class="tagline" data-i18n="perfumes-header-subtitle">إبداعات شمية ساحرة</div>
+      <!-- Product catalog shown after scrolling through the 3D experience -->
+      <section class="scents-section store-section" id="perfumes-catalog">
+        <div class="store-page">
+          <header class="store-reveal shop-hero">
+            <span class="shop-hero__eyebrow" data-i18n="perfumes-header-subtitle">إبداعات شمّية ساحرة</span>
+            <h2 class="shop-hero__title" data-i18n="perfumes-header-title">عطور الذاكرة</h2>
+            <p class="shop-hero__subtitle" data-i18n="perfumes-store-subtitle">كل قارورة حكاية. اختَر عطرك من المجموعة الكاملة.</p>
+            <div class="shop-hero__divider"></div>
+          </header>
+
+          <div class="shop-toolbar store-reveal" data-store="perfumes">
+            <div class="shop-filters">
+              <div class="shop-filter-row">
+                <span class="shop-filter-label" data-i18n="shop-filter-gender">النوع</span>
+                <div class="shop-chips" role="group" aria-label="تصفية حسب النوع">
+                  <button type="button" class="shop-chip shop-chip--sm active" data-group="gender" data-value="all" data-i18n="shop-filter-all">الكل</button>
+                  <button type="button" class="shop-chip shop-chip--sm" data-group="gender" data-value="men" data-i18n="sub-men">رجالي</button>
+                  <button type="button" class="shop-chip shop-chip--sm" data-group="gender" data-value="women" data-i18n="sub-women">نسائي</button>
+                  <button type="button" class="shop-chip shop-chip--sm" data-group="gender" data-value="unisex" data-i18n="shop-gender-unisex">للجميع</button>
+                </div>
+              </div>
             </div>
-
-            <div class="carousel-wrapper">
-              <div class="bottles-container" id="perfume-bottles-container"></div>
-            </div>
-
-            <div class="product-info" id="perfume-product-info">
-              <div class="product-name" id="perfume-product-name"></div>
-              <div class="product-subtitle" id="perfume-product-subtitle"></div>
-              <div class="product-notes" id="perfume-product-notes"></div>
-            </div>
-
-            <div class="nav-arrows">
-              <button class="arrow-btn" id="perfume-prev-btn" type="button">&#8592;</button>
-              <button class="arrow-btn" id="perfume-next-btn" type="button">&#8594;</button>
-            </div>
-
-            <div class="nav-dots" id="perfume-nav-dots"></div>
-
-            <div class="cta-section">
-              <button class="discover-btn" id="perfume-discover-btn" type="button" data-i18n="scents-discover-btn">اكتشف المنتج</button>
+            <div class="shop-toolbar__meta">
+              <span class="shop-count" aria-live="polite"></span>
+              <div class="shop-sort">
+                <label data-i18n="shop-sort-label">ترتيب</label>
+                <select class="store-sort">
+                  <option value="featured" data-i18n="shop-sort-featured">المميزة</option>
+                  <option value="price-asc" data-i18n="shop-sort-price-asc">السعر: من الأقل</option>
+                  <option value="price-desc" data-i18n="shop-sort-price-desc">السعر: من الأعلى</option>
+                  <option value="name" data-i18n="shop-sort-name">الاسم</option>
+                </select>
+              </div>
             </div>
           </div>
+
+          <div class="shop-grid store-reveal" id="perfumes-store-grid"><!-- JS injected --></div>
         </div>
       </section>
     </div>
@@ -357,51 +440,85 @@
     <!-- ==========================================
          SPA VIEW: CLOTHES (Editorial Layout)
          ========================================== -->
-    <div id="view-clothes" class="spa-view">
-      <section class="scents-section page-section">
-        <div class="section-container">
-          <div class="section-header">
-            <span class="section-subtitle" data-i18n="clothes-header-subtitle">تصاميم بخطوط كلاسيكية معاصرة</span>
-            <h2 class="section-title" data-i18n="clothes-header-title">الأزياء الفاخرة</h2>
-            <div class="section-divider"></div>
-          </div>
-          
-          <!-- Step 1: Main Gender Categories -->
-          <div class="perfume-gender-filters" id="clothes-gender-filters">
-            <button class="gender-btn" data-gender="men" data-i18n="sub-men">رجالي</button>
-            <button class="gender-btn" data-gender="women" data-i18n="sub-women">نسائي</button>
-          </div>
+    <div id="view-clothes" class="spa-view store-view">
+      <div class="store-page">
+        <header class="shop-hero">
+          <span class="shop-hero__eyebrow" data-i18n="clothes-header-subtitle">تصاميم بخطوط كلاسيكية معاصرة</span>
+          <h1 class="shop-hero__title" data-i18n="clothes-header-title">الأزياء الفاخرة</h1>
+          <p class="shop-hero__subtitle" data-i18n="clothes-store-subtitle">خامات فاخرة وقصّات معاصرة. تصفّح مجموعة الملابس كاملة.</p>
+          <div class="shop-hero__divider"></div>
+        </header>
 
-          <div class="editorial-container" id="clothes-editorial-rows">
-            <!-- JS Injected: Alternating rows Zara-style -->
+        <div class="shop-toolbar" data-store="clothes">
+          <div class="shop-filters">
+            <div class="shop-filter-row">
+              <span class="shop-filter-label" data-i18n="shop-filter-gender">النوع</span>
+              <div class="shop-chips" role="group" aria-label="تصفية حسب النوع">
+                <button type="button" class="shop-chip shop-chip--sm active" data-group="gender" data-value="all" data-i18n="shop-filter-all">الكل</button>
+                <button type="button" class="shop-chip shop-chip--sm" data-group="gender" data-value="men" data-i18n="sub-men">رجالي</button>
+                <button type="button" class="shop-chip shop-chip--sm" data-group="gender" data-value="women" data-i18n="sub-women">نسائي</button>
+                <button type="button" class="shop-chip shop-chip--sm" data-group="gender" data-value="unisex" data-i18n="shop-gender-unisex">للجميع</button>
+              </div>
+            </div>
+          </div>
+          <div class="shop-toolbar__meta">
+            <span class="shop-count" aria-live="polite"></span>
+            <div class="shop-sort">
+              <label data-i18n="shop-sort-label">ترتيب</label>
+              <select class="store-sort">
+                <option value="featured" data-i18n="shop-sort-featured">المميزة</option>
+                <option value="price-asc" data-i18n="shop-sort-price-asc">السعر: من الأقل</option>
+                <option value="price-desc" data-i18n="shop-sort-price-desc">السعر: من الأعلى</option>
+                <option value="name" data-i18n="shop-sort-name">الاسم</option>
+              </select>
+            </div>
           </div>
         </div>
-      </section>
+
+        <div class="shop-grid" id="clothes-store-grid"><!-- JS injected --></div>
+      </div>
     </div>
 
     <!-- ==========================================
          SPA VIEW: SHOES (Lookbook Grid)
          ========================================== -->
-    <div id="view-shoes" class="spa-view">
-      <section class="scents-section page-section">
-        <div class="section-container">
-          <div class="section-header">
-            <span class="section-subtitle" data-i18n="shoes-header-subtitle">خطوات تجمع الراحة والأناقة</span>
-            <h2 class="section-title" data-i18n="shoes-header-title">الأحذية الجلدية</h2>
-            <div class="section-divider"></div>
-          </div>
+    <div id="view-shoes" class="spa-view store-view">
+      <div class="store-page">
+        <header class="shop-hero">
+          <span class="shop-hero__eyebrow" data-i18n="shoes-header-subtitle">خطوات تجمع الراحة والأناقة</span>
+          <h1 class="shop-hero__title" data-i18n="shoes-header-title">الأحذية الجلدية</h1>
+          <p class="shop-hero__subtitle" data-i18n="shoes-store-subtitle">جلد طبيعي وصناعة يدوية. تصفّح مجموعة الأحذية كاملة.</p>
+          <div class="shop-hero__divider"></div>
+        </header>
 
-          <!-- Step 1: Main Gender Categories -->
-          <div class="perfume-gender-filters" id="shoes-gender-filters">
-            <button class="gender-btn" data-gender="men" data-i18n="sub-men">رجالي</button>
-            <button class="gender-btn" data-gender="women" data-i18n="sub-women">نسائي</button>
+        <div class="shop-toolbar" data-store="shoes">
+          <div class="shop-filters">
+            <div class="shop-filter-row">
+              <span class="shop-filter-label" data-i18n="shop-filter-gender">النوع</span>
+              <div class="shop-chips" role="group" aria-label="تصفية حسب النوع">
+                <button type="button" class="shop-chip shop-chip--sm active" data-group="gender" data-value="all" data-i18n="shop-filter-all">الكل</button>
+                <button type="button" class="shop-chip shop-chip--sm" data-group="gender" data-value="men" data-i18n="sub-men">رجالي</button>
+                <button type="button" class="shop-chip shop-chip--sm" data-group="gender" data-value="women" data-i18n="sub-women">نسائي</button>
+                <button type="button" class="shop-chip shop-chip--sm" data-group="gender" data-value="unisex" data-i18n="shop-gender-unisex">للجميع</button>
+              </div>
+            </div>
           </div>
-
-          <div class="shoes-grid" id="shoes-lookbook-grid">
-            <!-- JS Injected: 2-column Lookbook Shoes Cards -->
+          <div class="shop-toolbar__meta">
+            <span class="shop-count" aria-live="polite"></span>
+            <div class="shop-sort">
+              <label data-i18n="shop-sort-label">ترتيب</label>
+              <select class="store-sort">
+                <option value="featured" data-i18n="shop-sort-featured">المميزة</option>
+                <option value="price-asc" data-i18n="shop-sort-price-asc">السعر: من الأقل</option>
+                <option value="price-desc" data-i18n="shop-sort-price-desc">السعر: من الأعلى</option>
+                <option value="name" data-i18n="shop-sort-name">الاسم</option>
+              </select>
+            </div>
           </div>
         </div>
-      </section>
+
+        <div class="shop-grid" id="shoes-store-grid"><!-- JS injected --></div>
+      </div>
     </div>
 
 
@@ -1122,7 +1239,7 @@
   <script src="js/api-client.js?v=1.4"></script>
   <script src="js/auth.js?v=1.5"></script>
   <script src="js/orders.js?v=1.3"></script>
-  <script src="js/translations.js?v=1.3"></script>
+  <script src="js/translations.js?v=1.4"></script>
   <script src="js/lang.js?v=1.2"></script>
   <script src="js/utils.js?v=1.0"></script>
   <script src="js/cart.js?v=1.0"></script>
@@ -1132,11 +1249,23 @@
   <script src="js/admin.js?v=1.1"></script>
   <script src="js/search.js?v=1.0"></script>
   <script src="js/reviews.js?v=1.0"></script>
-  <script src="js/router.js?v=1.3"></script>
+  <script src="js/router.js?v=1.4"></script>
   <script src="js/intro.js?v=1.2"></script>
-  <script src="js/products.js?v=1.5"></script>
+  <script src="js/products.js?v=1.7"></script>
+  <script src="js/shop.js?v=1.1"></script>
   <script src="js/scroll.js?v=1.3"></script>
   <script src="js/cinematic-ad.js?v=1.0"></script>
   <script src="js/gallery.js?v=1.2"></script>
+
+  <!-- Three.js (ES modules) — import map must come before the module script -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="js/3d-experience.js?v=2.1"></script>
 </body>
 </html>

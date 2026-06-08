@@ -65,11 +65,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Toggle view visibility
+    const shell3d = document.getElementById("perfume-3d-shell");
     views.forEach(view => {
       const isActive = view.id === activeViewId;
       view.style.display = isActive ? "block" : "none";
       view.classList.toggle("active-view", isActive);
     });
+
+    // Show/hide the 3D shell and initialize the experience on first visit
+    if (shell3d) {
+      shell3d.style.display = (activeViewId === "view-perfumes") ? "block" : "none";
+    }
 
     // Update nav highlights
     navLinks.forEach(link => {
@@ -88,6 +94,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Page-specific triggers
+    if (hash === "#perfumes") {
+      // Init 3D on first visit; on subsequent visits just refresh scroll positions
+      setTimeout(() => window.init3DExperience?.(), 50);
+      window.stores?.perfumes?.render();
+    }
+    if (hash === "#clothes") window.stores?.clothes?.render();
+    if (hash === "#shoes")   window.stores?.shoes?.render();
     if (hash === "#cart")    window.cart?.renderCartPage();
     if (hash === "#account") window.accountPage?.load();
     if (hash === "#admin")   window.adminPage?.load();

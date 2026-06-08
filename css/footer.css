@@ -30,7 +30,7 @@
 }
 
 .footer-logo {
-  font-family: var(--font-arabic);
+  font-family: 'Rakkas', serif;
   font-size: 2.8rem;
   color: var(--gold);
   text-shadow: var(--shadow-gold);
