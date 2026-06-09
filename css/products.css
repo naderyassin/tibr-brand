@@ -407,6 +407,39 @@
   font-weight: 700;
 }
 
+/* Modal CTA Group — primary cart + bridge + secondary WhatsApp */
+.modal-cta-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 0.5rem;
+}
+
+.modal-cta-bridge {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-style: italic;
+  color: var(--beige-dim);
+  text-align: center;
+  margin: 0.15rem 0;
+  opacity: 0.75;
+}
+
+/* WhatsApp secondary CTA — burgundy, not gold */
+.btn-wa {
+  background-color: transparent;
+  border: 1px solid rgba(123, 45, 62, 0.6);
+  color: var(--beige-dim);
+  transition: var(--transition-smooth);
+}
+
+.btn-wa:hover {
+  background-color: var(--burgundy);
+  border-color: var(--burgundy);
+  color: var(--beige);
+  box-shadow: 0 4px 16px rgba(123, 45, 62, 0.35);
+}
+
 /* WhatsApp Order Button */
 .modal-order-btn {
   display: flex;

@@ -103,11 +103,14 @@
 }
 
 .story-highlight {
-  border-right: 2px solid var(--gold);
-  padding-right: 1.2rem;
-  font-style: italic;
-  color: var(--beige) !important;
-  margin-top: 1rem;
+  font-family: 'Rakkas', serif;
+  font-size: 1.42rem;
+  font-style: normal;
+  color: var(--gold) !important;
+  margin-top: 1.75rem;
+  margin-bottom: 0.25rem;
+  line-height: 1.55;
+  opacity: 0.92;
 }
 
 /* ==========================================

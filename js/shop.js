@@ -9,6 +9,13 @@
  * ------------------------------------------------------------- */
 
 (function () {
+  function getBottleVariant(product) {
+    const src = `${product.image || ''} ${product.id || ''}`.toLowerCase();
+    if (src.includes('jasmine') || src.includes('etoilee') || src.includes('فل')) return 'jasmine';
+    if (src.includes('nostalgia') || src.includes('rouge') || src.includes('نوستالج')) return 'nostalgia';
+    return 'oud';
+  }
+
   // Build one store bound to a fixed category and its own DOM nodes.
   function createStore({ key, category, gridId, toolbarSelector }) {
     return {
@@ -147,21 +154,33 @@
           const data = p[lang] || p.ar || {};
           const wished = window.wishlist?.has?.(p.id) ? "active" : "";
           const glow = p.accentGlow || "rgba(201, 168, 76, 0.12)";
+          const color = p.accentColor || "var(--gold)";
           const heartLabel = lang === "ar" ? "أضف إلى المفضلة" : "Add to wishlist";
+          const isPerf = p.category === "perfumes";
+          const variant = isPerf ? getBottleVariant(p) : null;
+          const moodLabel = isPerf && data.mood ? data.mood : null;
+
+          const visualInner = isPerf
+            ? `<div class="store-card__bottle-silhouette store-card__bottle--${variant}"></div>
+               <div class="store-card__glow"></div>
+               ${moodLabel ? `<span class="store-card__mood">${moodLabel}</span>` : ""}`
+            : `<div class="store-card__pattern"></div>`;
+
           return `
-            <article class="product-card shop-card" id="${this.key}-card-${p.id}" style="--accent-glow:${glow}; --i:${i};">
-              <div class="product-img-wrapper">
-                <img src="${p.image}" alt="${data.name || ""}" class="product-img" loading="lazy"
-                     onerror="this.style.opacity='0.25'">
+            <article class="product-card shop-card store-card" id="${this.key}-card-${p.id}"
+                     style="--product-color:${color};--accent-glow:${glow};--i:${i};">
+              <div class="store-card__visual ${isPerf ? "store-card__visual--perfume" : "store-card__visual--apparel"}">
+                ${visualInner}
                 <button class="wishlist-btn ${wished}" data-id="${p.id}"
                         aria-label="${heartLabel}" aria-pressed="${wished ? "true" : "false"}">♥</button>
               </div>
-              <div class="product-info">
-                ${data.collection ? `<span class="product-collection">${data.collection}</span>` : ""}
-                <h3 class="product-title">${data.name || ""}</h3>
-                ${data.shortDesc ? `<p class="product-short-desc">${data.shortDesc}</p>` : ""}
-                ${data.price ? `<div class="product-price">${data.price}</div>` : ""}
-                <button class="product-card-btn" data-id="${p.id}">${discoverText}</button>
+              <div class="store-card__info">
+                <h3 class="store-card__name">${data.name || ""}</h3>
+                ${data.shortDesc ? `<p class="store-card__line">${data.shortDesc}</p>` : ""}
+                <div class="store-card__footer">
+                  ${data.price ? `<span class="store-card__price">${data.price}</span>` : ""}
+                  <button class="store-card__cta product-card-btn" data-id="${p.id}">${discoverText}</button>
+                </div>
               </div>
             </article>`;
         }).join("");

@@ -312,16 +312,19 @@ html[dir="rtl"] .cart-drawer {
   margin-top: 1.25rem;
 }
 
-/* ── Add to Cart Button in Modal ─────────────────────────── */
+/* ── Add to Cart Button in Modal — primary CTA ───────────── */
 #modal-add-to-cart-btn {
   width: 100%;
-  margin-top: 0.75rem;
-  background: transparent;
-  border: var(--border-gold);
-  color: var(--gold);
+  background: var(--gold);
+  border: 1px solid var(--gold);
+  color: var(--bg-dark);
+  font-weight: 700;
+  box-shadow: var(--shadow-gold);
 }
 
 #modal-add-to-cart-btn:hover {
-  background: var(--gold);
-  color: var(--bg-dark);
+  background: var(--gold-hover);
+  border-color: var(--gold-hover);
+  box-shadow: var(--shadow-gold-large);
+  transform: translateY(-2px);
 }

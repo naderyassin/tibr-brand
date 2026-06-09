@@ -403,7 +403,6 @@
       <section class="scents-section store-section" id="perfumes-catalog">
         <div class="store-page">
           <header class="store-reveal shop-hero">
-            <span class="shop-hero__eyebrow" data-i18n="perfumes-header-subtitle">إبداعات شمّية ساحرة</span>
             <h2 class="shop-hero__title" data-i18n="perfumes-header-title">عطور الذاكرة</h2>
             <p class="shop-hero__subtitle" data-i18n="perfumes-store-subtitle">كل قارورة حكاية. اختَر عطرك من المجموعة الكاملة.</p>
             <div class="shop-hero__divider"></div>
@@ -446,7 +445,6 @@
     <div id="view-clothes" class="spa-view store-view">
       <div class="store-page">
         <header class="shop-hero">
-          <span class="shop-hero__eyebrow" data-i18n="clothes-header-subtitle">تصاميم بخطوط كلاسيكية معاصرة</span>
           <h1 class="shop-hero__title" data-i18n="clothes-header-title">الأزياء الفاخرة</h1>
           <p class="shop-hero__subtitle" data-i18n="clothes-store-subtitle">خامات فاخرة وقصّات معاصرة. تصفّح مجموعة الملابس كاملة.</p>
           <div class="shop-hero__divider"></div>
@@ -488,7 +486,6 @@
     <div id="view-shoes" class="spa-view store-view">
       <div class="store-page">
         <header class="shop-hero">
-          <span class="shop-hero__eyebrow" data-i18n="shoes-header-subtitle">خطوات تجمع الراحة والأناقة</span>
           <h1 class="shop-hero__title" data-i18n="shoes-header-title">الأحذية الجلدية</h1>
           <p class="shop-hero__subtitle" data-i18n="shoes-store-subtitle">جلد طبيعي وصناعة يدوية. تصفّح مجموعة الأحذية كاملة.</p>
           <div class="shop-hero__divider"></div>
@@ -890,7 +887,7 @@
         </div>
 
         <!-- Order / CTA Callout -->
-        <div class="footer-cta-card glass-panel animate-pulse-gold">
+        <div class="footer-cta-card glass-panel">
           <h3 data-i18n="footer-cta-title">هل وجدت منتجك الفريد؟</h3>
           <p data-i18n="footer-cta-desc">تواصل معنا فوراً على الواتساب واطلب قطعتك الخاصة بخصم 15% للإصدارات الأولى!</p>
           <a href="https://wa.me/201000000000?text=أهلاً%20روبابيكيا،%20أريد%20طلب%20عطر%20من%20مجموعتكم" target="_blank" class="footer-whatsapp-btn hover-vibrate">
@@ -1004,22 +1001,28 @@
             <strong id="modal-perfume-mood" data-i18n="modal-mood-default">رومانسية دافئة</strong>
           </div>
 
-          <a href="" id="modal-whatsapp-link" target="_blank" class="btn btn-gold modal-order-btn hover-vibrate" style="display: none;">
-            <span data-i18n="modal-order-btn">اطلب هذا المنتج الآن</span>
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-              <path d="M17.472 14.382c-0.297-0.149-1.758-0.867-2.031-0.967-0.272-0.099-0.47-0.148-0.669 0.15-0.198 0.297-0.767 0.966-0.941 1.164-0.173 0.199-0.347 0.223-0.644 0.075-0.297-0.15-1.255-0.463-2.39-1.475-0.883-0.788-1.48-1.761-1.653-2.059-0.173-0.297-0.018-0.458 0.13-0.606 0.134-0.133 0.298-0.347 0.446-0.52 0.149-0.174 0.198-0.298 0.298-0.497 0.099-0.198 0.05-0.371-0.025-0.52-0.075-0.149-0.669-1.612-0.916-2.207-0.242-0.579-0.487-0.5-0.669-0.51-0.173-0.008-0.371-0.01-0.57-0.01-0.198 0-0.52 0.074-0.792 0.372-0.272 0.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074 0.149 0.198 2.096 3.2 5.077 4.487 0.709 0.306 1.262 0.489 1.694 0.625 0.712 0.227 1.36 0.195 1.871 0.118 0.571-0.085 1.758-0.719 2.006-1.413 0.248-0.694 0.248-1.289 0.173-1.413-0.074-0.124-0.272-0.198-0.569-0.347zM12.05 21.785h-0.004a9.87 9.87 0 01-5.031-1.378l-0.361-0.214-3.741 0.982 0.998-3.648-0.235-0.374a9.86 9.86 0 01-1.51-5.26c0.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-0.003 5.45-4.437 9.884-9.885 9.884zm8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 0.16 5.335 0.157 11.892c0 2.096 0.547 4.142 1.588 5.945L0.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h0.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-            </svg>
-          </a>
+          <!-- CTA Group: cart (primary) + WhatsApp (secondary) -->
+          <div class="modal-cta-group">
+            <!-- Primary: Add to Cart -->
+            <button id="modal-add-to-cart-btn" class="btn btn-gold modal-order-btn" data-i18n="modal-add-to-cart-btn">
+              أضف إلى السلة
+            </button>
 
-          <!-- Native DB Order Button -->
-          <button id="modal-db-order-btn" class="btn btn-gold modal-order-btn hover-vibrate" data-i18n="modal-db-order-btn">
-            تأكيد الطلب المباشر
-          </button>
+            <!-- DB direct order (hidden until needed by orders.js) -->
+            <button id="modal-db-order-btn" class="btn btn-outline modal-order-btn" data-i18n="modal-db-order-btn" style="display:none;">
+              تأكيد الطلب المباشر
+            </button>
 
-          <!-- Add to Cart Button -->
-          <button id="modal-add-to-cart-btn" class="btn modal-order-btn" data-i18n="modal-add-to-cart-btn">
-            أضف إلى السلة 🛍
-          </button>
+            <p class="modal-cta-bridge" data-i18n="modal-cta-bridge">أو تواصل معنا مباشرة لطلب مخصص</p>
+
+            <!-- Secondary: WhatsApp -->
+            <a href="" id="modal-whatsapp-link" target="_blank" class="btn btn-wa modal-order-btn" aria-label="اطلب عبر الواتساب">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+                <path d="M17.472 14.382c-0.297-0.149-1.758-0.867-2.031-0.967-0.272-0.099-0.47-0.148-0.669 0.15-0.198 0.297-0.767 0.966-0.941 1.164-0.173 0.199-0.347 0.223-0.644 0.075-0.297-0.15-1.255-0.463-2.39-1.475-0.883-0.788-1.48-1.761-1.653-2.059-0.173-0.297-0.018-0.458 0.13-0.606 0.134-0.133 0.298-0.347 0.446-0.52 0.149-0.174 0.198-0.298 0.298-0.497 0.099-0.198 0.05-0.371-0.025-0.52-0.075-0.149-0.669-1.612-0.916-2.207-0.242-0.579-0.487-0.5-0.669-0.51-0.173-0.008-0.371-0.01-0.57-0.01-0.198 0-0.52 0.074-0.792 0.372-0.272 0.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074 0.149 0.198 2.096 3.2 5.077 4.487 0.709 0.306 1.262 0.489 1.694 0.625 0.712 0.227 1.36 0.195 1.871 0.118 0.571-0.085 1.758-0.719 2.006-1.413 0.248-0.694 0.248-1.289 0.173-1.413-0.074-0.124-0.272-0.198-0.569-0.347zM12.05 21.785h-0.004a9.87 9.87 0 01-5.031-1.378l-0.361-0.214-3.741 0.982 0.998-3.648-0.235-0.374a9.86 9.86 0 01-1.51-5.26c0.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-0.003 5.45-4.437 9.884-9.885 9.884zm8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 0.16 5.335 0.157 11.892c0 2.096 0.547 4.142 1.588 5.945L0.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h0.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+              </svg>
+              <span data-i18n="modal-order-btn">اطلب عبر الواتساب</span>
+            </a>
+          </div>
         </div>
       </div>
 
