@@ -63,20 +63,34 @@ document.addEventListener("DOMContentLoaded", () => {
   // 3. GSAP ENTRANCE & SCROLL PARALLAX
   // ==========================================
   
-  // Custom reveal for the Hero section once intro curtain clears
+  // Staggered hero reveal: children enter one by one with a blur-fade
   const animateHero = () => {
-    gsap.to(".hero-content", {
-      opacity: 1,
-      y: 0,
-      duration: 1.5,
-      ease: "power3.out",
-      delay: 0.2
-    });
-    
-    // Slow drift on background image
+    const heroContent = document.querySelector(".hero-content");
+    if (!heroContent) return;
+
+    // Snap the wrapper visible immediately so it doesn't block children
+    gsap.set(heroContent, { opacity: 1, y: 0 });
+
+    // Stagger each direct child in: blurred-and-low → sharp-and-full
+    gsap.fromTo(
+      heroContent.children,
+      { opacity: 0, y: 28, filter: "blur(6px)" },
+      {
+        opacity: 1,
+        y: 0,
+        filter: "blur(0px)",
+        duration: 1.1,
+        stagger: 0.16,
+        ease: "power3.out",
+        delay: 0.15,
+        clearProps: "filter"
+      }
+    );
+
+    // Parallax-style drift: hero image settles from slight zoom
     gsap.to(".hero-bg-img", {
       scale: 1,
-      duration: 2.5,
+      duration: 2.8,
       ease: "power2.out"
     });
   };

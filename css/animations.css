@@ -180,17 +180,95 @@
   clip-path: circle(150% at 50% 50%);
 }
 
-/* Atmospheric radial glow that pulses behind the logo */
-.intro-bg-glow {
+/* Warm amber candle-glow tint always present behind everything */
+.intro-curtain::before {
+  content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 55% 45% at 50% 50%,
-    rgba(201, 168, 76, 0.09) 0%,
-    rgba(201, 168, 76, 0.04) 40%,
-    transparent 70%);
+  background: radial-gradient(
+    ellipse 65% 55% at 50% 48%,
+    rgba(90, 55, 18, 0.38) 0%,
+    rgba(40, 22, 8, 0.18) 55%,
+    transparent 80%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Islamic diamond lattice tile pattern */
+.intro-arabesque {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cpath d='M30 1 L59 30 L30 59 L1 30 Z' fill='none' stroke='rgba(201,168,76,0.14)' stroke-width='0.7'/%3E%3Cpath d='M30 16 L44 30 L30 44 L16 30 Z' fill='none' stroke='rgba(201,168,76,0.09)' stroke-width='0.7'/%3E%3C/svg%3E");
+  background-size: 60px 60px;
   opacity: 0;
   pointer-events: none;
   z-index: 1;
+}
+
+/* Atmospheric radial glow — more amber and intense than before */
+.intro-bg-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 50% 42% at 50% 48%,
+    rgba(201, 168, 76, 0.14) 0%,
+    rgba(160, 110, 40, 0.07) 45%,
+    transparent 72%
+  );
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Bokeh orbs container — orbs are created in JS */
+.intro-bokeh-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+}
+
+.bokeh-orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* Portal glow ring — blooms and fades as the logo reveals */
+.intro-glow-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  border: 1px solid rgba(201, 168, 76, 0.22);
+  box-shadow:
+    0 0 35px 6px rgba(201, 168, 76, 0.07),
+    0 0 70px 14px rgba(201, 168, 76, 0.03),
+    inset 0 0 25px rgba(201, 168, 76, 0.04);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.intro-glow-ring::before {
+  content: '';
+  position: absolute;
+  inset: -44px;
+  border-radius: 50%;
+  border: 1px solid rgba(201, 168, 76, 0.1);
+}
+
+.intro-glow-ring::after {
+  content: '';
+  position: absolute;
+  inset: -90px;
+  border-radius: 50%;
+  border: 1px solid rgba(201, 168, 76, 0.05);
 }
 
 .intro-content {
@@ -203,14 +281,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.2rem;
+  gap: 1.4rem;
 }
 
 .intro-logo-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.5rem;
 }
 
 /* Clip container for the curtain-lift reveal */
@@ -221,12 +299,12 @@
 
 .intro-logo-ar {
   font-family: 'Rakkas', serif;
-  font-size: clamp(3rem, 10vw, 5rem);
+  font-size: clamp(3.2rem, 10vw, 5.2rem);
   color: var(--gold);
-  letter-spacing: 2px;
+  letter-spacing: 3px;
   text-shadow:
-    0 4px 20px rgba(201, 168, 76, 0.35),
-    0 0 60px rgba(201, 168, 76, 0.12);
+    0 4px 28px rgba(201, 168, 76, 0.45),
+    0 0 80px rgba(201, 168, 76, 0.15);
   margin: 0;
   display: block;
   transform: translateY(110%);
@@ -234,17 +312,17 @@
 
 .intro-logo-en {
   font-family: 'Cinzel Decorative', Georgia, serif;
-  font-size: clamp(0.75rem, 2vw, 1.1rem);
-  color: var(--beige);
+  font-size: clamp(0.7rem, 1.8vw, 1rem);
+  color: rgba(237, 224, 200, 0.75);
   letter-spacing: 24px;
-  margin-top: 2px;
+  margin-top: 4px;
   opacity: 0;
   white-space: nowrap;
 }
 
 /* SVG ornament lines */
 .intro-ornament {
-  width: min(380px, 80vw);
+  width: min(400px, 85vw);
   overflow: visible;
   display: block;
 }
@@ -257,7 +335,7 @@
   stroke-linecap: round;
   stroke-dasharray: 175;
   stroke-dashoffset: 175;
-  opacity: 0.7;
+  opacity: 0.65;
 }
 
 .orn-diamond {
@@ -265,29 +343,52 @@
   opacity: 0;
 }
 
-.intro-tagline {
-  font-family: var(--font-body);
-  font-style: italic;
-  font-size: clamp(1.1rem, 3vw, 1.4rem);
-  color: var(--beige-dim);
+/* Tick accent marks revealed after lines draw */
+.orn-accents {
   opacity: 0;
-  filter: blur(14px);
+}
+
+.intro-tagline {
+  font-family: 'Amiri', serif;
+  font-style: italic;
+  font-size: clamp(1.15rem, 3vw, 1.45rem);
+  color: rgba(193, 181, 160, 0.9);
+  opacity: 0;
+  filter: blur(12px);
   text-wrap: balance;
+  line-height: 1.7;
+  max-width: 480px;
+}
+
+/* Warm amber overlay that flashes at exit */
+.intro-exit-flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 65% 55% at 50% 48%,
+    rgba(201, 168, 76, 0.24) 0%,
+    rgba(160, 100, 30, 0.1) 50%,
+    transparent 75%
+  );
+  opacity: 0;
+  pointer-events: none;
+  z-index: 8;
 }
 
 .skip-btn {
   position: fixed;
   bottom: 40px;
-  left: 40px;
+  inset-inline-start: 40px;
   z-index: 10000;
   font-family: var(--font-body);
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: var(--gold);
-  border: 1px solid rgba(201, 168, 76, 0.35);
-  background: rgba(13, 10, 7, 0.6);
-  backdrop-filter: blur(8px);
-  padding: 0.55rem 1.4rem;
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  background: rgba(13, 10, 7, 0.55);
+  backdrop-filter: blur(10px);
+  padding: 0.5rem 1.3rem;
   border-radius: var(--radius-full);
+  letter-spacing: 1px;
   transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   opacity: 0;
 }
@@ -296,7 +397,7 @@
   background: var(--gold);
   color: var(--bg-dark);
   border-color: var(--gold);
-  box-shadow: 0 0 20px rgba(201, 168, 76, 0.3);
+  box-shadow: 0 0 24px rgba(201, 168, 76, 0.35);
 }
 
 /* Lock scroll on body during intro */
@@ -337,8 +438,16 @@ body.intro-active {
   }
 
   .orn-diamond,
-  .intro-bg-glow {
+  .orn-accents,
+  .intro-bg-glow,
+  .intro-arabesque {
     opacity: 1 !important;
+  }
+
+  .intro-glow-ring,
+  .intro-exit-flash,
+  .intro-bokeh-layer {
+    display: none !important;
   }
 
   .intro-curtain {

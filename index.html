@@ -62,9 +62,15 @@
        1. INTRO ANIMATION CURTAIN
        ========================================== -->
   <div class="intro-curtain" id="intro-curtain">
-    <button class="skip-btn" id="skip-btn" data-i18n="intro-skip">تخطي ←</button>
+    <button class="skip-btn" id="skip-btn" data-i18n="intro-skip">تخطي</button>
 
+    <!-- Atmospheric layers (back to front) -->
+    <div class="intro-arabesque" aria-hidden="true"></div>
     <div class="intro-bg-glow" aria-hidden="true"></div>
+    <div class="intro-bokeh-layer" id="intro-bokeh-layer" aria-hidden="true"></div>
+
+    <!-- Portal glow ring — blooms then fades before logo arrives -->
+    <div class="intro-glow-ring" id="intro-glow-ring" aria-hidden="true"></div>
 
     <div class="intro-content">
 
@@ -72,6 +78,14 @@
         <path class="orn-path-left" d="M 193,10 L 20,10"/>
         <polygon class="orn-diamond" points="200,4 207,10 200,16 193,10"/>
         <path class="orn-path-right" d="M 207,10 L 380,10"/>
+        <g class="orn-accents" opacity="0">
+          <line x1="68" y1="7" x2="68" y2="13" stroke="#C9A84C" stroke-width="0.7" opacity="0.5"/>
+          <line x1="120" y1="7" x2="120" y2="13" stroke="#C9A84C" stroke-width="0.7" opacity="0.5"/>
+          <line x1="166" y1="7" x2="166" y2="13" stroke="#C9A84C" stroke-width="0.7" opacity="0.5"/>
+          <line x1="234" y1="7" x2="234" y2="13" stroke="#C9A84C" stroke-width="0.7" opacity="0.5"/>
+          <line x1="280" y1="7" x2="280" y2="13" stroke="#C9A84C" stroke-width="0.7" opacity="0.5"/>
+          <line x1="332" y1="7" x2="332" y2="13" stroke="#C9A84C" stroke-width="0.7" opacity="0.5"/>
+        </g>
       </svg>
 
       <div class="intro-logo-wrapper">
@@ -85,12 +99,21 @@
         <path class="orn-path-left" d="M 193,10 L 20,10"/>
         <polygon class="orn-diamond" points="200,4 207,10 200,16 193,10"/>
         <path class="orn-path-right" d="M 207,10 L 380,10"/>
+        <g class="orn-accents" opacity="0">
+          <line x1="68" y1="7" x2="68" y2="13" stroke="#C9A84C" stroke-width="0.7" opacity="0.5"/>
+          <line x1="120" y1="7" x2="120" y2="13" stroke="#C9A84C" stroke-width="0.7" opacity="0.5"/>
+          <line x1="166" y1="7" x2="166" y2="13" stroke="#C9A84C" stroke-width="0.7" opacity="0.5"/>
+          <line x1="234" y1="7" x2="234" y2="13" stroke="#C9A84C" stroke-width="0.7" opacity="0.5"/>
+          <line x1="280" y1="7" x2="280" y2="13" stroke="#C9A84C" stroke-width="0.7" opacity="0.5"/>
+          <line x1="332" y1="7" x2="332" y2="13" stroke="#C9A84C" stroke-width="0.7" opacity="0.5"/>
+        </g>
       </svg>
 
       <p class="intro-tagline" data-i18n="intro-tagline">"روائح نايمة في الذاكرة، صحيت في قارورة."</p>
     </div>
 
-    <div class="intro-smoke-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;"></div>
+    <!-- Warm amber flash that fires at exit -->
+    <div class="intro-exit-flash" id="intro-exit-flash" aria-hidden="true"></div>
   </div>
 
   <!-- ==========================================
