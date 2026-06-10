@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="حسابك في روبابيكيا.">
+  <title>حسابي · روبابيكيا</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=Hanken+Grotesk:wght@400;500;600;700&family=Reem+Kufi:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/store/tokens.css">
+  <link rel="stylesheet" href="/css/store/base.css">
+  <link rel="stylesheet" href="/css/store/chrome.css">
+  <link rel="stylesheet" href="/css/store/components.css">
+  <link rel="stylesheet" href="/css/store/pages.css">
+</head>
+<body data-nav="" data-title-ar="حسابي · روبابيكيا" data-title-en="My account · Robabikia">
+  <a class="skip-link" href="#main"><span data-lang-ar>تخطَّ إلى المحتوى</span><span data-lang-en>Skip to content</span></a>
+
+  <main id="main" class="store-container">
+    <header class="page-head">
+      <h1 class="page-head__title"><span data-lang-ar>حسابي</span><span data-lang-en>My account</span></h1>
+      <p class="page-head__sub" id="account-greeting"></p>
+    </header>
+
+    <div class="dashboard">
+      <nav class="dash-nav" aria-label="أقسام الحساب">
+        <button class="dash-nav__item" type="button" data-tab="profile">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c.8-3.4 3.6-5.2 7-5.2s6.2 1.8 7 5.2" stroke-linecap="round"/></svg>
+          <span data-lang-ar>الملف الشخصي</span><span data-lang-en>Profile</span>
+        </button>
+        <button class="dash-nav__item" type="button" data-tab="orders">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z" stroke-linejoin="round"/><path d="M9 7V5.5a3 3 0 0 1 6 0V7" stroke-linecap="round"/></svg>
+          <span data-lang-ar>طلباتي</span><span data-lang-en>Orders</span>
+        </button>
+        <button class="dash-nav__item" type="button" data-tab="addresses">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 21s-6.5-5.2-6.5-10A6.5 6.5 0 0 1 18.5 11c0 4.8-6.5 10-6.5 10z" stroke-linejoin="round"/><circle cx="12" cy="11" r="2.3"/></svg>
+          <span data-lang-ar>العناوين</span><span data-lang-en>Addresses</span>
+        </button>
+        <button class="dash-nav__item" type="button" data-tab="wishlist">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 20s-7-4.3-9.3-8.5C1 8 2.5 4.8 6 4.8c2 0 3.2 1.2 4 2.4.8-1.2 2-2.4 4-2.4 3.5 0 5 3.2 3.3 6.7C19 15.7 12 20 12 20z" stroke-linejoin="round"/></svg>
+          <span data-lang-ar>المفضلة</span><span data-lang-en>Wishlist</span>
+        </button>
+        <button class="dash-nav__item dash-nav__item--danger" type="button" id="logout-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M15 12H6m0 0l3-3m-3 3l3 3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 4h5a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-5" stroke-linecap="round"/></svg>
+          <span data-lang-ar>تسجيل الخروج</span><span data-lang-en>Sign out</span>
+        </button>
+      </nav>
+
+      <div>
+        <!-- Profile -->
+        <section class="dash-panel" data-panel="profile" role="region" aria-label="الملف الشخصي">
+          <div class="dash-panel__head"><h2 class="dash-panel__title"><span data-lang-ar>الملف الشخصي</span><span data-lang-en>Profile</span></h2></div>
+          <div class="dash-card">
+            <form class="dash-form" id="profile-form" novalidate>
+              <div class="field">
+                <label class="field__label" for="pf-name"><span data-lang-ar>الاسم</span><span data-lang-en>Name</span></label>
+                <input class="input" id="pf-name" name="name" autocomplete="name" value="">
+              </div>
+              <div class="field">
+                <label class="field__label" for="pf-phone"><span data-lang-ar>رقم الهاتف</span><span data-lang-en>Phone</span></label>
+                <input class="input" id="pf-phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="01XXXXXXXXX">
+              </div>
+              <div class="field field--full">
+                <label class="field__label" for="pf-email"><span data-lang-ar>البريد الإلكتروني</span><span data-lang-en>Email</span></label>
+                <input class="input" id="pf-email" name="email" type="email" readonly>
+                <p class="field__hint"><span data-lang-ar>لا يمكن تغيير البريد الإلكتروني هنا.</span><span data-lang-en>Email can't be changed here.</span></p>
+              </div>
+              <div class="field--full">
+                <button class="btn btn--primary" type="submit"><span data-lang-ar>حفظ التغييرات</span><span data-lang-en>Save changes</span></button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- Orders -->
+        <section class="dash-panel" data-panel="orders" role="region" aria-label="طلباتي">
+          <div class="dash-panel__head"><h2 class="dash-panel__title"><span data-lang-ar>طلباتي</span><span data-lang-en>Orders</span></h2></div>
+          <div id="orders-list" class="dash-orders"></div>
+        </section>
+
+        <!-- Addresses -->
+        <section class="dash-panel" data-panel="addresses" role="region" aria-label="العناوين">
+          <div class="dash-panel__head">
+            <h2 class="dash-panel__title"><span data-lang-ar>العناوين</span><span data-lang-en>Addresses</span></h2>
+            <button class="btn btn--secondary" type="button" id="add-address-btn"><span data-lang-ar>إضافة عنوان</span><span data-lang-en>Add address</span></button>
+          </div>
+          <form class="dash-card dash-form" id="address-form" hidden novalidate style="margin-block-end: var(--sp-5);">
+            <div class="field">
+              <label class="field__label" for="ad-label"><span data-lang-ar>الاسم المختصر</span><span data-lang-en>Label</span></label>
+              <input class="input" id="ad-label" placeholder="المنزل">
+            </div>
+            <div class="field">
+              <label class="field__label" for="ad-phone"><span data-lang-ar>رقم الهاتف</span><span data-lang-en>Phone</span></label>
+              <input class="input" id="ad-phone" type="tel" inputmode="numeric" placeholder="01XXXXXXXXX">
+            </div>
+            <div class="field field--full">
+              <label class="field__label" for="ad-street"><span data-lang-ar>العنوان بالتفصيل</span><span data-lang-en>Street address</span><span class="field__req">*</span></label>
+              <input class="input" id="ad-street">
+              <p class="field__error"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4m0 4h.01" stroke-linecap="round"/></svg><span data-lang-ar>أدخل العنوان.</span><span data-lang-en>Enter the address.</span></p>
+            </div>
+            <div class="field--full" style="display:flex; gap: var(--sp-3);">
+              <button class="btn btn--primary" type="submit"><span data-lang-ar>حفظ العنوان</span><span data-lang-en>Save address</span></button>
+              <button class="btn btn--ghost" type="button" id="cancel-address"><span data-lang-ar>إلغاء</span><span data-lang-en>Cancel</span></button>
+            </div>
+          </form>
+          <div id="addresses-list" class="address-grid"></div>
+        </section>
+
+        <!-- Wishlist -->
+        <section class="dash-panel" data-panel="wishlist" role="region" aria-label="المفضلة">
+          <div class="dash-panel__head"><h2 class="dash-panel__title"><span data-lang-ar>المفضلة</span><span data-lang-en>Wishlist</span></h2></div>
+          <div class="rb-empty">
+            <span class="rb-empty__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M12 20s-7-4.3-9.3-8.5C1 8 2.5 4.8 6 4.8c2 0 3.2 1.2 4 2.4.8-1.2 2-2.4 4-2.4 3.5 0 5 3.2 3.3 6.7C19 15.7 12 20 12 20z" stroke-linejoin="round"/></svg></span>
+            <h3 class="rb-empty__title"><span data-lang-ar>لا منتجات في المفضلة بعد</span><span data-lang-en>Your wishlist is empty</span></h3>
+            <p class="rb-empty__text"><span data-lang-ar>احفظ ما يعجبك أثناء التصفّح.</span><span data-lang-en>Save what catches your eye while browsing.</span></p>
+            <a class="btn btn--primary" href="/shop/perfumes"><span data-lang-ar>تصفّح العطور</span><span data-lang-en>Browse perfumes</span></a>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script src="/js/store/chrome.js" defer></script>
+  <script src="/js/store/account.js" defer></script>
+</body>
+</html>

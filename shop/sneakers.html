@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="أحذية روبابيكيا الجلدية، حرفية مصرية بروح معاصرة.">
+  <title>الأحذية · روبابيكيا</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=Hanken+Grotesk:wght@400;500;600;700&family=Reem+Kufi:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/store/tokens.css">
+  <link rel="stylesheet" href="/css/store/base.css">
+  <link rel="stylesheet" href="/css/store/chrome.css">
+  <link rel="stylesheet" href="/css/store/components.css">
+  <link rel="stylesheet" href="/css/store/catalog.css">
+</head>
+<body data-nav="sneakers" data-title-ar="الأحذية · روبابيكيا" data-title-en="Sneakers · Robabikia">
+  <a class="skip-link" href="#main"><span data-lang-ar>تخطَّ إلى المنتجات</span><span data-lang-en>Skip to products</span></a>
+
+  <main id="main" class="store-container">
+    <nav class="breadcrumb" aria-label="مسار التصفح">
+      <a href="/"><span data-lang-ar>الرئيسية</span><span data-lang-en>Home</span></a>
+      <span class="breadcrumb__sep" aria-hidden="true">/</span>
+      <span aria-current="page"><span data-lang-ar>الأحذية</span><span data-lang-en>Sneakers</span></span>
+    </nav>
+
+    <header class="catalog-head">
+      <h1 class="catalog-head__title"><span data-lang-ar>الأحذية</span><span data-lang-en>Sneakers</span></h1>
+      <hr class="catalog-head__rule">
+      <p class="catalog-head__intro">
+        <span data-lang-ar>أحذية جلدية مصنوعة بحرفية مصرية، خطوط نظيفة وخامات تدوم خطوةً بعد خطوة.</span>
+        <span data-lang-en>Leather sneakers built with Egyptian craft, clean lines and materials that last, step after step.</span>
+      </p>
+    </header>
+
+    <div class="catalog-controls">
+      <div class="catalog-filters">
+        <div class="filter-group" role="group" aria-label="تصفية حسب النوع">
+          <span class="filter-group__label"><span data-lang-ar>لِمن</span><span data-lang-en>For</span></span>
+          <button class="filter-chip" type="button" data-filter="gender" data-value="all" aria-pressed="true"><span data-lang-ar>الكل</span><span data-lang-en>All</span></button>
+          <button class="filter-chip" type="button" data-filter="gender" data-value="women" aria-pressed="false"><span data-lang-ar>نسائي</span><span data-lang-en>Women</span></button>
+          <button class="filter-chip" type="button" data-filter="gender" data-value="men" aria-pressed="false"><span data-lang-ar>رجالي</span><span data-lang-en>Men</span></button>
+        </div>
+      </div>
+      <div class="catalog-right">
+        <p class="catalog-count" id="catalog-count" aria-live="polite"><span data-lang-ar><span data-count>٤</span> موديلات</span><span data-lang-en><span data-count>4</span> styles</span></p>
+        <div class="sort">
+          <label class="visually-hidden" for="sort-select"><span data-lang-ar>ترتيب</span><span data-lang-en>Sort</span></label>
+          <select class="sort__select" id="sort-select"
+            data-ar='["الأحدث","السعر: من الأقل","السعر: من الأعلى"]'
+            data-en='["Newest","Price: low to high","Price: high to low"]'>
+            <option value="newest">الأحدث</option>
+            <option value="price-asc">السعر: من الأقل</option>
+            <option value="price-desc">السعر: من الأعلى</option>
+          </select>
+          <svg class="sort__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="catalog-grid skeleton-grid" id="skeleton-grid" hidden aria-hidden="true"></div>
+
+    <section class="catalog-grid" id="product-grid" aria-label="قائمة الأحذية" aria-busy="false">
+
+      <article class="product" data-product data-id="wadi-high" data-gender="women" data-price="2300" data-order="4" data-default-size="38" data-reveal data-ar-name="وادي هاي" data-en-name="Wadi High">
+        <div class="product__media">
+          <a class="product__link" href="/product?id=wadi-high" aria-label="وادي هاي">
+            <img class="product__img" src="https://placehold.co/600x750/171311/c9a84c/png?text=Wadi+High&amp;font=playfair-display" loading="lazy" decoding="async" data-ar-alt="حذاء جلدي مرتفع الرقبة" data-en-alt="Leather high-top sneaker" alt="حذاء جلدي مرتفع الرقبة">
+          </a>
+          <button class="product__wish" type="button" aria-pressed="false" data-ar-label="أضف وادي هاي إلى المفضلة" data-en-label="Add Wadi High to wishlist" aria-label="أضف وادي هاي إلى المفضلة">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.3-9.3-8.5C1 8 2.5 4.8 6 4.8c2 0 3.2 1.2 4 2.4.8-1.2 2-2.4 4-2.4 3.5 0 5 3.2 3.3 6.7C19 15.7 12 20 12 20z" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <div class="product__body">
+          <p class="product__collection"><span data-lang-ar>مجموعة الجلد</span><span data-lang-en>Leather Line</span></p>
+          <a class="product__name-link" href="/product?id=wadi-high"><h3 class="product__name"><span data-lang-ar>وادي هاي</span><span data-lang-en>Wadi High</span></h3></a>
+          <p class="product__desc"><span data-lang-ar>حذاء جلدي مرتفع الرقبة بخطوط نظيفة ولون ترابي دافئ يذكّر بوديان الصحراء.</span><span data-lang-en>A leather high-top with clean lines and a warm earthen tone recalling desert valleys.</span></p>
+          <div class="product__meta">
+            <span class="product__price"><span data-lang-ar>٢٣٠٠ ج.م</span><span data-lang-en>2300 EGP</span></span>
+            <button class="btn btn--secondary" type="button" data-add data-ar-name="وادي هاي" data-en-name="Wadi High">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8z" stroke-linejoin="round"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8" stroke-linecap="round"/></svg>
+              <span data-lang-ar>أضف للسلة</span><span data-lang-en>Add to cart</span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="product" data-product data-id="nile-runner" data-gender="men" data-price="2100" data-order="3" data-default-size="42" data-reveal data-ar-name="نايل رنر" data-en-name="Nile Runner">
+        <div class="product__media">
+          <a class="product__link" href="/product?id=nile-runner" aria-label="نايل رنر">
+            <img class="product__img" src="https://placehold.co/600x750/171311/c9a84c/png?text=Nile+Runner&amp;font=playfair-display" loading="lazy" decoding="async" data-ar-alt="حذاء رياضي من الشامواه" data-en-alt="Suede runner sneaker" alt="حذاء رياضي من الشامواه">
+          </a>
+          <span class="product__badge product__badge--soft"><span data-lang-ar>جديد</span><span data-lang-en>New</span></span>
+          <button class="product__wish" type="button" aria-pressed="false" data-ar-label="أضف نايل رنر إلى المفضلة" data-en-label="Add Nile Runner to wishlist" aria-label="أضف نايل رنر إلى المفضلة">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.3-9.3-8.5C1 8 2.5 4.8 6 4.8c2 0 3.2 1.2 4 2.4.8-1.2 2-2.4 4-2.4 3.5 0 5 3.2 3.3 6.7C19 15.7 12 20 12 20z" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <div class="product__body">
+          <p class="product__collection"><span data-lang-ar>مجموعة الجلد</span><span data-lang-en>Leather Line</span></p>
+          <a class="product__name-link" href="/product?id=nile-runner"><h3 class="product__name"><span data-lang-ar>نايل رنر</span><span data-lang-en>Nile Runner</span></h3></a>
+          <p class="product__desc"><span data-lang-ar>حذاء رياضي بخامة شامواه ونعل خفيف، مستوحى من إيقاع المدينة على ضفاف النيل.</span><span data-lang-en>A suede runner on a lightweight sole, inspired by the city's rhythm along the Nile.</span></p>
+          <div class="product__meta">
+            <span class="product__price"><span data-lang-ar>٢١٠٠ ج.م</span><span data-lang-en>2100 EGP</span></span>
+            <button class="btn btn--secondary" type="button" data-add data-ar-name="نايل رنر" data-en-name="Nile Runner">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8z" stroke-linejoin="round"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8" stroke-linecap="round"/></svg>
+              <span data-lang-ar>أضف للسلة</span><span data-lang-en>Add to cart</span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="product" data-product data-id="cairo-low" data-gender="men" data-price="1800" data-order="2" data-default-size="42" data-reveal data-ar-name="كايرو لو" data-en-name="Cairo Low">
+        <div class="product__media">
+          <a class="product__link" href="/product?id=cairo-low" aria-label="كايرو لو">
+            <img class="product__img" src="https://placehold.co/600x750/171311/c9a84c/png?text=Cairo+Low&amp;font=playfair-display" loading="lazy" decoding="async" data-ar-alt="حذاء جلدي منخفض الرقبة" data-en-alt="Full-grain leather low-top sneaker" alt="حذاء جلدي منخفض الرقبة">
+          </a>
+          <button class="product__wish" type="button" aria-pressed="false" data-ar-label="أضف كايرو لو إلى المفضلة" data-en-label="Add Cairo Low to wishlist" aria-label="أضف كايرو لو إلى المفضلة">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.3-9.3-8.5C1 8 2.5 4.8 6 4.8c2 0 3.2 1.2 4 2.4.8-1.2 2-2.4 4-2.4 3.5 0 5 3.2 3.3 6.7C19 15.7 12 20 12 20z" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <div class="product__body">
+          <p class="product__collection"><span data-lang-ar>مجموعة الجلد</span><span data-lang-en>Leather Line</span></p>
+          <a class="product__name-link" href="/product?id=cairo-low"><h3 class="product__name"><span data-lang-ar>كايرو لو</span><span data-lang-en>Cairo Low</span></h3></a>
+          <p class="product__desc"><span data-lang-ar>حذاء جلدي منخفض بقَصّة نظيفة وجلد مدبوغ بالكامل، يجمع راحة اليوم وأناقة المدينة.</span><span data-lang-en>A clean-cut low-top in full-grain leather, pairing all-day comfort with city polish.</span></p>
+          <div class="product__meta">
+            <span class="product__price"><span data-lang-ar>١٨٠٠ ج.م</span><span data-lang-en>1800 EGP</span></span>
+            <button class="btn btn--secondary" type="button" data-add data-ar-name="كايرو لو" data-en-name="Cairo Low">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8z" stroke-linejoin="round"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8" stroke-linecap="round"/></svg>
+              <span data-lang-ar>أضف للسلة</span><span data-lang-en>Add to cart</span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="product" data-product data-id="linen-court" data-gender="women" data-price="1500" data-order="1" data-default-size="38" data-reveal data-ar-name="كورت الكتان" data-en-name="Linen Court">
+        <div class="product__media">
+          <a class="product__link" href="/product?id=linen-court" aria-label="كورت الكتان">
+            <img class="product__img" src="https://placehold.co/600x750/171311/c9a84c/png?text=Linen+Court&amp;font=playfair-display" loading="lazy" decoding="async" data-ar-alt="حذاء كورت من كانفاس الكتان" data-en-alt="Linen-canvas court shoe" alt="حذاء كورت من كانفاس الكتان">
+          </a>
+          <button class="product__wish" type="button" aria-pressed="false" data-ar-label="أضف كورت الكتان إلى المفضلة" data-en-label="Add Linen Court to wishlist" aria-label="أضف كورت الكتان إلى المفضلة">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.3-9.3-8.5C1 8 2.5 4.8 6 4.8c2 0 3.2 1.2 4 2.4.8-1.2 2-2.4 4-2.4 3.5 0 5 3.2 3.3 6.7C19 15.7 12 20 12 20z" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <div class="product__body">
+          <p class="product__collection"><span data-lang-ar>مجموعة الكانفاس</span><span data-lang-en>Canvas Line</span></p>
+          <a class="product__name-link" href="/product?id=linen-court"><h3 class="product__name"><span data-lang-ar>كورت الكتان</span><span data-lang-en>Linen Court</span></h3></a>
+          <p class="product__desc"><span data-lang-ar>حذاء كانفاس كتاني بتصميم كورت كلاسيكي ولمسة معاصرة خفيفة.</span><span data-lang-en>A linen-canvas court shoe with a classic silhouette and a light contemporary touch.</span></p>
+          <div class="product__meta">
+            <span class="product__price"><span data-lang-ar>١٥٠٠ ج.م</span><span data-lang-en>1500 EGP</span></span>
+            <button class="btn btn--secondary" type="button" data-add data-ar-name="كورت الكتان" data-en-name="Linen Court">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8z" stroke-linejoin="round"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8" stroke-linecap="round"/></svg>
+              <span data-lang-ar>أضف للسلة</span><span data-lang-en>Add to cart</span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+    </section>
+
+    <div class="catalog-empty" id="catalog-empty" role="status">
+      <svg class="catalog-empty__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3" stroke-linecap="round"/><path d="M8.5 11h5" stroke-linecap="round"/></svg>
+      <h2 class="catalog-empty__title"><span data-lang-ar>لا أحذية تطابق اختيارك</span><span data-lang-en>No sneakers match your selection</span></h2>
+      <p class="catalog-empty__text"><span data-lang-ar>جرّب توسيع التصفية أو اعرض المجموعة كاملة.</span><span data-lang-en>Try widening the filters, or view the full collection.</span></p>
+      <button class="btn btn--secondary" type="button" id="reset-filters"><span data-lang-ar>عرض كل الأحذية</span><span data-lang-en>View all sneakers</span></button>
+    </div>
+  </main>
+
+  <script src="/js/store/chrome.js" defer></script>
+  <script src="/js/store/catalog.js" defer></script>
+</body>
+</html>

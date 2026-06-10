@@ -125,6 +125,57 @@
   gap: 1rem;
 }
 
+/* Shop Now — the single store entry point on the storytelling landing */
+.nav-shop-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--gold);
+  color: var(--bg-dark);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0.55rem 1.4rem;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-gold);
+  transition: var(--transition-smooth);
+}
+.nav-shop-btn svg { stroke: var(--bg-dark); }
+.nav-shop-btn:hover {
+  background-color: var(--gold-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-gold-large);
+}
+
+/* Slim vertical divider between Shop Now and the language toggle */
+.nav-v-divider {
+  inline-size: 1px;
+  block-size: 22px;
+  background: var(--glass-border);
+}
+
+/* Language toggle (ghost gold pill) */
+.nav-lang-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--glass-border);
+  color: var(--gold);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+.nav-lang-btn:hover {
+  background: rgba(201, 168, 76, 0.1);
+  border-color: var(--gold);
+  color: var(--gold-hover);
+}
+
 /* Language Toggle Button */
 .lang-switch-btn {
   display: inline-flex;
@@ -205,7 +256,14 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle, rgba(13, 10, 7, 0.3) 0%, rgba(13, 10, 7, 0.9) 85%);
+  background: linear-gradient(
+    to bottom,
+    rgba(13, 10, 7, 0.88) 0%,
+    rgba(13, 10, 7, 0.15) 22%,
+    rgba(13, 10, 7, 0.04) 42%,
+    rgba(13, 10, 7, 0.12) 62%,
+    rgba(13, 10, 7, 0.88) 100%
+  );
   z-index: 2;
 }
 
@@ -484,7 +542,10 @@ html[lang="en"] .hero-title-en {
     font-size: 1.5rem;
   }
 
-  .nav-cta {
-    display: none; /* Hide WhatsApp button in small viewport nav to save space */
+  /* Keep Shop Now visible (it's the only store entry point); drop the
+     language toggle + divider on very small screens to save space. */
+  .nav-lang-btn,
+  .nav-cta .nav-v-divider {
+    display: none;
   }
 }

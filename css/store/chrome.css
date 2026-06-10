@@ -1,0 +1,284 @@
+/* -------------------------------------------------------------
+ * STORE / CHROME.CSS — Header, nav, mobile drawer, footer
+ * The shared frame every store page inherits.
+ * ------------------------------------------------------------- */
+
+/* ============================ HEADER ============================ */
+.store-header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--z-sticky);
+  background: var(--bg);
+  border-block-end: 1px solid transparent;
+  transition: background var(--dur) var(--ease-out),
+              border-color var(--dur) var(--ease-out),
+              box-shadow var(--dur) var(--ease-out);
+}
+.store-header.is-scrolled {
+  background: var(--bg-raised);
+  border-block-end-color: var(--line);
+  box-shadow: var(--shadow-1);
+}
+
+.store-header__inner {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--sp-4);
+  min-height: 4.75rem;
+  padding-block: var(--sp-3);
+  transition: min-height var(--dur) var(--ease-out),
+              padding-block var(--dur) var(--ease-out);
+}
+.store-header.is-scrolled .store-header__inner {
+  min-height: 3.75rem;
+  padding-block: var(--sp-2);
+}
+
+/* Wordmark (text only in the store; ornamental logo stays on the landing) */
+.store-wordmark {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  line-height: 1;
+  white-space: nowrap;
+}
+:root[lang="en"] .store-wordmark { letter-spacing: 0.14em; text-transform: uppercase; font-size: 1.2rem; }
+.store-wordmark:hover { color: var(--gold); }
+.store-wordmark .dot { color: var(--gold); }
+
+/* Primary category nav (desktop) */
+.store-nav {
+  justify-self: center;
+}
+.store-nav__list {
+  display: flex;
+  gap: clamp(1.25rem, 0.5rem + 2vw, 2.75rem);
+}
+.store-nav__link {
+  position: relative;
+  display: inline-block;
+  font-size: var(--fs-base);
+  font-weight: var(--fw-medium);
+  color: var(--ink-2);
+  padding-block: var(--sp-2);
+  transition: color var(--dur) var(--ease-out);
+}
+.store-nav__link::after {
+  content: "";
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-start: 0;
+  inline-size: 0;
+  block-size: 1px;
+  background: var(--gold);
+  transition: inline-size var(--dur) var(--ease-out);
+}
+.store-nav__link:hover,
+.store-nav__link[aria-current="page"] { color: var(--gold); }
+.store-nav__link:hover::after,
+.store-nav__link[aria-current="page"]::after { inline-size: 100%; }
+
+/* Utility cluster (search, wishlist, account, cart, language) */
+.store-utils {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  justify-self: end;
+}
+.store-iconbtn {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 2.75rem;     /* 44px touch target */
+  block-size: 2.75rem;
+  color: var(--ink-2);
+  border-radius: var(--r-sm);
+  position: relative;
+  transition: color var(--dur) var(--ease-out),
+              background var(--dur) var(--ease-out);
+}
+.store-iconbtn:hover { color: var(--ink); background: var(--surface); }
+.store-iconbtn svg { inline-size: 1.25rem; block-size: 1.25rem; }
+.store-iconbtn[aria-pressed="true"] { color: var(--gold); }
+
+/* Cart count badge */
+.store-cart-count {
+  position: absolute;
+  inset-block-start: 0.35rem;
+  inset-inline-end: 0.35rem;
+  min-inline-size: 1.05rem;
+  block-size: 1.05rem;
+  padding-inline: 0.2rem;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  font-weight: var(--fw-bold);
+  line-height: 1;
+  color: var(--on-gold);
+  background: var(--gold);
+  border-radius: var(--r-xs);
+  transform: scale(0);
+  transition: transform var(--dur) var(--ease-out);
+}
+.store-cart-count.is-active { transform: scale(1); }
+
+/* Language toggle */
+.store-lang {
+  margin-inline-start: var(--sp-1);
+  padding: 0.45rem 0.8rem;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--gold);
+  border: 1px solid var(--gold-line);
+  border-radius: var(--r-sm);
+  white-space: nowrap;
+  transition: background var(--dur) var(--ease-out),
+              border-color var(--dur) var(--ease-out);
+}
+.store-lang:hover { background: var(--gold-ghost); border-color: var(--gold); }
+
+/* Hamburger — hidden on desktop */
+.store-burger { display: none; }
+
+/* ============================ MOBILE DRAWER ============================ */
+.store-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-backdrop);
+  background: oklch(0.1 0.005 75 / 0.6);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--dur) var(--ease-out), visibility var(--dur);
+}
+.store-scrim.is-open { opacity: 1; visibility: visible; }
+
+.store-drawer {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-end: 0;
+  z-index: var(--z-drawer);
+  inline-size: min(82vw, 22rem);
+  background: var(--bg-raised);
+  border-inline-start: 1px solid var(--line);
+  padding: var(--sp-6) var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  transform: translateX(100%);
+  transition: transform var(--dur-slow) var(--ease-out);
+  overflow-y: auto;
+}
+:root[dir="rtl"] .store-drawer { transform: translateX(-100%); }
+/* dir-scoped open rules so RTL (the default) outranks the closed RTL rule */
+.store-drawer.is-open,
+:root[dir="rtl"] .store-drawer.is-open { transform: translateX(0); }
+
+.store-drawer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.store-drawer__nav { display: flex; flex-direction: column; }
+.store-drawer__link {
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  color: var(--ink);
+  padding-block: var(--sp-3);
+  border-block-end: 1px solid var(--line);
+  transition: color var(--dur) var(--ease-out);
+}
+.store-drawer__link:hover,
+.store-drawer__link[aria-current="page"] { color: var(--gold); }
+.store-drawer__foot { margin-block-start: auto; }
+
+/* ============================ FOOTER ============================ */
+.store-footer {
+  background: var(--bg-raised);
+  border-block-start: 1px solid var(--line);
+  margin-block-start: var(--sp-9);
+  padding-block: var(--section-pad) var(--sp-6);
+}
+.store-footer__grid {
+  display: grid;
+  grid-template-columns: 1.4fr repeat(2, 1fr) 1.2fr;
+  gap: var(--gutter) var(--sp-6);
+}
+.store-footer__brand .store-wordmark { font-size: 1.6rem; }
+.store-footer__tagline {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  margin-block-start: var(--sp-3);
+  max-width: 30ch;
+}
+.store-footer__col h4 {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-wide);
+  color: var(--muted);
+  margin-block-end: var(--sp-4);
+}
+:root[lang="ar"] .store-footer__col h4 { letter-spacing: 0; }
+.store-footer__col li { margin-block-end: var(--sp-3); }
+.store-footer__col a {
+  color: var(--ink-2);
+  font-size: var(--fs-sm);
+  transition: color var(--dur) var(--ease-out);
+}
+.store-footer__col a:hover { color: var(--gold); }
+
+.store-footer__whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-block-start: var(--sp-2);
+  color: var(--ink);
+  font-weight: var(--fw-medium);
+}
+.store-footer__whatsapp svg { inline-size: 1.15rem; block-size: 1.15rem; color: var(--gold); }
+.store-footer__note {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  margin-block-start: var(--sp-4);
+  line-height: var(--lh-snug);
+}
+.store-footer__bar {
+  margin-block-start: var(--section-pad);
+  padding-block-start: var(--sp-5);
+  border-block-start: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+/* ============================ RESPONSIVE ============================ */
+@media (max-width: 56rem) {
+  .store-nav { display: none; }
+  .store-header__inner { grid-template-columns: auto auto; justify-content: space-between; }
+  .store-burger {
+    display: inline-grid;
+    place-items: center;
+    inline-size: 2.75rem; block-size: 2.75rem;
+    color: var(--ink);
+    border-radius: var(--r-sm);
+  }
+  .store-burger:hover { background: var(--surface); }
+  /* On mobile, keep cart + burger + lang in the cluster; fold the rest into the drawer */
+  .store-utils .store-util-extra { display: none; }
+  .store-footer__grid { grid-template-columns: 1fr 1fr; }
+  .store-footer__brand { grid-column: 1 / -1; }
+}
+
+@media (max-width: 30rem) {
+  .store-footer__grid { grid-template-columns: 1fr; }
+}
+
+@media (min-width: 56.0625rem) {
+  .store-drawer, .store-scrim { display: none; }
+}

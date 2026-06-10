@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="تفاصيل المنتج من روبابيكيا.">
+  <title>المنتج · روبابيكيا</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=Hanken+Grotesk:wght@400;500;600;700&family=Reem+Kufi:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/store/tokens.css">
+  <link rel="stylesheet" href="/css/store/base.css">
+  <link rel="stylesheet" href="/css/store/chrome.css">
+  <link rel="stylesheet" href="/css/store/components.css">
+  <link rel="stylesheet" href="/css/store/pages.css">
+  <link rel="stylesheet" href="/css/store/catalog.css">
+</head>
+<body data-nav="" data-title-ar="المنتج · روبابيكيا" data-title-en="Product · Robabikia">
+  <a class="skip-link" href="#main"><span data-lang-ar>تخطَّ إلى المنتج</span><span data-lang-en>Skip to product</span></a>
+
+  <main id="main" class="store-container">
+    <nav class="breadcrumb" aria-label="مسار التصفح">
+      <a href="/"><span data-lang-ar>الرئيسية</span><span data-lang-en>Home</span></a>
+      <span class="breadcrumb__sep" aria-hidden="true">/</span>
+      <a href="/shop/perfumes" id="pdp-cat-link"><span data-lang-ar>العطور</span><span data-lang-en>Perfumes</span></a>
+      <span class="breadcrumb__sep" aria-hidden="true">/</span>
+      <span aria-current="page" id="pdp-crumb"></span>
+    </nav>
+
+    <article class="pdp">
+      <div class="pdp__media">
+        <img class="pdp__img" id="pdp-img" src="" alt="" decoding="async">
+        <button class="pdp__wish" type="button" data-wish aria-pressed="false" id="pdp-wish"
+          data-ar-label="أضف إلى المفضلة" data-en-label="Add to wishlist" aria-label="أضف إلى المفضلة">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.3-9.3-8.5C1 8 2.5 4.8 6 4.8c2 0 3.2 1.2 4 2.4.8-1.2 2-2.4 4-2.4 3.5 0 5 3.2 3.3 6.7C19 15.7 12 20 12 20z" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+
+      <div class="pdp__buy">
+        <p class="pdp__collection" id="pdp-collection"></p>
+        <h1 class="pdp__title" id="pdp-title"></h1>
+        <p class="pdp__price" id="pdp-price"></p>
+        <p class="pdp__desc" id="pdp-desc"></p>
+
+        <div class="pdp__notes">
+          <div>
+            <p class="note__label" id="pdp-spec1-label"></p>
+            <p class="note__val" id="pdp-spec1"></p>
+          </div>
+          <div>
+            <p class="note__label" id="pdp-spec2-label"></p>
+            <p class="note__val" id="pdp-spec2"></p>
+          </div>
+        </div>
+
+        <div>
+          <p class="pdp__field-label"><span data-lang-ar>المقاس</span><span data-lang-en>Size</span></p>
+          <div class="size-options" id="pdp-sizes" role="radiogroup" aria-label="المقاس"></div>
+        </div>
+
+        <div class="pdp__actions">
+          <div class="stepper" role="group" aria-label="الكمية">
+            <button class="stepper__btn" type="button" id="qty-minus" data-ar-label="إنقاص الكمية" data-en-label="Decrease quantity" aria-label="إنقاص الكمية">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14" stroke-linecap="round"/></svg>
+            </button>
+            <span class="stepper__value" id="qty-value" aria-live="polite">1</span>
+            <button class="stepper__btn" type="button" id="qty-plus" data-ar-label="زيادة الكمية" data-en-label="Increase quantity" aria-label="زيادة الكمية">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+          <button class="btn btn--primary btn--lg" type="button" id="pdp-add">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8z" stroke-linejoin="round"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8" stroke-linecap="round"/></svg>
+            <span data-lang-ar>أضف للسلة</span><span data-lang-en>Add to cart</span>
+          </button>
+        </div>
+
+        <p class="pdp__cod">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.4"/></svg>
+          <span data-lang-ar>الدفع عند الاستلام في كل محافظات مصر.</span><span data-lang-en>Cash on delivery across every Egyptian governorate.</span>
+        </p>
+      </div>
+    </article>
+
+    <section class="related" aria-labelledby="related-title">
+      <h2 class="page-head__title" id="related-title" style="font-size: var(--fs-h2); margin-block-end: var(--sp-5);">
+        <span data-lang-ar>تشكيلة مكمّلة</span><span data-lang-en>Pairs well with</span>
+      </h2>
+      <div class="catalog-grid" id="pdp-related"></div>
+    </section>
+  </main>
+
+  <script src="/js/store/chrome.js" defer></script>
+  <script src="/js/store/product.js" defer></script>
+</body>
+</html>

@@ -23,7 +23,7 @@ const translations = {
     "nav-order": "طريقة الطلب",
     "nav-nostalgia": "النوستالجيا",
     "nav-cta": "اطلب الآن",
-    "nav-shop": "المتجر",
+    "nav-shop": "تسوّق الآن",
 
     // Shop — Product Listing Page (PLP)
     "shop-eyebrow": "المجموعة الكاملة",
@@ -227,7 +227,7 @@ const translations = {
     "nav-order": "How to Order",
     "nav-nostalgia": "Nostalgia",
     "nav-cta": "Order Now",
-    "nav-shop": "Shop",
+    "nav-shop": "Shop Now",
 
     // Shop — Product Listing Page (PLP)
     "shop-eyebrow": "The Full Collection",
