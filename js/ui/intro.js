@@ -13,6 +13,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!curtain) return;
 
+  // Skip intro on every visit after the first
+  if (localStorage.getItem("rb_intro_seen")) {
+    curtain.style.display = "none";
+    body.classList.remove("intro-active");
+    document.dispatchEvent(new CustomEvent("introFinished"));
+    return;
+  }
+
   const bgGlow       = curtain.querySelector(".intro-bg-glow");
   const arabesque    = curtain.querySelector(".intro-arabesque");
   const bokehLayer   = document.getElementById("intro-bokeh-layer");
@@ -134,6 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const exitTl = gsap.timeline({
       onComplete: () => {
+        localStorage.setItem("rb_intro_seen", "1");
         body.classList.remove("intro-active");
         curtain.style.display = "none";
         document.dispatchEvent(new CustomEvent("introFinished"));

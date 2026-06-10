@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="إتمام الطلب في روبابيكيا.">
+  <title>إتمام الطلب · روبابيكيا</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=Hanken+Grotesk:wght@400;500;600;700&family=Reem+Kufi:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/store/tokens.css">
+  <link rel="stylesheet" href="/css/store/base.css">
+  <link rel="stylesheet" href="/css/store/chrome.css">
+  <link rel="stylesheet" href="/css/store/components.css">
+  <link rel="stylesheet" href="/css/store/pages.css">
+</head>
+<body data-nav="" data-title-ar="إتمام الطلب · روبابيكيا" data-title-en="Checkout · Robabikia">
+  <a class="skip-link" href="#main"><span data-lang-ar>تخطَّ إلى النموذج</span><span data-lang-en>Skip to form</span></a>
+
+  <main id="main" class="store-container">
+    <nav class="breadcrumb" aria-label="مسار التصفح">
+      <a href="/cart"><span data-lang-ar>السلة</span><span data-lang-en>Cart</span></a>
+      <span class="breadcrumb__sep" aria-hidden="true">/</span>
+      <span aria-current="page"><span data-lang-ar>إتمام الطلب</span><span data-lang-en>Checkout</span></span>
+    </nav>
+
+    <header class="page-head">
+      <h1 class="page-head__title"><span data-lang-ar>إتمام الطلب</span><span data-lang-en>Checkout</span></h1>
+    </header>
+
+    <!-- Empty-cart notice -->
+    <div class="rb-empty" id="checkout-empty" hidden>
+      <span class="rb-empty__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8z" stroke-linejoin="round"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8" stroke-linecap="round"/></svg></span>
+      <h2 class="rb-empty__title"><span data-lang-ar>لا يوجد ما يُطلب بعد</span><span data-lang-en>Nothing to order yet</span></h2>
+      <p class="rb-empty__text"><span data-lang-ar>أضِف منتجات إلى سلتك أولاً.</span><span data-lang-en>Add products to your cart first.</span></p>
+      <a class="btn btn--primary" href="/shop/perfumes"><span data-lang-ar>تصفّح العطور</span><span data-lang-en>Browse perfumes</span></a>
+    </div>
+
+    <!-- Success -->
+    <div class="checkout-success" id="checkout-success" hidden>
+      <span class="checkout-success__mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <h2 class="rb-empty__title"><span data-lang-ar>تم استلام طلبك</span><span data-lang-en>Order received</span></h2>
+      <p class="rb-empty__text"><span data-lang-ar>سنتواصل معك عبر واتساب لتأكيد التوصيل. رقم طلبك:</span><span data-lang-en>We'll confirm delivery over WhatsApp. Your order number:</span></p>
+      <p class="checkout-success__ref" id="success-ref"></p>
+      <div style="display:flex; gap: var(--sp-3); flex-wrap: wrap; justify-content: center;">
+        <a class="btn btn--primary" href="/account"><span data-lang-ar>عرض طلباتي</span><span data-lang-en>View my orders</span></a>
+        <a class="btn btn--secondary" href="/shop/perfumes"><span data-lang-ar>متابعة التسوق</span><span data-lang-en>Keep shopping</span></a>
+      </div>
+    </div>
+
+    <!-- Checkout form -->
+    <form class="checkout" id="checkout-form" novalidate hidden>
+      <div>
+        <section class="form-section">
+          <h2 class="form-section__title"><span data-lang-ar>بيانات التواصل</span><span data-lang-en>Contact</span></h2>
+          <div class="form-grid">
+            <div class="field field--full">
+              <label class="field__label" for="co-name"><span data-lang-ar>الاسم بالكامل</span><span data-lang-en>Full name</span><span class="field__req">*</span></label>
+              <input class="input" id="co-name" name="name" autocomplete="name" required>
+              <p class="field__error"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4m0 4h.01" stroke-linecap="round"/></svg><span data-lang-ar>من فضلك أدخل اسمك.</span><span data-lang-en>Please enter your name.</span></p>
+            </div>
+            <div class="field field--full">
+              <label class="field__label" for="co-phone"><span data-lang-ar>رقم الهاتف</span><span data-lang-en>Phone number</span><span class="field__req">*</span></label>
+              <input class="input" id="co-phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="01XXXXXXXXX" required>
+              <p class="field__error"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4m0 4h.01" stroke-linecap="round"/></svg><span data-lang-ar>أدخل رقم موبايل مصري صحيح (١١ رقمًا).</span><span data-lang-en>Enter a valid Egyptian mobile number (11 digits).</span></p>
+            </div>
+          </div>
+        </section>
+
+        <section class="form-section">
+          <h2 class="form-section__title"><span data-lang-ar>عنوان التوصيل</span><span data-lang-en>Delivery address</span></h2>
+          <div class="form-grid">
+            <div class="field">
+              <label class="field__label" for="co-gov"><span data-lang-ar>المحافظة</span><span data-lang-en>Governorate</span><span class="field__req">*</span></label>
+              <div class="select-field">
+                <select class="select" id="co-gov" name="governorate" required
+                  data-ar='["اختر المحافظة","القاهرة","الجيزة","الإسكندرية","القليوبية","الدقهلية","الشرقية","الغربية","المنوفية","البحيرة","كفر الشيخ","دمياط","بورسعيد","الإسماعيلية","السويس","الفيوم","بني سويف","المنيا","أسيوط","سوهاج","قنا","الأقصر","أسوان","البحر الأحمر","الوادي الجديد","مطروح","شمال سيناء","جنوب سيناء"]'
+                  data-en='["Select governorate","Cairo","Giza","Alexandria","Qalyubia","Dakahlia","Sharqia","Gharbia","Monufia","Beheira","Kafr El Sheikh","Damietta","Port Said","Ismailia","Suez","Faiyum","Beni Suef","Minya","Asyut","Sohag","Qena","Luxor","Aswan","Red Sea","New Valley","Matrouh","North Sinai","South Sinai"]'>
+                  <option value="">اختر المحافظة</option>
+                  <option value="cairo">القاهرة</option><option value="giza">الجيزة</option><option value="alexandria">الإسكندرية</option>
+                  <option value="qalyubia">القليوبية</option><option value="dakahlia">الدقهلية</option><option value="sharqia">الشرقية</option>
+                  <option value="gharbia">الغربية</option><option value="monufia">المنوفية</option><option value="beheira">البحيرة</option>
+                  <option value="kafr-el-sheikh">كفر الشيخ</option><option value="damietta">دمياط</option><option value="port-said">بورسعيد</option>
+                  <option value="ismailia">الإسماعيلية</option><option value="suez">السويس</option><option value="faiyum">الفيوم</option>
+                  <option value="beni-suef">بني سويف</option><option value="minya">المنيا</option><option value="asyut">أسيوط</option>
+                  <option value="sohag">سوهاج</option><option value="qena">قنا</option><option value="luxor">الأقصر</option>
+                  <option value="aswan">أسوان</option><option value="red-sea">البحر الأحمر</option><option value="new-valley">الوادي الجديد</option>
+                  <option value="matrouh">مطروح</option><option value="north-sinai">شمال سيناء</option><option value="south-sinai">جنوب سيناء</option>
+                </select>
+                <svg class="select-field__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <p class="field__error"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4m0 4h.01" stroke-linecap="round"/></svg><span data-lang-ar>اختر محافظتك.</span><span data-lang-en>Select your governorate.</span></p>
+            </div>
+            <div class="field">
+              <label class="field__label" for="co-city"><span data-lang-ar>المدينة / المنطقة</span><span data-lang-en>City / area</span></label>
+              <input class="input" id="co-city" name="city" autocomplete="address-level2">
+            </div>
+            <div class="field field--full">
+              <label class="field__label" for="co-street"><span data-lang-ar>العنوان بالتفصيل</span><span data-lang-en>Street address</span><span class="field__req">*</span></label>
+              <textarea class="textarea" id="co-street" name="street" autocomplete="street-address" required></textarea>
+              <p class="field__error"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4m0 4h.01" stroke-linecap="round"/></svg><span data-lang-ar>أدخل عنوان التوصيل.</span><span data-lang-en>Enter your delivery address.</span></p>
+            </div>
+          </div>
+        </section>
+
+        <section class="form-section">
+          <h2 class="form-section__title"><span data-lang-ar>طريقة الدفع</span><span data-lang-en>Payment method</span></h2>
+          <div class="pay-options">
+            <label class="pay-option">
+              <input type="radio" name="payment" value="cash_on_delivery" checked>
+              <span><span class="pay-option__label"><span data-lang-ar>الدفع عند الاستلام</span><span data-lang-en>Cash on delivery</span></span>
+              <span class="pay-option__desc"><span data-lang-ar>ادفع نقدًا عند وصول الطلب.</span><span data-lang-en>Pay in cash when your order arrives.</span></span></span>
+            </label>
+            <label class="pay-option">
+              <input type="radio" name="payment" value="vodafone_cash">
+              <span><span class="pay-option__label"><span data-lang-ar>فودافون كاش</span><span data-lang-en>Vodafone Cash</span></span>
+              <span class="pay-option__desc"><span data-lang-ar>تحويل عبر محفظة فودافون كاش.</span><span data-lang-en>Transfer via your Vodafone Cash wallet.</span></span></span>
+            </label>
+            <label class="pay-option">
+              <input type="radio" name="payment" value="instapay">
+              <span><span class="pay-option__label"><span data-lang-ar>إنستاباي</span><span data-lang-en>InstaPay</span></span>
+              <span class="pay-option__desc"><span data-lang-ar>تحويل فوري عبر إنستاباي.</span><span data-lang-en>Instant transfer via InstaPay.</span></span></span>
+            </label>
+          </div>
+        </section>
+      </div>
+
+      <aside class="summary" aria-label="ملخص الطلب" id="checkout-summary"></aside>
+    </form>
+  </main>
+
+  <script src="/js/store/chrome.js" defer></script>
+  <script src="/js/store/checkout.js" defer></script>
+</body>
+</html>
