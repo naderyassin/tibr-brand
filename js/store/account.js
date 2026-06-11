@@ -20,7 +20,7 @@
   };
 
   /* ---- Greeting + profile prefill ---- */
-  const email = (function () { try { return localStorage.getItem("robabikia-auth") || ""; } catch (_) { return ""; } })();
+  const email = (function () { try { return localStorage.getItem("tibr-auth") || ""; } catch (_) { return ""; } })();
   const greet = $("#account-greeting");
   if (greet) greet.innerHTML = email
     ? bi(`مرحبًا، ${email}`, `Welcome, ${email}`)
@@ -42,7 +42,7 @@
 
   /* ---- Logout ---- */
   $("#logout-btn").addEventListener("click", () => {
-    try { localStorage.removeItem("robabikia-auth"); } catch (_) {}
+    try { localStorage.removeItem("tibr-auth"); } catch (_) {}
     location.href = "/login";
   });
 
@@ -90,7 +90,7 @@
   }
 
   /* ---- Addresses ---- */
-  const ADDR_KEY = "robabikia-addresses";
+  const ADDR_KEY = "tibr-addresses";
   function readAddr() { try { return JSON.parse(localStorage.getItem(ADDR_KEY)) || seed(); } catch (_) { return seed(); } }
   function seed() {
     const s = [{ id: "a1", label_ar: "المنزل", label_en: "Home", street: ar() ? "شارع المعز، الجمالية، القاهرة" : "Al-Muizz St, Gamaleya, Cairo", phone: "01012345678", default: true }];

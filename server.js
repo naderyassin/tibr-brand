@@ -660,7 +660,7 @@ app.get("*", (req, res, next) => {
 
 if (!process.env.SKIP_LISTEN) {
   app.listen(port, host, () => {
-    console.log(`Robabikia server running at http://${host}:${port}`);
+    console.log(`Tibr server running at http://${host}:${port}`);
   });
 }
 

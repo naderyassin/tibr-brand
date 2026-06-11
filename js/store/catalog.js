@@ -17,12 +17,18 @@
   const countNodes = $$("#catalog-count [data-count]");
   if (!grid) return;
 
-  const state = { gender: "all", collection: "all" };
+  const state = { gender: "all", collection: "all", search: "" };
   let loadingTimer = null;
 
-  const matches = (p) =>
-    (state.gender === "all" || p.dataset.gender === state.gender) &&
-    (state.collection === "all" || p.dataset.collection === state.collection);
+  const matches = (p) => {
+    const q = state.search.trim().toLowerCase();
+    const nameMatch = !q ||
+      (p.dataset.arName || "").toLowerCase().includes(q) ||
+      (p.dataset.enName || "").toLowerCase().includes(q);
+    return nameMatch &&
+      (state.gender === "all" || p.dataset.gender === state.gender) &&
+      (state.collection === "all" || p.dataset.collection === state.collection);
+  };
 
   function buildSkeletons(n) {
     if (!skeletonGrid) return;
@@ -95,12 +101,36 @@
   }
   if (sortSelect) sortSelect.addEventListener("change", () => { applySort(); applyFilters(true); });
 
+  const searchInput = $("#catalog-search");
+  if (searchInput) {
+    searchInput.addEventListener("input", () => {
+      state.search = searchInput.value;
+      applyFilters(false);
+    });
+  }
+
   const resetBtn = $("#reset-filters");
   if (resetBtn) resetBtn.addEventListener("click", () => {
-    state.gender = "all"; state.collection = "all";
+    state.gender = "all"; state.collection = "all"; state.search = "";
+    if (searchInput) searchInput.value = "";
     $$(".filter-chip").forEach((c) => c.setAttribute("aria-pressed", String(c.dataset.value === "all")));
     applyFilters(true);
   });
+
+  // Advanced-filter disclosure: close the attached panel on outside click / Escape
+  const advFilter = $(".catalog-filter__disclosure");
+  if (advFilter) {
+    document.addEventListener("click", (e) => {
+      if (advFilter.open && !advFilter.contains(e.target)) advFilter.open = false;
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && advFilter.open) {
+        advFilter.open = false;
+        const toggle = advFilter.querySelector(".catalog-filter__toggle");
+        if (toggle) toggle.focus();
+      }
+    });
+  }
 
   // Add to cart (reads the product article)
   $$("[data-add]").forEach((btn) => {

@@ -54,7 +54,7 @@
     btn.classList.add("is-loading");
     btn.disabled = true;
     setTimeout(() => {
-      try { localStorage.setItem("robabikia-auth", $("#email").value.trim()); } catch (_) {}
+      try { localStorage.setItem("tibr-auth", $("#email").value.trim()); } catch (_) {}
       location.href = "/account";
     }, 700);
   });

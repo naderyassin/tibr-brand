@@ -5,8 +5,8 @@
 const translations = {
   ar: {
     // Meta / Document Title
-    "doc-title": "روبابيكيا للعطور والملابس 🌸 Robabikia — تراث فاخر بلمسة عصرية",
-    "meta-desc": "روبابيكيا للعطور والملابس - عطور مصرية وأزياء كلاسيكية معاصرة تجمع تراث الماضي وفخامة الحاضر.",
+    "doc-title": "تِبْر — الأصل قبل كل شيء 🌸 عطور وأزياء وأحذية مصرية فاخرة",
+    "meta-desc": "تِبْر — عطور مصرية فاخرة وأزياء وأحذية من خامات طبيعية نقية. الأصل قبل كل شيء.",
     "meta-keys": "عطور, ملابس, أحذية, أزياء كلاسيكية, أزياء معاصرة, الكتان, عطور فاخرة",
 
     // Intro curtain
@@ -14,7 +14,7 @@ const translations = {
     "intro-tagline": "\"روائح نايمة في الذاكرة، صحيت في قارورة.\"",
 
     // Navigation
-    "nav-logo-ar": "روبابيكيا",
+    "nav-logo-ar": "تِبْر",
     "nav-home": "الرئيسية",
     "nav-perfumes": "العطور",
     "nav-clothes": "الملابس",
@@ -47,8 +47,8 @@ const translations = {
 
     // Hero Section
     "hero-subtitle": "🌿 بيت العطور والأزياء الراقية 🌿",
-    "hero-title": "روبـابـيـكـيـا",
-    "hero-tagline": "\"أصالة الماضي، بفخامة معاصرة.\"",
+    "hero-title": "تِـبْـر",
+    "hero-tagline": "\"الأصل قبل كل شيء.\"",
     "hero-desc": "توليفة ساحرة تجمع عبق التراث والأناقة الكلاسيكية مع خطوط الموضة المعاصرة والفخامة الحديثة.",
     "hero-cta-discover": "اكتشف مجموعتنا",
     "hero-cta-story": "حكايتنا",
@@ -93,9 +93,9 @@ const translations = {
     // Brand Story Section
     "story-mini-title": "🌿 حكاية قارورة ونسيج 🌿",
     "story-title": "من قلب القاهرة العريقة...",
-    "story-p1": "كلمة <strong>\"روبابيكيا\"</strong> بتصحّي جوانا دايماً طاقة حنين غريبة. بتفكرنا بصوت البياع وهو بينادي في الشوارع الهادية يوم الجمعة الصبح، بتفكرنا بصندوق قديم مخفي فوق الدولاب، وصور أبيض وأسود فيها ضحكات ناس عاشوا بالحب والجمال البسيط.",
-    "story-p2": "من هنا لمعت الفكرة: ليه مانجمعش ذكرياتنا دي ونعيد صياغتها بروح العصر؟ ليه مانحولش نوستالجيا الشوارع القديمة لعطور فاخرة، وتصاميم أزياء كلاسيكية معاصرة تمنحك الأناقة والثقة كل يوم؟",
-    "story-p3-highlight": "\"كل منتج في روبابيكيا هو قصة مكتوبة بأدق التفاصيل، مصنوعة من مواد فاخرة وخامات طبيعية خُلقت لتدوم.\"",
+    "story-p1": "<strong>تِبْر</strong> — هو الذهب الخام قبل الصهر. المادة في أنقى حالاتها، قبل أن تُلمَّع أو تُزيَّف. من هذا المعنى وُلدت الفكرة: نُعيد اكتشاف الخامات المصرية الأصيلة — عطوراً ونسيجاً وجلداً — وننقلها إليك بلا وسيط ولا تكلّف.",
+    "story-p2": "كل منتج نصنعه يبدأ من السؤال: ما هي المادة الأصيلة التي تستحق هذا الشكل؟ الكتان المصري، الياسمين الليلي، الجلد الطبيعي — خامات تحمل في ذاتها قصة المكان والزمان.",
+    "story-p3-highlight": "\"كل منتج في تِبْر مصنوع من خامات طبيعية نقية، تُختار بعناية لتدوم وتحكي قصة المكان الذي نشأت فيه.\"",
 
     // How to order Section
     "order-subtitle": "بخطوات بسيطة وسريعة",
@@ -112,7 +112,7 @@ const translations = {
 
     // Gallery Section
     "gallery-subtitle": "شريط الذاكرة",
-    "gallery-title": "أجواء روبابيكيا",
+    "gallery-title": "أجواء تِبْر",
     "gallery-desc": "اسحب الشريط أفقياً لاستكشاف أجواء وعوالم مجموعاتنا",
     "gallery-item-1-title": "ذاكرة الفل",
     "gallery-item-1-desc": "رقة ياسمين بيوت القاهرة",
@@ -126,8 +126,8 @@ const translations = {
     "gallery-item-5-desc": "أصالة التراث في قالب فاخر",
 
     // Footer
-    "footer-about-logo": "روبابيكيا",
-    "footer-about-tagline": "\"أصالة الماضي، بفخامة معاصرة.\"",
+    "footer-about-logo": "تِبْر",
+    "footer-about-tagline": "\"الأصل قبل كل شيء.\"",
     "footer-cta-title": "هل وجدت منتجك الفريد؟",
     "footer-cta-desc": "تواصل معنا فوراً على الواتساب واطلب قطعتك الخاصة بخصم 15% للإصدارات الأولى!",
     "footer-cta-btn": "ابعت طلبك على الواتساب",
@@ -136,7 +136,7 @@ const translations = {
     "footer-info-delivery": "🚚 خدمات التوصيل",
     "footer-info-del-desc": "شحن آمن وسريع لكل محافظات مصر",
     "footer-info-email": "✉️ البريد الإلكتروني",
-    "footer-copyright": "روبابيكيا © 2026. جميع الحقوق محفوظة.",
+    "footer-copyright": "تِبْر © 2026. جميع الحقوق محفوظة.",
 
     // Modal Generic Labels
     "modal-close-label": "إغلاق النافذة",
@@ -169,9 +169,9 @@ const translations = {
 
     // Auth Modal
     "auth-login-title": "تسجيل الدخول",
-    "auth-login-subtitle": "أهلاً بعودتك في روبابيكيا 🌿",
+    "auth-login-subtitle": "أهلاً بعودتك في تِبْر 🌿",
     "auth-signup-title": "إنشاء حساب جديد",
-    "auth-signup-subtitle": "انضم إلى عائلة روبابيكيا الراقية",
+    "auth-signup-subtitle": "انضم إلى عائلة تِبْر الراقية",
     "auth-submit-login": "دخول",
     "auth-submit-signup": "إنشاء حساب",
     "auth-toggle-to-signup": "ليس لديك حساب؟ إنشاء حساب جديد",
@@ -186,7 +186,7 @@ const translations = {
     "auth-google-error": "تعذر تسجيل الدخول عبر Google. تأكد من تفعيل Google Provider وإضافة رابط الموقع الحالي إلى Redirect URLs في Supabase.",
 
     // 3D Experience scenes
-    "3d-scene1-eyebrow": "روبابيكيا",
+    "3d-scene1-eyebrow": "تِبْر",
     "3d-scene1-title": "روائح تسكن الذاكرة",
     "3d-scene1-desc": "تشكيلة فاخرة مُقطَّرة من روح التراث المصري",
     "3d-scene2-eyebrow": "الحكاية",
@@ -203,14 +203,14 @@ const translations = {
     "3d-scene4-cta": "اكتشف التشكيلة",
 
     // WhatsApp Messages
-    "wa-msg-prefix": "أهلاً روبابيكيا 🌸\n\nأود طلب عطر \"{name}\" الفاخر ({collection}).\nالسعر: {price}\n\nيرجى تأكيد الطلب وتحديد تفاصيل الشحن.",
-    "wa-msg-apparel": "أهلاً روبابيكيا 🌸\n\nأود طلب قطعتي الفاخرة \"{name}\" من مجموعة ({collection}).\nالمقاس المحدد: {size}\nالسعر: {price}\n\nيرجى تأكيد الطلب وتفاصيل الشحن.",
-    "wa-msg-custom": "أهلاً روبابيكيا 🌸\n\nأود طلب عطر تركيب من تصميمي الخاص.\n\nالمكونات المحددة:\n- النوتة العليا: {top}\n- النوتة الوسطى: {heart}\n- النوتة الأساسية: {base}\n- حجم العبوة: {size}\n\nيرجى تأكيد الطلب وتحديد تفاصيل الشحن."
+    "wa-msg-prefix": "أهلاً تِبْر 🌸\n\nأود طلب عطر \"{name}\" الفاخر ({collection}).\nالسعر: {price}\n\nيرجى تأكيد الطلب وتحديد تفاصيل الشحن.",
+    "wa-msg-apparel": "أهلاً تِبْر 🌸\n\nأود طلب قطعتي الفاخرة \"{name}\" من مجموعة ({collection}).\nالمقاس المحدد: {size}\nالسعر: {price}\n\nيرجى تأكيد الطلب وتفاصيل الشحن.",
+    "wa-msg-custom": "أهلاً تِبْر 🌸\n\nأود طلب عطر تركيب من تصميمي الخاص.\n\nالمكونات المحددة:\n- النوتة العليا: {top}\n- النوتة الوسطى: {heart}\n- النوتة الأساسية: {base}\n- حجم العبوة: {size}\n\nيرجى تأكيد الطلب وتحديد تفاصيل الشحن."
   },
   en: {
     // Meta / Document Title
-    "doc-title": "Robabikia Luxury Collection 🌸 Fragrances & Classic Apparel",
-    "meta-desc": "Robabikia Fragrances & Apparel - Contemporary Egyptian scents and classic-modern fashion merging heritage with luxury.",
+    "doc-title": "Tibr — Pure Origin 🌸 Egyptian Fragrances, Apparel & Footwear",
+    "meta-desc": "Tibr — Premium Egyptian fragrances, apparel and footwear. Pure natural materials, authentic origin.",
     "meta-keys": "perfumes, apparel, shoes, classic fashion, modern classic, linen shirts, luxury collections",
 
     // Intro curtain
@@ -218,7 +218,7 @@ const translations = {
     "intro-tagline": "\"Scents asleep in memory, awakened in a bottle.\"",
 
     // Navigation
-    "nav-logo-ar": "ROBABIKIA",
+    "nav-logo-ar": "TIBR",
     "nav-home": "Home",
     "nav-perfumes": "Fragrances",
     "nav-clothes": "Apparel",
@@ -251,8 +251,8 @@ const translations = {
 
     // Hero Section
     "hero-subtitle": "🌿 House of Fine Scents & Premium Garments 🌿",
-    "hero-title": "ROBABIKIA",
-    "hero-tagline": "\"Authentic heritage, modern luxury.\"",
+    "hero-title": "TIBR",
+    "hero-tagline": "\"Pure origin. Lasting craft.\"",
     "hero-desc": "A magical blend that combines the elegance of classic heritage with contemporary silhouettes and modern sophistication.",
     "hero-cta-discover": "Discover Our Collection",
     "hero-cta-story": "Our Story",
@@ -297,9 +297,9 @@ const translations = {
     // Brand Story Section
     "story-mini-title": "🌿 Story of Scents & Weaves 🌿",
     "story-title": "From the Heart of Cairo...",
-    "story-p1": "The word <strong>\"Robabikia\"</strong> always awakens a strange energy of nostalgia inside us. It reminds us of the vendor's voice calling out in quiet streets on Friday mornings, of an old box hidden atop the wardrobe, and black-and-white photos capturing the smiles of people who lived with love and simple beauty.",
-    "story-p2": "From here, the idea shone: Why not gather these memories and recreate them with the spirit of today? Why not transform the nostalgia of ancient streets into luxurious perfumes and classic-modern fashion lines that give you daily elegance and confidence?",
-    "story-p3-highlight": "\"Each product in Robabikia is a story written in fine details, made of premium materials and natural fabrics designed to last.\"",
+    "story-p1": "<strong>Tibr</strong> — raw gold before the smelting. Material at its purest state, before it is polished or altered. From this meaning our idea was born: to rediscover authentic Egyptian materials — fragrance, fabric, leather — and bring them to you unmediated, unadorned.",
+    "story-p2": "Every product we make starts from one question: what is the pure material that deserves this form? Egyptian linen, night jasmine, full-grain leather — materials that carry the story of their place and time.",
+    "story-p3-highlight": "\"Every Tibr product is made from pure natural materials, chosen with care to last and to tell the story of where they came from.\"",
 
     // How to order Section
     "order-subtitle": "In Simple & Fast Steps",
@@ -316,7 +316,7 @@ const translations = {
 
     // Gallery Section
     "gallery-subtitle": "Memory Lane",
-    "gallery-title": "Robabikia Atmosphere",
+    "gallery-title": "Tibr Atmosphere",
     "gallery-desc": "Drag the track horizontally to explore the atmosphere and worlds of our collections",
     "gallery-item-1-title": "Jasmine Memory",
     "gallery-item-1-desc": "Delicacy of jasmine in Cairo's old homes",
@@ -330,8 +330,8 @@ const translations = {
     "gallery-item-5-desc": "Authentic heritage in a luxury layout",
 
     // Footer
-    "footer-about-logo": "ROBABIKIA",
-    "footer-about-tagline": "\"Authentic heritage, modern luxury.\"",
+    "footer-about-logo": "TIBR",
+    "footer-about-tagline": "\"Pure origin. Lasting craft.\"",
     "footer-cta-title": "Have you found your unique item?",
     "footer-cta-desc": "Contact us immediately on WhatsApp and order your special piece with a 15% discount for the first editions!",
     "footer-cta-btn": "Send your order on WhatsApp",
@@ -340,7 +340,7 @@ const translations = {
     "footer-info-delivery": "🚚 Delivery Services",
     "footer-info-del-desc": "Safe and fast shipping to all Egyptian governorates",
     "footer-info-email": "✉️ Email Address",
-    "footer-copyright": "Robabikia © 2026. All rights reserved.",
+    "footer-copyright": "Tibr © 2026. All rights reserved.",
 
     // Modal Generic Labels
     "modal-close-label": "Close Window",
@@ -373,9 +373,9 @@ const translations = {
 
     // Auth Modal
     "auth-login-title": "Sign In",
-    "auth-login-subtitle": "Welcome back to Robabikia 🌿",
+    "auth-login-subtitle": "Welcome back to Tibr 🌿",
     "auth-signup-title": "Create New Account",
-    "auth-signup-subtitle": "Join the Robabikia Premium Family",
+    "auth-signup-subtitle": "Join the Tibr Premium Family",
     "auth-submit-login": "Sign In",
     "auth-submit-signup": "Create Account",
     "auth-toggle-to-signup": "Don't have an account? Create one",
@@ -390,12 +390,12 @@ const translations = {
     "auth-google-error": "Unable to sign in with Google. Please make sure Google Provider is enabled and the current site URL is added to Redirect URLs in Supabase.",
 
     // 3D Experience scenes
-    "3d-scene1-eyebrow": "Robabikia",
+    "3d-scene1-eyebrow": "Tibr",
     "3d-scene1-title": "Scents That Never Leave",
     "3d-scene1-desc": "A luxury collection distilled from the living soul of Egyptian heritage",
     "3d-scene2-eyebrow": "The Story",
     "3d-scene2-title": "A Memory in Every Drop",
-    "3d-scene2-desc": "From Cairo's ancient gardens to its storied spice markets — every Robabikia fragrance carries a tale that seeps into the soul and lingers.",
+    "3d-scene2-desc": "From Cairo's ancient gardens to its storied spice markets — every Tibr fragrance carries a tale that seeps into the soul and lingers.",
     "3d-scene3-eyebrow": "The Notes",
     "3d-scene3-title": "Explore the Collection",
     "3d-note1-label": "Oriental",
@@ -407,8 +407,8 @@ const translations = {
     "3d-scene4-cta": "Explore the Collection",
 
     // WhatsApp Messages
-    "wa-msg-prefix": "Hello Robabikia 🌸\n\nI would like to order the luxury perfume \"{name}\" ({collection}).\nPrice: {price}\n\nPlease confirm my order and specify delivery details.",
-    "wa-msg-apparel": "Hello Robabikia 🌸\n\nI would like to order the premium \"{name}\" from the ({collection}) collection.\nSelected Size: {size}\nPrice: {price}\n\nPlease confirm my order and specify delivery details.",
-    "wa-msg-custom": "Hello Robabikia 🌸\n\nI would like to order a Custom Blend perfume designed by me.\n\nSelected Notes:\n- Top Note: {top}\n- Heart Note: {heart}\n- Base Note: {base}\n- Bottle Size: {size}\n\nPlease confirm my custom order and specify shipping details."
+    "wa-msg-prefix": "Hello Tibr 🌸\n\nI would like to order the luxury perfume \"{name}\" ({collection}).\nPrice: {price}\n\nPlease confirm my order and specify delivery details.",
+    "wa-msg-apparel": "Hello Tibr 🌸\n\nI would like to order the premium \"{name}\" from the ({collection}) collection.\nSelected Size: {size}\nPrice: {price}\n\nPlease confirm my order and specify delivery details.",
+    "wa-msg-custom": "Hello Tibr 🌸\n\nI would like to order a Custom Blend perfume designed by me.\n\nSelected Notes:\n- Top Note: {top}\n- Heart Note: {heart}\n- Base Note: {base}\n- Bottle Size: {size}\n\nPlease confirm my custom order and specify shipping details."
   }
 };

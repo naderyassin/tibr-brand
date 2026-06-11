@@ -182,9 +182,9 @@
   img.setAttribute("data-en-alt", p.en_alt);
   img.alt = RB.lang() === "ar" ? p.ar_alt : p.en_alt;
 
-  document.title = RB.lang() === "ar" ? `${p.ar_name} · روبابيكيا` : `${p.en_name} · Robabikia`;
-  document.body.dataset.titleAr = `${p.ar_name} · روبابيكيا`;
-  document.body.dataset.titleEn = `${p.en_name} · Robabikia`;
+  document.title = RB.lang() === "ar" ? `${p.ar_name} · تِبْر` : `${p.en_name} · Tibr`;
+  document.body.dataset.titleAr = `${p.ar_name} · تِبْر`;
+  document.body.dataset.titleEn = `${p.en_name} · Tibr`;
 
   // Sizes
   const sizesWrap = $("#pdp-sizes");

@@ -14,21 +14,22 @@
 
   /* ============================ ICONS ============================ */
   const I = {
-    search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3" stroke-linecap="round"/></svg>',
-    heart:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12 20s-7-4.3-9.3-8.5C1 8 2.5 4.8 6 4.8c2 0 3.2 1.2 4 2.4.8-1.2 2-2.4 4-2.4 3.5 0 5 3.2 3.3 6.7C19 15.7 12 20 12 20z" stroke-linejoin="round"/></svg>',
-    user:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c.8-3.6 3.6-5.5 7-5.5s6.2 1.9 7 5.5" stroke-linecap="round"/></svg>',
-    bag:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8z" stroke-linejoin="round"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8" stroke-linecap="round"/></svg>',
-    menu:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke-linecap="round"/></svg>',
+    search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg>',
+    heart:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 20.3c-.4-.3-5.9-4-8-7.6C2.2 9.8 3.2 6.2 6.3 6.2c1.8 0 3 1.1 3.7 2.2.7-1.1 1.9-2.2 3.7-2.2 3.1 0 4.1 3.6 2.3 6.5-2.1 3.6-7.6 7.3-8 7.6z" stroke-linejoin="round"/></svg>',
+    user:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 19.5a6.5 6.5 0 0 1 13 0" stroke-linecap="round"/></svg>',
+    bag:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6.6 8h10.8l.7 11.4a1.1 1.1 0 0 1-1.1 1.1H7a1.1 1.1 0 0 1-1.1-1.1z" stroke-linejoin="round"/><path d="M9.2 8.5V7a2.8 2.8 0 0 1 5.6 0v1.5" stroke-linecap="round"/></svg>',
+    menu:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10" stroke-linecap="round"/></svg>',
+    globe:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="8.2"/><path d="M3.8 12h16.4M12 3.8c2.2 2.3 3.4 5.2 3.4 8.2s-1.2 5.9-3.4 8.2c-2.2-2.3-3.4-5.2-3.4-8.2s1.2-5.9 3.4-8.2z"/></svg>',
     close:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>',
     check:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     whatsapp: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2zm0 2a8 8 0 1 1-4.1 14.9l-.3-.2-2.8.8.8-2.7-.2-.3A8 8 0 0 1 12 4zm4.4 10.2c-.2-.1-1.3-.7-1.5-.8-.2-.1-.4-.1-.5.1l-.7.9c-.1.1-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.1-.2 0-.4.1-.5l.4-.5c.1-.1.1-.3 0-.4l-.7-1.7c-.2-.4-.4-.4-.5-.4h-.5c-.2 0-.5.1-.7.3-.8.8-.8 2 0 3.2a9 9 0 0 0 3.9 3.5c1.3.6 1.9.6 2.6.5.4 0 1.3-.5 1.5-1 .2-.5.2-1 .1-1z"/></svg>'
   };
   const bi = (ar, en) => `<span data-lang-ar>${ar}</span><span data-lang-en>${en}</span>`;
-  const wordmark = () => `<span data-lang-ar>روبابيكيا</span><span data-lang-en>Robabikia<span class="dot">.</span></span>`;
+  const wordmark = () => `<span data-lang-ar>تِبْر</span><span data-lang-en>Tibr<span class="dot">.</span></span>`;
 
   /* ============================ CART STORE ============================ */
-  const CART_KEY = "robabikia-cart";
-  const ORDERS_KEY = "robabikia-orders";
+  const CART_KEY = "tibr-cart";
+  const ORDERS_KEY = "tibr-orders";
   const readJSON = (k, fallback) => { try { return JSON.parse(localStorage.getItem(k)) || fallback; } catch (_) { return fallback; } };
 
   const cart = {
@@ -76,7 +77,7 @@
     return `
     <header class="store-header" id="store-header">
       <div class="store-container store-header__inner">
-        <a class="store-wordmark" href="/" aria-label="روبابيكيا">${wordmark()}</a>
+        <a class="store-wordmark" href="/" aria-label="تِبْر">${wordmark()}</a>
         <nav class="store-nav" aria-label="التصنيفات">
           <ul class="store-nav__list">
             ${link("/shop/perfumes", "العطور", "Perfumes", "perfumes")}
@@ -91,7 +92,7 @@
           <a class="store-iconbtn" href="/cart" id="cart-btn" data-ar-label="سلة التسوق" data-en-label="Cart" aria-label="سلة التسوق">
             ${I.bag}<span class="store-cart-count" id="cart-count" aria-hidden="true">0</span>
           </a>
-          <button class="store-lang" id="lang-switch" type="button" aria-label="Switch language"><span class="lang-text">EN</span></button>
+          <button class="store-lang" id="lang-switch" type="button" aria-label="Switch language">${I.globe}<span class="lang-text">EN</span></button>
           <button class="store-burger" id="burger" type="button" aria-expanded="false" aria-controls="drawer" data-ar-label="القائمة" data-en-label="Menu" aria-label="القائمة">${I.menu}</button>
         </div>
       </div>
@@ -144,7 +145,7 @@
           </div>
         </div>
         <div class="store-footer__bar">
-          ${bi("© ٢٠٢٦ روبابيكيا. كل الحقوق محفوظة.", "© 2026 Robabikia. All rights reserved.")}
+          ${bi("© ٢٠٢٦ تِبْر. كل الحقوق محفوظة.", "© 2026 Tibr. All rights reserved.")}
           <span>${bi("صُنع في القاهرة", "Made in Cairo")}</span>
         </div>
       </div>
@@ -177,7 +178,7 @@
   }
 
   /* ============================ LANGUAGE ============================ */
-  const LANG_KEY = "robabikia-lang";
+  const LANG_KEY = "tibr-lang";
   let currentLang = localStorage.getItem(LANG_KEY) || document.documentElement.lang || "ar";
 
   function applyLang(lang) {

@@ -84,6 +84,110 @@
   color: var(--muted); pointer-events: none;
 }
 
+/* ============ PERFUMES FILTER — search square with advanced filter ============ */
+.catalog-filter { display: grid; justify-items: center; gap: var(--sp-4); padding-block: var(--sp-2); }
+
+/* The search square: search input + inline Filters disclosure */
+.catalog-filter__bar {
+  position: relative;
+  display: flex; align-items: center; gap: 0.5rem;
+  inline-size: min(100%, 40rem);
+  padding: 0.55rem 0.65rem 0.55rem 1.1rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-2);
+  transition: border-color var(--dur) var(--ease-out),
+              box-shadow var(--dur) var(--ease-out);
+}
+.catalog-filter__bar:focus-within { border-color: var(--gold-line); box-shadow: var(--glow-gold); }
+.catalog-filter__bar > .ic-search {
+  inline-size: 1.25rem; block-size: 1.25rem; color: var(--gold); flex: none;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+.catalog-filter__bar:focus-within > .ic-search { transform: rotate(-12deg) scale(1.08); }
+.catalog-filter__input {
+  flex: 1; min-inline-size: 0; border: 0; background: transparent;
+  color: var(--ink); font: inherit; font-size: var(--fs-base);
+}
+.catalog-filter__input::placeholder { color: var(--ink-2); opacity: 1; }
+.catalog-filter__input:focus { outline: none; }
+.catalog-filter__div { inline-size: 1px; align-self: stretch; margin-block: 0.35rem; background: var(--line); }
+
+/* Filters toggle (summary) */
+.catalog-filter__toggle {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.5rem 0.85rem;
+  font: inherit; font-size: var(--fs-sm); color: var(--ink-2);
+  background: var(--surface-2); border: 1px solid var(--line);
+  border-radius: 999px; cursor: pointer; list-style: none; white-space: nowrap;
+  transition: color var(--dur) var(--ease-out),
+              border-color var(--dur) var(--ease-out),
+              background var(--dur) var(--ease-out);
+}
+.catalog-filter__toggle::-webkit-details-marker { display: none; }
+.catalog-filter__toggle:hover { color: var(--ink); border-color: var(--line-strong); }
+.catalog-filter__toggle:focus-visible { outline: none; box-shadow: var(--glow-gold); }
+.catalog-filter__toggle .ic-tune { inline-size: 1.05rem; block-size: 1.05rem; color: var(--gold); flex: none; }
+.catalog-filter__toggle .ic-tune .kk { fill: var(--surface-2); transition: transform var(--dur-slow) var(--ease-out); }
+.catalog-filter__disclosure[open] .catalog-filter__toggle { color: var(--gold); border-color: var(--gold-line); background: var(--gold-ghost); }
+.catalog-filter__disclosure[open] .ic-tune .kk.a { transform: translateX(4px); }
+.catalog-filter__disclosure[open] .ic-tune .kk.b { transform: translateX(-5px); }
+.catalog-filter__disclosure[open] .ic-tune .kk.c { transform: translateX(6px); }
+.catalog-filter__caret { inline-size: 0.8rem; block-size: 0.8rem; color: var(--muted); transition: transform var(--dur) var(--ease-out); }
+.catalog-filter__disclosure[open] .catalog-filter__caret { transform: rotate(180deg); color: var(--gold); }
+.catalog-filter__dot { inline-size: 6px; block-size: 6px; border-radius: 50%; background: var(--gold); opacity: 0; transition: opacity var(--dur) var(--ease-out); }
+.catalog-filter__disclosure:has(.filter-chip[aria-pressed="true"]:not([data-value="all"])) .catalog-filter__dot { opacity: 1; }
+
+/* Attached filter panel */
+.catalog-filter__panel {
+  position: absolute; inset-block-start: calc(100% + 8px); inset-inline: 0;
+  z-index: var(--z-dropdown);
+  display: grid; gap: 1.1rem 1.4rem; grid-template-columns: repeat(3, 1fr);
+  padding: 1.1rem;
+  background: var(--bg-raised); border: 1px solid var(--line-strong);
+  border-radius: var(--r-md); box-shadow: var(--shadow-3);
+}
+.catalog-filter__field { display: grid; gap: 0.5rem; align-content: start; }
+.catalog-filter__flabel { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--muted); font-size: var(--fs-xs); }
+.catalog-filter__flabel .ic { inline-size: 1rem; block-size: 1rem; color: var(--gold); flex: none; }
+.catalog-filter__opts { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.catalog-filter .catalog-filter__chip {
+  display: inline-flex; align-items: center; min-block-size: 0;
+  padding: 0.45rem 0.8rem;
+  font: inherit; font-size: var(--fs-sm); color: var(--ink-2);
+  background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px;
+  cursor: pointer;
+  transition: color var(--dur) var(--ease-out),
+              border-color var(--dur) var(--ease-out),
+              background var(--dur) var(--ease-out);
+}
+.catalog-filter .catalog-filter__chip:hover { color: var(--ink); border-color: var(--line-strong); }
+.catalog-filter .catalog-filter__chip[aria-pressed="true"] { color: var(--on-gold); background: var(--gold); border-color: var(--gold); }
+.catalog-filter__chip:focus-visible { outline: none; box-shadow: var(--glow-gold); }
+.catalog-filter__sort { position: relative; display: inline-flex; align-items: center; }
+.catalog-filter__sort .ic-sort { position: absolute; inset-inline-start: 0.7rem; inline-size: 1rem; block-size: 1rem; color: var(--muted); pointer-events: none; }
+.catalog-filter__sort select {
+  appearance: none; -webkit-appearance: none; inline-size: 100%;
+  background: var(--surface-2); color: var(--ink);
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+  padding-block: 0.55rem; padding-inline-start: 2.3rem; padding-inline-end: 2rem;
+  font: inherit; font-size: var(--fs-sm); cursor: pointer;
+  transition: border-color var(--dur) var(--ease-out);
+}
+.catalog-filter__sort select:hover { border-color: var(--line-strong); }
+.catalog-filter__sort select:focus-visible { outline: none; border-color: var(--gold-line); box-shadow: var(--glow-gold); }
+.catalog-filter__sort .ic-chev { position: absolute; inset-inline-end: 0.7rem; inline-size: 0.85rem; block-size: 0.85rem; color: var(--muted); pointer-events: none; }
+.catalog-filter__count { margin: 0; color: var(--muted); font-size: var(--fs-xs); letter-spacing: var(--tracking-wide); }
+
+@media (max-width: 600px) {
+  .catalog-filter__panel { grid-template-columns: 1fr; }
+  .catalog-filter__toggle-txt { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .catalog-filter *, .catalog-filter *::before, .catalog-filter *::after { transition: none !important; }
+}
+
 /* ============================ PRODUCT GRID ============================ */
 .catalog-grid {
   display: grid;

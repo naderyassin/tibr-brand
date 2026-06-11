@@ -4,7 +4,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   // Determine starting language: check localStorage, otherwise default to Arabic ('ar')
-  let currentLang = localStorage.getItem("robabikia-lang") || "ar";
+  let currentLang = localStorage.getItem("tibr-lang") || "ar";
 
   const langSwitchBtn = document.getElementById("lang-switch");
   const langText = langSwitchBtn ? langSwitchBtn.querySelector(".lang-text") : null;
@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Switch action trigger
   const toggleLanguage = () => {
     currentLang = currentLang === "ar" ? "en" : "ar";
-    localStorage.setItem("robabikia-lang", currentLang);
+    localStorage.setItem("tibr-lang", currentLang);
     document.body.classList.add('no-transitions');
     applyTranslations(currentLang);
     requestAnimationFrame(() => requestAnimationFrame(() => {

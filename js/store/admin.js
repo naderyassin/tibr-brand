@@ -1,7 +1,7 @@
 /* -------------------------------------------------------------
  * STORE / ADMIN.JS — Orders control panel
  * Status filter, per-row status change, live stats.
- * Demo dataset is seeded locally (robabikia-admin-orders).
+ * Demo dataset is seeded locally (tibr-admin-orders).
  * Depends on chrome.js (window.RB).
  * ------------------------------------------------------------- */
 (function () {
@@ -21,15 +21,15 @@
   };
   const ORDER = ["pending", "confirmed", "shipped", "delivered", "cancelled"];
 
-  const KEY = "robabikia-admin-orders";
+  const KEY = "tibr-admin-orders";
   const daysAgo = (d) => new Date(Date.now() - d * 864e5).toISOString();
   function seed() {
     return [
-      { ref: "RB-A1001", name_ar: "منى حسن", name_en: "Mona Hassan", items_ar: "وردة الأناقة ×١", items_en: "Rose Elegance ×1", total: 350, date: daysAgo(0), status: "pending" },
-      { ref: "RB-A1002", name_ar: "أحمد سمير", name_en: "Ahmed Samir", items_ar: "سر العود ×٢", items_en: "Oud Mystery ×2", total: 900, date: daysAgo(1), status: "confirmed" },
-      { ref: "RB-A1003", name_ar: "ليلى مصطفى", name_en: "Layla Mostafa", items_ar: "ذاكرة الفل ×١", items_en: "Jasmine Memories ×1", total: 375, date: daysAgo(2), status: "shipped" },
-      { ref: "RB-A1004", name_ar: "كريم عادل", name_en: "Karim Adel", items_ar: "سر العود ×١، وردة الأناقة ×١", items_en: "Oud Mystery ×1, Rose Elegance ×1", total: 800, date: daysAgo(4), status: "delivered" },
-      { ref: "RB-A1005", name_ar: "سارة فؤاد", name_en: "Sara Fouad", items_ar: "ذاكرة الفل ×١", items_en: "Jasmine Memories ×1", total: 375, date: daysAgo(6), status: "cancelled" }
+      { ref: "TB-A1001", name_ar: "منى حسن", name_en: "Mona Hassan", items_ar: "وردة الأناقة ×١", items_en: "Rose Elegance ×1", total: 350, date: daysAgo(0), status: "pending" },
+      { ref: "TB-A1002", name_ar: "أحمد سمير", name_en: "Ahmed Samir", items_ar: "سر العود ×٢", items_en: "Oud Mystery ×2", total: 900, date: daysAgo(1), status: "confirmed" },
+      { ref: "TB-A1003", name_ar: "ليلى مصطفى", name_en: "Layla Mostafa", items_ar: "ذاكرة الفل ×١", items_en: "Jasmine Memories ×1", total: 375, date: daysAgo(2), status: "shipped" },
+      { ref: "TB-A1004", name_ar: "كريم عادل", name_en: "Karim Adel", items_ar: "سر العود ×١، وردة الأناقة ×١", items_en: "Oud Mystery ×1, Rose Elegance ×1", total: 800, date: daysAgo(4), status: "delivered" },
+      { ref: "TB-A1005", name_ar: "سارة فؤاد", name_en: "Sara Fouad", items_ar: "ذاكرة الفل ×١", items_en: "Jasmine Memories ×1", total: 375, date: daysAgo(6), status: "cancelled" }
     ];
   }
   function read() { try { return JSON.parse(localStorage.getItem(KEY)) || seed(); } catch (_) { return seed(); } }

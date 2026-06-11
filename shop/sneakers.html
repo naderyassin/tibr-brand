@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="أحذية روبابيكيا الجلدية، حرفية مصرية بروح معاصرة.">
-  <title>الأحذية · روبابيكيا</title>
+  <meta name="description" content="أحذية تِبْر الجلدية، حرفية مصرية بروح معاصرة.">
+  <title>الأحذية · تِبْر</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=Hanken+Grotesk:wght@400;500;600;700&family=Reem+Kufi:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="/css/store/components.css">
   <link rel="stylesheet" href="/css/store/catalog.css">
 </head>
-<body data-nav="sneakers" data-title-ar="الأحذية · روبابيكيا" data-title-en="Sneakers · Robabikia">
+<body data-nav="sneakers" data-title-ar="الأحذية · تِبْر" data-title-en="Sneakers · Tibr">
   <a class="skip-link" href="#main"><span data-lang-ar>تخطَّ إلى المنتجات</span><span data-lang-en>Skip to products</span></a>
 
   <main id="main" class="store-container">
@@ -33,36 +33,60 @@
       </p>
     </header>
 
-    <div class="catalog-controls">
-      <div class="catalog-filters">
-        <div class="filter-group" role="group" aria-label="تصفية حسب النوع">
-          <span class="filter-group__label"><span data-lang-ar>لِمن</span><span data-lang-en>For</span></span>
-          <button class="filter-chip" type="button" data-filter="gender" data-value="all" aria-pressed="true"><span data-lang-ar>الكل</span><span data-lang-en>All</span></button>
-          <button class="filter-chip" type="button" data-filter="gender" data-value="women" aria-pressed="false"><span data-lang-ar>نسائي</span><span data-lang-en>Women</span></button>
-          <button class="filter-chip" type="button" data-filter="gender" data-value="men" aria-pressed="false"><span data-lang-ar>رجالي</span><span data-lang-en>Men</span></button>
-        </div>
+    <!-- Controls: search square with inline advanced filter -->
+    <div class="catalog-filter">
+      <div class="catalog-filter__bar">
+        <svg class="ic-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="11" cy="11" r="6.4"/><path d="M16.5 16.5 21 21" stroke-linecap="round"/></svg>
+        <input class="catalog-filter__input" type="search" id="catalog-search" placeholder="ابحث عن حذاء يناسبك…" data-ar-ph="ابحث عن حذاء يناسبك…" data-en-ph="Search for a sneaker…" data-ar-label="بحث" data-en-label="Search" aria-label="بحث">
+        <span class="catalog-filter__div" aria-hidden="true"></span>
+        <details class="catalog-filter__disclosure">
+          <summary class="catalog-filter__toggle">
+            <svg class="ic-tune" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/><circle class="kk a" cx="9" cy="7" r="2.3"/><circle class="kk b" cx="15" cy="12" r="2.3"/><circle class="kk c" cx="8" cy="17" r="2.3"/></svg>
+            <span class="catalog-filter__toggle-txt"><span data-lang-ar>تصفية</span><span data-lang-en>Filter</span></span>
+            <span class="catalog-filter__dot" aria-hidden="true"></span>
+            <svg class="catalog-filter__caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </summary>
+          <div class="catalog-filter__panel">
+            <div class="catalog-filter__field" role="group" aria-label="تصفية حسب النوع">
+              <span class="catalog-filter__flabel"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="8" r="3.4"/><path d="M5.5 19c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6" stroke-linecap="round"/></svg><span data-lang-ar>لِمن</span><span data-lang-en>For</span></span>
+              <div class="catalog-filter__opts">
+                <button class="filter-chip catalog-filter__chip" type="button" data-filter="gender" data-value="all" aria-pressed="true"><span data-lang-ar>الكل</span><span data-lang-en>All</span></button>
+                <button class="filter-chip catalog-filter__chip" type="button" data-filter="gender" data-value="women" aria-pressed="false"><span data-lang-ar>نسائي</span><span data-lang-en>Women</span></button>
+                <button class="filter-chip catalog-filter__chip" type="button" data-filter="gender" data-value="men" aria-pressed="false"><span data-lang-ar>رجالي</span><span data-lang-en>Men</span></button>
+              </div>
+            </div>
+            <div class="catalog-filter__field" role="group" aria-label="تصفية حسب المجموعة">
+              <span class="catalog-filter__flabel"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 4h12l3 5-9 11L3 9z" stroke-linejoin="round"/><path d="M3 9h18M9 4 6 9l6 11 6-11-3-5" stroke-linejoin="round"/></svg><span data-lang-ar>المجموعة</span><span data-lang-en>Collection</span></span>
+              <div class="catalog-filter__opts">
+                <button class="filter-chip catalog-filter__chip" type="button" data-filter="collection" data-value="all" aria-pressed="true"><span data-lang-ar>الكل</span><span data-lang-en>All</span></button>
+                <button class="filter-chip catalog-filter__chip" type="button" data-filter="collection" data-value="leather" aria-pressed="false"><span data-lang-ar>الجلد</span><span data-lang-en>Leather</span></button>
+                <button class="filter-chip catalog-filter__chip" type="button" data-filter="collection" data-value="canvas" aria-pressed="false"><span data-lang-ar>الكانفاس</span><span data-lang-en>Canvas</span></button>
+              </div>
+            </div>
+            <div class="catalog-filter__field">
+              <span class="catalog-filter__flabel"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M7 5v14m0 0-3-3m3 3 3-3M17 19V5m0 0-3 3m3-3 3 3" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-lang-ar>ترتيب</span><span data-lang-en>Sort</span></span>
+              <div class="catalog-filter__sort">
+                <svg class="ic-sort" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M7 5v14m0 0-3-3m3 3 3-3M17 19V5m0 0-3 3m3-3 3 3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <label class="visually-hidden" for="sort-select"><span data-lang-ar>ترتيب</span><span data-lang-en>Sort</span></label>
+                <select id="sort-select" data-ar='["الأحدث","السعر: من الأقل","السعر: من الأعلى"]' data-en='["Newest","Price: low to high","Price: high to low"]'>
+                  <option value="newest">الأحدث</option>
+                  <option value="price-asc">السعر: من الأقل</option>
+                  <option value="price-desc">السعر: من الأعلى</option>
+                </select>
+                <svg class="ic-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+        </details>
       </div>
-      <div class="catalog-right">
-        <p class="catalog-count" id="catalog-count" aria-live="polite"><span data-lang-ar><span data-count>٤</span> موديلات</span><span data-lang-en><span data-count>4</span> styles</span></p>
-        <div class="sort">
-          <label class="visually-hidden" for="sort-select"><span data-lang-ar>ترتيب</span><span data-lang-en>Sort</span></label>
-          <select class="sort__select" id="sort-select"
-            data-ar='["الأحدث","السعر: من الأقل","السعر: من الأعلى"]'
-            data-en='["Newest","Price: low to high","Price: high to low"]'>
-            <option value="newest">الأحدث</option>
-            <option value="price-asc">السعر: من الأقل</option>
-            <option value="price-desc">السعر: من الأعلى</option>
-          </select>
-          <svg class="sort__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-      </div>
+      <p class="catalog-filter__count" id="catalog-count" aria-live="polite"><span data-lang-ar><span data-count>٤</span> موديلات</span><span data-lang-en><span data-count>4</span> styles</span></p>
     </div>
 
     <div class="catalog-grid skeleton-grid" id="skeleton-grid" hidden aria-hidden="true"></div>
 
     <section class="catalog-grid" id="product-grid" aria-label="قائمة الأحذية" aria-busy="false">
 
-      <article class="product" data-product data-id="wadi-high" data-gender="women" data-price="2300" data-order="4" data-default-size="38" data-reveal data-ar-name="وادي هاي" data-en-name="Wadi High">
+      <article class="product" data-product data-id="wadi-high" data-gender="women" data-collection="leather" data-price="2300" data-order="4" data-default-size="38" data-reveal data-ar-name="وادي هاي" data-en-name="Wadi High">
         <div class="product__media">
           <a class="product__link" href="/product?id=wadi-high" aria-label="وادي هاي">
             <img class="product__img" src="https://placehold.co/600x750/171311/c9a84c/png?text=Wadi+High&amp;font=playfair-display" loading="lazy" decoding="async" data-ar-alt="حذاء جلدي مرتفع الرقبة" data-en-alt="Leather high-top sneaker" alt="حذاء جلدي مرتفع الرقبة">
@@ -85,7 +109,7 @@
         </div>
       </article>
 
-      <article class="product" data-product data-id="nile-runner" data-gender="men" data-price="2100" data-order="3" data-default-size="42" data-reveal data-ar-name="نايل رنر" data-en-name="Nile Runner">
+      <article class="product" data-product data-id="nile-runner" data-gender="men" data-collection="leather" data-price="2100" data-order="3" data-default-size="42" data-reveal data-ar-name="نايل رنر" data-en-name="Nile Runner">
         <div class="product__media">
           <a class="product__link" href="/product?id=nile-runner" aria-label="نايل رنر">
             <img class="product__img" src="https://placehold.co/600x750/171311/c9a84c/png?text=Nile+Runner&amp;font=playfair-display" loading="lazy" decoding="async" data-ar-alt="حذاء رياضي من الشامواه" data-en-alt="Suede runner sneaker" alt="حذاء رياضي من الشامواه">
@@ -109,7 +133,7 @@
         </div>
       </article>
 
-      <article class="product" data-product data-id="cairo-low" data-gender="men" data-price="1800" data-order="2" data-default-size="42" data-reveal data-ar-name="كايرو لو" data-en-name="Cairo Low">
+      <article class="product" data-product data-id="cairo-low" data-gender="men" data-collection="leather" data-price="1800" data-order="2" data-default-size="42" data-reveal data-ar-name="كايرو لو" data-en-name="Cairo Low">
         <div class="product__media">
           <a class="product__link" href="/product?id=cairo-low" aria-label="كايرو لو">
             <img class="product__img" src="https://placehold.co/600x750/171311/c9a84c/png?text=Cairo+Low&amp;font=playfair-display" loading="lazy" decoding="async" data-ar-alt="حذاء جلدي منخفض الرقبة" data-en-alt="Full-grain leather low-top sneaker" alt="حذاء جلدي منخفض الرقبة">
@@ -132,7 +156,7 @@
         </div>
       </article>
 
-      <article class="product" data-product data-id="linen-court" data-gender="women" data-price="1500" data-order="1" data-default-size="38" data-reveal data-ar-name="كورت الكتان" data-en-name="Linen Court">
+      <article class="product" data-product data-id="linen-court" data-gender="women" data-collection="canvas" data-price="1500" data-order="1" data-default-size="38" data-reveal data-ar-name="كورت الكتان" data-en-name="Linen Court">
         <div class="product__media">
           <a class="product__link" href="/product?id=linen-court" aria-label="كورت الكتان">
             <img class="product__img" src="https://placehold.co/600x750/171311/c9a84c/png?text=Linen+Court&amp;font=playfair-display" loading="lazy" decoding="async" data-ar-alt="حذاء كورت من كانفاس الكتان" data-en-alt="Linen-canvas court shoe" alt="حذاء كورت من كانفاس الكتان">
@@ -167,5 +191,8 @@
 
   <script src="/js/store/chrome.js" defer></script>
   <script src="/js/store/catalog.js" defer></script>
+<!-- impeccable-live-start -->
+<script src="http://localhost:8400/live.js"></script>
+<!-- impeccable-live-end -->
 </body>
 </html>
