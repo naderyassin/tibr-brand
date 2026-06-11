@@ -298,8 +298,10 @@
   }
 
   /* ============================ INIT ============================ */
+  document.body.classList.add("no-transitions");
   injectChrome();
   applyLang(currentLang);
+  requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.remove("no-transitions")));
   const langBtn = $("#lang-switch");
   if (langBtn) langBtn.addEventListener("click", toggleLang);
   wireHeader();

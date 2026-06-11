@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+<script>(function(){var l=localStorage.getItem("tibr-lang");if(l==="en"||l==="ar"){document.documentElement.lang=l;document.documentElement.dir=l==="ar"?"rtl":"ltr";}})();</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="سلة التسوق في تِبْر.">
@@ -17,6 +18,59 @@
 <body data-nav="" data-title-ar="سلة التسوق · تِبْر" data-title-en="Cart · Tibr">
   <a class="skip-link" href="#main"><span data-lang-ar>تخطَّ إلى السلة</span><span data-lang-en>Skip to cart</span></a>
 
+  <!-- ============================ HEADER ============================ -->
+  <header class="store-header" id="store-header">
+    <div class="store-container store-header__inner">
+      <a class="store-wordmark" href="/" aria-label="تِبْر">
+        <span data-lang-ar>تِبْر</span><span data-lang-en>Tibr<span class="dot">.</span></span>
+      </a>
+      <nav class="store-nav" aria-label="التصنيفات">
+        <ul class="store-nav__list">
+          <li><a class="store-nav__link" href="/shop/perfumes"><span data-lang-ar>العطور</span><span data-lang-en>Perfumes</span></a></li>
+          <li><a class="store-nav__link" href="/shop/clothing"><span data-lang-ar>الملابس</span><span data-lang-en>Clothing</span></a></li>
+          <li><a class="store-nav__link" href="/shop/sneakers"><span data-lang-ar>الأحذية</span><span data-lang-en>Sneakers</span></a></li>
+        </ul>
+      </nav>
+      <div data-impeccable-variants="b9c1cf36" data-impeccable-variant-count="4" style="display: contents">
+        <div data-impeccable-variant="original">
+          <div data-impeccable-variants="0e70542d" data-impeccable-variant-count="4" style="display: contents">
+            <div data-impeccable-variant="original">
+              <div class="store-utils">
+                <button class="store-iconbtn store-util-extra" type="button" data-ar-label="بحث" data-en-label="Search" aria-label="بحث"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg></button>
+                <a class="store-iconbtn store-util-extra" href="/wishlist" data-ar-label="المفضلة" data-en-label="Wishlist" aria-label="المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 20.3c-.4-.3-5.9-4-8-7.6C2.2 9.8 3.2 6.2 6.3 6.2c1.8 0 3 1.1 3.7 2.2.7-1.1 1.9-2.2 3.7-2.2 3.1 0 4.1 3.6 2.3 6.5-2.1 3.6-7.6 7.3-8 7.6z" stroke-linejoin="round"/></svg></a>
+                <a class="store-iconbtn store-util-extra" href="/account" data-ar-label="حسابي" data-en-label="Account" aria-label="حسابي"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 19.5a6.5 6.5 0 0 1 13 0" stroke-linecap="round"/></svg></a>
+                <a class="store-iconbtn" href="/cart" id="cart-btn" data-ar-label="سلة التسوق" data-en-label="Cart" aria-label="سلة التسوق"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6.6 8h10.8l.7 11.4a1.1 1.1 0 0 1-1.1 1.1H7a1.1 1.1 0 0 1-1.1-1.1z" stroke-linejoin="round"/><path d="M9.2 8.5V7a2.8 2.8 0 0 1 5.6 0v1.5" stroke-linecap="round"/></svg><span class="store-cart-count" id="cart-count" aria-hidden="true">0</span></a>
+                <button class="store-lang" id="lang-switch" type="button" aria-label="Switch language"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="8.2"/><path d="M3.8 12h16.4M12 3.8c2.2 2.3 3.4 5.2 3.4 8.2s-1.2 5.9-3.4 8.2c-2.2-2.3-3.4-5.2-3.4-8.2s1.2-5.9 3.4-8.2z"/></svg><span class="lang-text">EN</span></button>
+                <button class="store-burger" id="burger" type="button" aria-expanded="false" aria-controls="drawer" data-ar-label="القائمة" data-en-label="Menu" aria-label="القائمة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10" stroke-linecap="round"/></svg></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================ MOBILE DRAWER ============================ -->
+  <div class="store-scrim" id="scrim" hidden></div>
+  <aside class="store-drawer" id="drawer" aria-label="القائمة" aria-hidden="true" hidden>
+    <div class="store-drawer__head">
+      <span class="store-wordmark"><span data-lang-ar>تِبْر</span><span data-lang-en>Tibr<span class="dot">.</span></span></span>
+      <button class="store-iconbtn" id="drawer-close" type="button" data-ar-label="إغلاق" data-en-label="Close" aria-label="إغلاق"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg></button>
+    </div>
+    <nav class="store-drawer__nav" aria-label="التصنيفات">
+      <a class="store-drawer__link" href="/shop/perfumes"><span data-lang-ar>العطور</span><span data-lang-en>Perfumes</span></a>
+      <a class="store-drawer__link" href="/shop/clothing"><span data-lang-ar>الملابس</span><span data-lang-en>Clothing</span></a>
+      <a class="store-drawer__link" href="/shop/sneakers"><span data-lang-ar>الأحذية</span><span data-lang-en>Sneakers</span></a>
+      <a class="store-drawer__link" href="/wishlist"><span data-lang-ar>المفضلة</span><span data-lang-en>Wishlist</span></a>
+      <a class="store-drawer__link" href="/account"><span data-lang-ar>حسابي</span><span data-lang-en>Account</span></a>
+    </nav>
+    <div class="store-drawer__foot">
+      <a class="store-footer__whatsapp" href="https://wa.me/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2zm0 2a8 8 0 1 1-4.1 14.9l-.3-.2-2.8.8.8-2.7-.2-.3A8 8 0 0 1 12 4zm4.4 10.2c-.2-.1-1.3-.7-1.5-.8-.2-.1-.4-.1-.5.1l-.7.9c-.1.1-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.1-.2 0-.4.1-.5l.4-.5c.1-.1.1-.3 0-.4l-.7-1.7c-.2-.4-.4-.4-.5-.4h-.5c-.2 0-.5.1-.7.3-.8.8-.8 2 0 3.2a9 9 0 0 0 3.9 3.5c1.3.6 1.9.6 2.6.5.4 0 1.3-.5 1.5-1 .2-.5.2-1 .1-1z"/></svg>
+        <span data-lang-ar>تواصل عبر واتساب</span><span data-lang-en>Chat on WhatsApp</span>
+      </a>
+    </div>
+  </aside>
+
   <main id="main" class="store-container">
     <header class="page-head">
       <h1 class="page-head__title"><span data-lang-ar>سلة التسوق</span><span data-lang-en>Your cart</span></h1>
@@ -29,5 +83,51 @@
 <!-- impeccable-live-start -->
 <script src="http://localhost:8400/live.js"></script>
 <!-- impeccable-live-end -->
+  <!-- ============================ FOOTER ============================ -->
+  <footer class="store-footer">
+    <div class="store-container">
+      <div class="store-footer__grid">
+        <div class="store-footer__brand">
+          <span class="store-wordmark"><span data-lang-ar>تِبْر</span><span data-lang-en>Tibr<span class="dot">.</span></span></span>
+          <p class="store-footer__tagline"><span data-lang-ar>عطور وأزياء وأحذية مصرية فاخرة، تجمع تراث الماضي بفخامة الحاضر.</span><span data-lang-en>Egyptian perfume, clothing, and footwear, joining the heritage of the past to the luxury of the present.</span></p>
+        </div>
+        <div class="store-footer__col">
+          <h4><span data-lang-ar>تسوّق</span><span data-lang-en>Shop</span></h4>
+          <ul>
+            <li><a href="/shop/perfumes"><span data-lang-ar>العطور</span><span data-lang-en>Perfumes</span></a></li>
+            <li><a href="/shop/clothing"><span data-lang-ar>الملابس</span><span data-lang-en>Clothing</span></a></li>
+            <li><a href="/shop/sneakers"><span data-lang-ar>الأحذية</span><span data-lang-en>Sneakers</span></a></li>
+            <li><a href="/wishlist"><span data-lang-ar>المفضلة</span><span data-lang-en>Wishlist</span></a></li>
+          </ul>
+        </div>
+        <div class="store-footer__col">
+          <h4><span data-lang-ar>المساعدة</span><span data-lang-en>Help</span></h4>
+          <ul>
+            <li><a href="/help/ordering"><span data-lang-ar>كيف أطلب</span><span data-lang-en>How to order</span></a></li>
+            <li><a href="/help/shipping"><span data-lang-ar>الشحن والدفع عند الاستلام</span><span data-lang-en>Shipping &amp; cash on delivery</span></a></li>
+            <li><a href="/help/returns"><span data-lang-ar>الإرجاع والاستبدال</span><span data-lang-en>Returns &amp; exchanges</span></a></li>
+            <li><a href="/account"><span data-lang-ar>حسابي</span><span data-lang-en>My account</span></a></li>
+          </ul>
+        </div>
+        <div class="store-footer__col">
+          <h4><span data-lang-ar>تواصل</span><span data-lang-en>Contact</span></h4>
+          <a class="store-footer__whatsapp" href="https://wa.me/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2zm0 2a8 8 0 1 1-4.1 14.9l-.3-.2-2.8.8.8-2.7-.2-.3A8 8 0 0 1 12 4zm4.4 10.2c-.2-.1-1.3-.7-1.5-.8-.2-.1-.4-.1-.5.1l-.7.9c-.1.1-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.1-.2 0-.4.1-.5l.4-.5c.1-.1.1-.3 0-.4l-.7-1.7c-.2-.4-.4-.4-.5-.4h-.5c-.2 0-.5.1-.7.3-.8.8-.8 2 0 3.2a9 9 0 0 0 3.9 3.5c1.3.6 1.9.6 2.6.5.4 0 1.3-.5 1.5-1 .2-.5.2-1 .1-1z"/></svg>
+            <span data-lang-ar>تواصل عبر واتساب</span><span data-lang-en>Chat on WhatsApp</span>
+          </a>
+          <p class="store-footer__note"><span data-lang-ar>الدفع عند الاستلام في كل محافظات مصر.</span><span data-lang-en>Cash on delivery across every Egyptian governorate.</span></p>
+        </div>
+      </div>
+      <div class="store-footer__bar">
+        <span data-lang-ar>© ٢٠٢٦ تِبْر. كل الحقوق محفوظة.</span><span data-lang-en>© 2026 Tibr. All rights reserved.</span>
+        <span><span data-lang-ar>صُنع في القاهرة</span><span data-lang-en>Made in Cairo</span></span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================ TOAST ============================ -->
+  <div class="store-toast" id="toast" role="status" aria-live="polite">
+    <span class="store-toast__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    <span class="store-toast__msg" id="toast-msg"></span>
+  </div>
 </body>
 </html>
