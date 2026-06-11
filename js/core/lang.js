@@ -68,6 +68,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Trigger dynamic component translations by dispatching a custom event
     const event = new CustomEvent("languageChanged", { detail: { lang } });
     document.dispatchEvent(event);
+
+    document.documentElement.style.visibility = "";
   };
 
   // Switch action trigger

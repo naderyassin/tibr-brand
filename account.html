@@ -1,18 +1,21 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+<style id="lang-cloak">html{visibility:hidden}</style>
+<style>html,body{background:oklch(0.165 0.006 75)}</style>
 <script>(function(){
 var l=localStorage.getItem("tibr-lang");if(l!=="ar")l="en";
-document.documentElement.lang=l;document.documentElement.dir=l==="ar"?"rtl":"ltr";
+document.documentElement.lang=l;document.documentElement.dir=l==="ar"?"rtl":"ltr";var c=document.getElementById("lang-cloak");if(c)c.parentNode.removeChild(c);
 new MutationObserver(function(m){var L=document.documentElement.lang;for(var x=0;x<m.length;x++){for(var n=0;n<m[x].addedNodes.length;n++){var e=m[x].addedNodes[n];if(e.nodeType!==1)continue;if(e.hasAttribute("data-ar-label"))e.setAttribute("aria-label",e.getAttribute("data-"+L+"-label"));if(e.hasAttribute("data-ar-alt"))e.setAttribute("alt",e.getAttribute("data-"+L+"-alt"));if(e.hasAttribute("data-ar-ph"))e.setAttribute("placeholder",e.getAttribute("data-"+L+"-ph"));if(e.tagName==="SELECT"&&e.hasAttribute("data-ar")){try{var J=JSON.parse(e.getAttribute("data-"+L));for(var j=0;j<e.options.length;j++){if(J[j]!=null)e.options[j].textContent=J[j]}}catch(_){}}if(e.tagName==="BODY"&&e.hasAttribute("data-title-ar")&&e.hasAttribute("data-title-en")){document.title=e.getAttribute("data-"+L+"-title")}if(e.querySelectorAll){var q;q=e.querySelectorAll("[data-ar-label]");for(var i=0;i<q.length;i++)q[i].setAttribute("aria-label",q[i].getAttribute("data-"+L+"-label"));q=e.querySelectorAll("[data-ar-alt]");for(var i=0;i<q.length;i++)q[i].setAttribute("alt",q[i].getAttribute("data-"+L+"-alt"));q=e.querySelectorAll("[data-ar-ph]");for(var i=0;i<q.length;i++)q[i].setAttribute("placeholder",q[i].getAttribute("data-"+L+"-ph"));q=e.querySelectorAll("select[data-ar]");for(var i=0;i<q.length;i++){try{var J=JSON.parse(q[i].getAttribute("data-"+L));for(var j=0;j<q[i].options.length;j++){if(J[j]!=null)q[i].options[j].textContent=J[j]}}catch(_){}}}}}).observe(document.documentElement,{childList:true,subtree:true});
 })();</script>
+<style>:root[lang="en"] [data-lang-ar]{display:none}:root[lang="ar"] [data-lang-en]{display:none}</style>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="حسابك في تِبْر.">
   <title>حسابي · تِبْر</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=Hanken+Grotesk:wght@400;500;600;700&family=Reem+Kufi:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=Hanken+Grotesk:wght@400;500;600;700&family=Reem+Kufi:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="/css/store/tokens.css">
   <link rel="stylesheet" href="/css/store/base.css">
   <link rel="stylesheet" href="/css/store/chrome.css">

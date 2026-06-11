@@ -301,6 +301,9 @@
   document.body.classList.add("no-transitions");
   injectChrome();
   applyLang(currentLang);
+  document.documentElement.style.visibility = "";
+  var _cloak = document.getElementById("lang-cloak");
+  if (_cloak) _cloak.parentNode.removeChild(_cloak);
   requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.remove("no-transitions")));
   const langBtn = $("#lang-switch");
   if (langBtn) langBtn.addEventListener("click", toggleLang);
