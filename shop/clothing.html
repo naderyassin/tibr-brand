@@ -39,7 +39,7 @@
             <div data-impeccable-variant="original">
               <div class="store-utils">
                 <button class="store-iconbtn store-util-extra" type="button" data-ar-label="بحث" data-en-label="Search" aria-label="بحث"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg></button>
-                <a class="store-iconbtn store-util-extra" href="/wishlist" data-ar-label="المفضلة" data-en-label="Wishlist" aria-label="المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 20.3c-.4-.3-5.9-4-8-7.6C2.2 9.8 3.2 6.2 6.3 6.2c1.8 0 3 1.1 3.7 2.2.7-1.1 1.9-2.2 3.7-2.2 3.1 0 4.1 3.6 2.3 6.5-2.1 3.6-7.6 7.3-8 7.6z" stroke-linejoin="round"/></svg></a>
+                <a class="store-iconbtn store-util-extra" href="/wishlist" data-ar-label="المفضلة" data-en-label="Wishlist" aria-label="المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></a>
                 <a class="store-iconbtn store-util-extra" href="/account" data-ar-label="حسابي" data-en-label="Account" aria-label="حسابي"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 19.5a6.5 6.5 0 0 1 13 0" stroke-linecap="round"/></svg></a>
                 <a class="store-iconbtn" href="/cart" id="cart-btn" data-ar-label="سلة التسوق" data-en-label="Cart" aria-label="سلة التسوق"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6.6 8h10.8l.7 11.4a1.1 1.1 0 0 1-1.1 1.1H7a1.1 1.1 0 0 1-1.1-1.1z" stroke-linejoin="round"/><path d="M9.2 8.5V7a2.8 2.8 0 0 1 5.6 0v1.5" stroke-linecap="round"/></svg><span class="store-cart-count" id="cart-count" aria-hidden="true">0</span></a>
                 <button class="store-lang" id="lang-switch" type="button" aria-label="Switch language"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="8.2"/><path d="M3.8 12h16.4M12 3.8c2.2 2.3 3.4 5.2 3.4 8.2s-1.2 5.9-3.4 8.2c-2.2-2.3-3.4-5.2-3.4-8.2s1.2-5.9 3.4-8.2z"/></svg><span class="lang-text"><span data-lang-ar>EN</span><span data-lang-en>العربية</span></span></button>
@@ -140,102 +140,110 @@
 
     <div class="catalog-grid skeleton-grid" id="skeleton-grid" hidden aria-hidden="true"></div>
 
-    <section class="catalog-grid" id="product-grid" aria-label="قائمة الملابس" aria-busy="false">
+    <!-- impeccable-variants-start df572a6f -->
+    <div data-impeccable-variants="df572a6f" data-impeccable-variant-count="3" style="display: contents">
+      <!-- Original -->
+      <div data-impeccable-variant="original">
+        <section class="catalog-grid" id="product-grid" aria-label="قائمة الملابس" aria-busy="false">
 
-      <article class="product" data-product data-id="silk-dress" data-gender="women" data-collection="contemporary" data-price="1200" data-order="4" data-default-size="M" data-reveal data-ar-name="فستان الحرير الأنثوي" data-en-name="Silk Dress">
-        <div class="product__media">
-          <a class="product__link" href="/product?id=silk-dress" aria-label="فستان الحرير الأنثوي">
-            <img class="product__img" src="https://placehold.co/600x750/171311/c9a84c/png?text=Silk+Dress&amp;font=playfair-display" loading="lazy" decoding="async" data-ar-alt="فستان حرير أنثوي بقصة معاصرة" data-en-alt="Feminine silk dress with a contemporary cut" alt="فستان حرير أنثوي بقصة معاصرة">
-          </a>
-          <span class="product__badge product__badge--soft"><span data-lang-ar>الأكثر مبيعاً</span><span data-lang-en>Bestseller</span></span>
-          <button class="product__wish" type="button" aria-pressed="false" data-ar-label="أضف فستان الحرير إلى المفضلة" data-en-label="Add Silk Dress to wishlist" aria-label="أضف فستان الحرير إلى المفضلة">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.3-9.3-8.5C1 8 2.5 4.8 6 4.8c2 0 3.2 1.2 4 2.4.8-1.2 2-2.4 4-2.4 3.5 0 5 3.2 3.3 6.7C19 15.7 12 20 12 20z" stroke-linejoin="round"/></svg>
-          </button>
-        </div>
-        <div class="product__body">
-          <p class="product__collection"><span data-lang-ar>مجموعة العصرية</span><span data-lang-en>Contemporary Line</span></p>
-          <a class="product__name-link" href="/product?id=silk-dress"><h3 class="product__name"><span data-lang-ar>فستان الحرير الأنثوي</span><span data-lang-en>Silk Dress</span></h3></a>
-          <p class="product__desc"><span data-lang-ar>حرير ناعم بقصّة عصرية وتفاصيل تراثية، يليق بالمناسبات الراقية.</span><span data-lang-en>Soft silk with a contemporary cut and heritage details, for refined occasions.</span></p>
-          <div class="product__meta">
-            <span class="product__price"><span data-lang-ar>١٢٠٠ ج.م</span><span data-lang-en>1200 EGP</span></span>
-            <button class="btn btn--secondary" type="button" data-add data-ar-name="فستان الحرير الأنثوي" data-en-name="Silk Dress">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8z" stroke-linejoin="round"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8" stroke-linecap="round"/></svg>
-              <span data-lang-ar>أضف للسلة</span><span data-lang-en>Add to cart</span>
-            </button>
-          </div>
-        </div>
-      </article>
+          <article class="product" data-product data-id="silk-dress" data-gender="women" data-collection="contemporary" data-price="1200" data-order="4" data-default-size="M" data-reveal data-ar-name="فستان الحرير الأنثوي" data-en-name="Silk Dress">
+            <div class="product__media">
+              <a class="product__link" href="/product?id=silk-dress" aria-label="فستان الحرير الأنثوي">
+                <img class="product__img" src="https://placehold.co/600x750/171311/c9a84c/png?text=Silk+Dress&amp;font=playfair-display" loading="lazy" decoding="async" data-ar-alt="فستان حرير أنثوي بقصة معاصرة" data-en-alt="Feminine silk dress with a contemporary cut" alt="فستان حرير أنثوي بقصة معاصرة">
+              </a>
+              <span class="product__badge product__badge--soft"><span data-lang-ar>الأكثر مبيعاً</span><span data-lang-en>Bestseller</span></span>
+              <button class="product__wish" type="button" aria-pressed="false" data-ar-label="أضف فستان الحرير إلى المفضلة" data-en-label="Add Silk Dress to wishlist" aria-label="أضف فستان الحرير إلى المفضلة">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+            <div class="product__body">
+              <p class="product__collection"><span data-lang-ar>مجموعة العصرية</span><span data-lang-en>Contemporary Line</span></p>
+              <a class="product__name-link" href="/product?id=silk-dress"><h3 class="product__name"><span data-lang-ar>فستان الحرير الأنثوي</span><span data-lang-en>Silk Dress</span></h3></a>
+              <p class="product__desc"><span data-lang-ar>حرير ناعم بقصّة عصرية وتفاصيل تراثية، يليق بالمناسبات الراقية.</span><span data-lang-en>Soft silk with a contemporary cut and heritage details, for refined occasions.</span></p>
+              <div class="product__meta">
+                <span class="product__price"><span data-lang-ar>١٢٠٠ ج.م</span><span data-lang-en>1200 EGP</span></span>
+                <button class="btn btn--secondary" type="button" data-add data-ar-name="فستان الحرير الأنثوي" data-en-name="Silk Dress">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8z" stroke-linejoin="round"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8" stroke-linecap="round"/></svg>
+                  <span data-lang-ar>أضف للسلة</span><span data-lang-en>Add to cart</span>
+                </button>
+              </div>
+            </div>
+          </article>
 
-      <article class="product" data-product data-id="linen-abaya" data-gender="women" data-collection="classic" data-price="850" data-order="1" data-default-size="M" data-reveal data-ar-name="عباية الكتان الفاخرة" data-en-name="Linen Abaya">
-        <div class="product__media">
-          <a class="product__link" href="/product?id=linen-abaya" aria-label="عباية الكتان الفاخرة">
-            <img class="product__img" src="https://placehold.co/600x750/171311/c9a84c/png?text=Linen+Abaya&amp;font=playfair-display" loading="lazy" decoding="async" data-ar-alt="عباية كتان فاخرة بتطريز يدوي" data-en-alt="Premium linen abaya with hand embroidery" alt="عباية كتان فاخرة بتطريز يدوي">
-          </a>
-          <button class="product__wish" type="button" aria-pressed="false" data-ar-label="أضف العباية إلى المفضلة" data-en-label="Add Linen Abaya to wishlist" aria-label="أضف العباية إلى المفضلة">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.3-9.3-8.5C1 8 2.5 4.8 6 4.8c2 0 3.2 1.2 4 2.4.8-1.2 2-2.4 4-2.4 3.5 0 5 3.2 3.3 6.7C19 15.7 12 20 12 20z" stroke-linejoin="round"/></svg>
-          </button>
-        </div>
-        <div class="product__body">
-          <p class="product__collection"><span data-lang-ar>مجموعة الكلاسيكيات</span><span data-lang-en>Classics Collection</span></p>
-          <a class="product__name-link" href="/product?id=linen-abaya"><h3 class="product__name"><span data-lang-ar>عباية الكتان الفاخرة</span><span data-lang-en>Linen Abaya</span></h3></a>
-          <p class="product__desc"><span data-lang-ar>كتان مصري ١٠٠٪ مع تطريز يدوي دقيق، تجمع التقليد والحداثة بأناقة هادئة.</span><span data-lang-en>100% Egyptian linen with fine hand embroidery, tradition and modernity in quiet elegance.</span></p>
-          <div class="product__meta">
-            <span class="product__price"><span data-lang-ar>٨٥٠ ج.م</span><span data-lang-en>850 EGP</span></span>
-            <button class="btn btn--secondary" type="button" data-add data-ar-name="عباية الكتان الفاخرة" data-en-name="Linen Abaya">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8z" stroke-linejoin="round"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8" stroke-linecap="round"/></svg>
-              <span data-lang-ar>أضف للسلة</span><span data-lang-en>Add to cart</span>
-            </button>
-          </div>
-        </div>
-      </article>
+          <article class="product" data-product data-id="linen-abaya" data-gender="women" data-collection="classic" data-price="850" data-order="1" data-default-size="M" data-reveal data-ar-name="عباية الكتان الفاخرة" data-en-name="Linen Abaya">
+            <div class="product__media">
+              <a class="product__link" href="/product?id=linen-abaya" aria-label="عباية الكتان الفاخرة">
+                <img class="product__img" src="https://placehold.co/600x750/171311/c9a84c/png?text=Linen+Abaya&amp;font=playfair-display" loading="lazy" decoding="async" data-ar-alt="عباية كتان فاخرة بتطريز يدوي" data-en-alt="Premium linen abaya with hand embroidery" alt="عباية كتان فاخرة بتطريز يدوي">
+              </a>
+              <button class="product__wish" type="button" aria-pressed="false" data-ar-label="أضف العباية إلى المفضلة" data-en-label="Add Linen Abaya to wishlist" aria-label="أضف العباية إلى المفضلة">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+            <div class="product__body">
+              <p class="product__collection"><span data-lang-ar>مجموعة الكلاسيكيات</span><span data-lang-en>Classics Collection</span></p>
+              <a class="product__name-link" href="/product?id=linen-abaya"><h3 class="product__name"><span data-lang-ar>عباية الكتان الفاخرة</span><span data-lang-en>Linen Abaya</span></h3></a>
+              <p class="product__desc"><span data-lang-ar>كتان مصري ١٠٠٪ مع تطريز يدوي دقيق، تجمع التقليد والحداثة بأناقة هادئة.</span><span data-lang-en>100% Egyptian linen with fine hand embroidery, tradition and modernity in quiet elegance.</span></p>
+              <div class="product__meta">
+                <span class="product__price"><span data-lang-ar>٨٥٠ ج.م</span><span data-lang-en>850 EGP</span></span>
+                <button class="btn btn--secondary" type="button" data-add data-ar-name="عباية الكتان الفاخرة" data-en-name="Linen Abaya">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8z" stroke-linejoin="round"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8" stroke-linecap="round"/></svg>
+                  <span data-lang-ar>أضف للسلة</span><span data-lang-en>Add to cart</span>
+                </button>
+              </div>
+            </div>
+          </article>
 
-      <article class="product" data-product data-id="cotton-vest" data-gender="men" data-collection="contemporary" data-price="750" data-order="3" data-default-size="L" data-reveal data-ar-name="جيليه القطن المعاصر" data-en-name="Cotton Vest">
-        <div class="product__media">
-          <a class="product__link" href="/product?id=cotton-vest" aria-label="جيليه القطن المعاصر">
-            <img class="product__img" src="https://placehold.co/600x750/171311/c9a84c/png?text=Cotton+Vest&amp;font=playfair-display" loading="lazy" decoding="async" data-ar-alt="جيليه قطن معاصر للرجال" data-en-alt="Contemporary men's cotton vest" alt="جيليه قطن معاصر للرجال">
-          </a>
-          <button class="product__wish" type="button" aria-pressed="false" data-ar-label="أضف الجيليه إلى المفضلة" data-en-label="Add Cotton Vest to wishlist" aria-label="أضف الجيليه إلى المفضلة">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.3-9.3-8.5C1 8 2.5 4.8 6 4.8c2 0 3.2 1.2 4 2.4.8-1.2 2-2.4 4-2.4 3.5 0 5 3.2 3.3 6.7C19 15.7 12 20 12 20z" stroke-linejoin="round"/></svg>
-          </button>
-        </div>
-        <div class="product__body">
-          <p class="product__collection"><span data-lang-ar>مجموعة العصرية</span><span data-lang-en>Men's Contemporary</span></p>
-          <a class="product__name-link" href="/product?id=cotton-vest"><h3 class="product__name"><span data-lang-ar>جيليه القطن المعاصر</span><span data-lang-en>Cotton Vest</span></h3></a>
-          <p class="product__desc"><span data-lang-ar>قطن عالي الجودة بقصّة عصرية وتفاصيل تراثية، مثالي للعمل والمناسبات.</span><span data-lang-en>Premium cotton with a modern cut and heritage details, ideal for work and occasions.</span></p>
-          <div class="product__meta">
-            <span class="product__price"><span data-lang-ar>٧٥٠ ج.م</span><span data-lang-en>750 EGP</span></span>
-            <button class="btn btn--secondary" type="button" data-add data-ar-name="جيليه القطن المعاصر" data-en-name="Cotton Vest">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8z" stroke-linejoin="round"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8" stroke-linecap="round"/></svg>
-              <span data-lang-ar>أضف للسلة</span><span data-lang-en>Add to cart</span>
-            </button>
-          </div>
-        </div>
-      </article>
+          <article class="product" data-product data-id="cotton-vest" data-gender="men" data-collection="contemporary" data-price="750" data-order="3" data-default-size="L" data-reveal data-ar-name="جيليه القطن المعاصر" data-en-name="Cotton Vest">
+            <div class="product__media">
+              <a class="product__link" href="/product?id=cotton-vest" aria-label="جيليه القطن المعاصر">
+                <img class="product__img" src="https://placehold.co/600x750/171311/c9a84c/png?text=Cotton+Vest&amp;font=playfair-display" loading="lazy" decoding="async" data-ar-alt="جيليه قطن معاصر للرجال" data-en-alt="Contemporary men's cotton vest" alt="جيليه قطن معاصر للرجال">
+              </a>
+              <button class="product__wish" type="button" aria-pressed="false" data-ar-label="أضف الجيليه إلى المفضلة" data-en-label="Add Cotton Vest to wishlist" aria-label="أضف الجيليه إلى المفضلة">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+            <div class="product__body">
+              <p class="product__collection"><span data-lang-ar>مجموعة العصرية</span><span data-lang-en>Men's Contemporary</span></p>
+              <a class="product__name-link" href="/product?id=cotton-vest"><h3 class="product__name"><span data-lang-ar>جيليه القطن المعاصر</span><span data-lang-en>Cotton Vest</span></h3></a>
+              <p class="product__desc"><span data-lang-ar>قطن عالي الجودة بقصّة عصرية وتفاصيل تراثية، مثالي للعمل والمناسبات.</span><span data-lang-en>Premium cotton with a modern cut and heritage details, ideal for work and occasions.</span></p>
+              <div class="product__meta">
+                <span class="product__price"><span data-lang-ar>٧٥٠ ج.م</span><span data-lang-en>750 EGP</span></span>
+                <button class="btn btn--secondary" type="button" data-add data-ar-name="جيليه القطن المعاصر" data-en-name="Cotton Vest">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8z" stroke-linejoin="round"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8" stroke-linecap="round"/></svg>
+                  <span data-lang-ar>أضف للسلة</span><span data-lang-en>Add to cart</span>
+                </button>
+              </div>
+            </div>
+          </article>
 
-      <article class="product" data-product data-id="linen-shirt" data-gender="men" data-collection="classic" data-price="650" data-order="2" data-default-size="L" data-reveal data-ar-name="قميص الكتان الكلاسيكي" data-en-name="Linen Shirt">
-        <div class="product__media">
-          <a class="product__link" href="/product?id=linen-shirt" aria-label="قميص الكتان الكلاسيكي">
-            <img class="product__img" src="https://placehold.co/600x750/171311/c9a84c/png?text=Linen+Shirt&amp;font=playfair-display" loading="lazy" decoding="async" data-ar-alt="قميص كتان كلاسيكي للرجال" data-en-alt="Classic men's linen shirt" alt="قميص كتان كلاسيكي للرجال">
-          </a>
-          <button class="product__wish" type="button" aria-pressed="false" data-ar-label="أضف القميص إلى المفضلة" data-en-label="Add Linen Shirt to wishlist" aria-label="أضف القميص إلى المفضلة">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.3-9.3-8.5C1 8 2.5 4.8 6 4.8c2 0 3.2 1.2 4 2.4.8-1.2 2-2.4 4-2.4 3.5 0 5 3.2 3.3 6.7C19 15.7 12 20 12 20z" stroke-linejoin="round"/></svg>
-          </button>
-        </div>
-        <div class="product__body">
-          <p class="product__collection"><span data-lang-ar>مجموعة الرجولة</span><span data-lang-en>Men's Classics</span></p>
-          <a class="product__name-link" href="/product?id=linen-shirt"><h3 class="product__name"><span data-lang-ar>قميص الكتان الكلاسيكي</span><span data-lang-en>Linen Shirt</span></h3></a>
-          <p class="product__desc"><span data-lang-ar>كتان مصري ١٠٠٪ خفيف وجيد التهوية، أناقة لا تخطئها العين في الطقس الحار.</span><span data-lang-en>Light, breathable 100% Egyptian linen, unmistakably elegant in the heat.</span></p>
-          <div class="product__meta">
-            <span class="product__price"><span data-lang-ar>٦٥٠ ج.م</span><span data-lang-en>650 EGP</span></span>
-            <button class="btn btn--secondary" type="button" data-add data-ar-name="قميص الكتان الكلاسيكي" data-en-name="Linen Shirt">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8z" stroke-linejoin="round"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8" stroke-linecap="round"/></svg>
-              <span data-lang-ar>أضف للسلة</span><span data-lang-en>Add to cart</span>
-            </button>
-          </div>
-        </div>
-      </article>
+          <article class="product" data-product data-id="linen-shirt" data-gender="men" data-collection="classic" data-price="650" data-order="2" data-default-size="L" data-reveal data-ar-name="قميص الكتان الكلاسيكي" data-en-name="Linen Shirt">
+            <div class="product__media">
+              <a class="product__link" href="/product?id=linen-shirt" aria-label="قميص الكتان الكلاسيكي">
+                <img class="product__img" src="https://placehold.co/600x750/171311/c9a84c/png?text=Linen+Shirt&amp;font=playfair-display" loading="lazy" decoding="async" data-ar-alt="قميص كتان كلاسيكي للرجال" data-en-alt="Classic men's linen shirt" alt="قميص كتان كلاسيكي للرجال">
+              </a>
+              <button class="product__wish" type="button" aria-pressed="false" data-ar-label="أضف القميص إلى المفضلة" data-en-label="Add Linen Shirt to wishlist" aria-label="أضف القميص إلى المفضلة">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+            <div class="product__body">
+              <p class="product__collection"><span data-lang-ar>مجموعة الرجولة</span><span data-lang-en>Men's Classics</span></p>
+              <a class="product__name-link" href="/product?id=linen-shirt"><h3 class="product__name"><span data-lang-ar>قميص الكتان الكلاسيكي</span><span data-lang-en>Linen Shirt</span></h3></a>
+              <p class="product__desc"><span data-lang-ar>كتان مصري ١٠٠٪ خفيف وجيد التهوية، أناقة لا تخطئها العين في الطقس الحار.</span><span data-lang-en>Light, breathable 100% Egyptian linen, unmistakably elegant in the heat.</span></p>
+              <div class="product__meta">
+                <span class="product__price"><span data-lang-ar>٦٥٠ ج.م</span><span data-lang-en>650 EGP</span></span>
+                <button class="btn btn--secondary" type="button" data-add data-ar-name="قميص الكتان الكلاسيكي" data-en-name="Linen Shirt">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8z" stroke-linejoin="round"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8" stroke-linecap="round"/></svg>
+                  <span data-lang-ar>أضف للسلة</span><span data-lang-en>Add to cart</span>
+                </button>
+              </div>
+            </div>
+          </article>
 
-    </section>
+        </section>
+      </div>
+      <!-- Variants: insert below this line -->
+    </div>
+    <!-- impeccable-variants-end df572a6f -->
 
     <div class="catalog-empty" id="catalog-empty" role="status">
       <svg class="catalog-empty__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3" stroke-linecap="round"/><path d="M8.5 11h5" stroke-linecap="round"/></svg>
@@ -247,9 +255,6 @@
 
   <script src="/js/store/chrome.js" defer></script>
   <script src="/js/store/catalog.js" defer></script>
-<!-- impeccable-live-start -->
-<script src="http://localhost:8400/live.js"></script>
-<!-- impeccable-live-end -->
   <!-- ============================ FOOTER ============================ -->
   <footer class="store-footer">
     <div class="store-container">

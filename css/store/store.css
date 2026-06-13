@@ -364,7 +364,7 @@ p, li { max-width: 68ch; }     /* readable measure */
               transform var(--dur) var(--ease-out);
 }
 .store-iconbtn:hover { color: var(--gold); transform: translateY(-2px); }
-.store-iconbtn svg { inline-size: 1.25rem; block-size: 1.25rem; }
+.store-iconbtn svg { inline-size: 1.15rem; block-size: 1.15rem; }
 .store-iconbtn[aria-pressed="true"] { color: var(--gold); }
 
 /* Cart count badge */
@@ -828,7 +828,7 @@ p, li { max-width: 68ch; }     /* readable measure */
   transition: background var(--dur) var(--ease-out), color var(--dur) var(--ease-out);
 }
 .pdp__wish:hover { background: oklch(0.13 0.005 75 / 0.82); }
-.pdp__wish svg { inline-size: 1.3rem; block-size: 1.3rem; fill: none; stroke: currentColor; stroke-width: 1.6; }
+.pdp__wish svg { inline-size: 1.1rem; block-size: 1.1rem; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .pdp__wish[aria-pressed="true"] { color: var(--gold); }
 .pdp__wish[aria-pressed="true"] svg { fill: var(--gold); stroke: var(--gold); }
 
@@ -1200,9 +1200,7 @@ p, li { max-width: 68ch; }     /* readable measure */
 }
 @media (min-width: 40rem)  { .catalog-grid { grid-template-columns: 1fr 1fr; } }
 @media (min-width: 64rem)  {
-  /* Curated boutique: cinematic tiles, three per row. A denser catalog
-     can swap to repeat(auto-fill, minmax(240px,1fr)) for 4+ up. */
-  .catalog-grid { grid-template-columns: repeat(3, 1fr); }
+  .catalog-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; }
 }
 
 /* ============================ PRODUCT TILE ============================ */
@@ -1244,7 +1242,7 @@ p, li { max-width: 68ch; }     /* readable measure */
   transition: background var(--dur) var(--ease-out), color var(--dur) var(--ease-out);
 }
 .product__wish:hover { background: oklch(0.13 0.005 75 / 0.82); }
-.product__wish svg { inline-size: 1.2rem; block-size: 1.2rem; fill: none; stroke: currentColor; stroke-width: 1.6; }
+.product__wish svg { inline-size: 1rem; block-size: 1rem; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .product__wish[aria-pressed="true"] { color: var(--gold); }
 .product__wish[aria-pressed="true"] svg { fill: var(--gold); stroke: var(--gold); }
 
@@ -1258,23 +1256,20 @@ p, li { max-width: 68ch; }     /* readable measure */
 .product__badge--gold { background: var(--gold); color: var(--on-gold); }
 .product__badge--soft { background: oklch(0.15 0.006 75 / 0.78); color: var(--ink); border: 1px solid var(--line-strong); }
 
-.product__body { padding-block-start: var(--sp-4); display: flex; flex-direction: column; gap: var(--sp-2); }
+.product__body { padding-block: 10px 12px; display: flex; flex-direction: column; gap: 5px; }
 .product__collection { font-size: var(--fs-xs); color: var(--muted); }
 .product__name {
   font-family: var(--font-display);
-  font-size: var(--fs-h3); font-weight: var(--fw-semibold);
+  font-size: 0.9375rem; font-weight: var(--fw-semibold);
   color: var(--ink);
   transition: color var(--dur) var(--ease-out);
 }
 .product__name-link:hover .product__name { color: var(--gold); }
-.product__desc {
-  font-size: var(--fs-sm); color: var(--muted);
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-}
-.product__sizes { display: flex; flex-wrap: wrap; gap: var(--sp-1); margin-block-start: var(--sp-1); }
-.product__size { font-size: var(--fs-xs); color: var(--ink-2); border: 1px solid var(--line); border-radius: var(--r-xs); padding: 0.2rem 0.5rem; }
-.product__meta { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); margin-block-start: var(--sp-3); }
-.product__price { font-weight: var(--fw-semibold); font-size: var(--fs-lg); color: var(--gold); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.product__desc { display: none; }
+.product__sizes { display: flex; flex-wrap: wrap; gap: 4px; }
+.product__size { font-size: var(--fs-xs); color: var(--ink-2); border: 1px solid var(--line); border-radius: var(--r-xs); padding: 2px 6px; }
+.product__meta { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); margin-block-start: 8px; }
+.product__price { font-weight: var(--fw-semibold); font-size: var(--fs-sm); color: var(--gold); font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 /* ============================ SKELETON LOADING ============================ */
 .skeleton-grid { margin-block-start: var(--sp-6); }
