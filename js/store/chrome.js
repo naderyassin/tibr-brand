@@ -92,7 +92,7 @@
           <a class="store-iconbtn" href="/cart" id="cart-btn" data-ar-label="سلة التسوق" data-en-label="Cart" aria-label="سلة التسوق">
             ${I.bag}<span class="store-cart-count" id="cart-count" aria-hidden="true">0</span>
           </a>
-          <button class="store-lang" id="lang-switch" type="button" aria-label="Switch language">${I.globe}<span class="lang-text">${bi("EN","العربية")}</span></button>
+          <button class="store-lang-toggle" id="lang-switch" type="button" aria-label="Switch language"><div class="store-lang-toggle__slider"></div><span class="store-lang-toggle__opt" data-opt="ar">AR</span><span class="store-lang-toggle__opt" data-opt="en">EN</span></button>
           <button class="store-burger" id="burger" type="button" aria-expanded="false" aria-controls="drawer" data-ar-label="القائمة" data-en-label="Menu" aria-label="القائمة">${I.menu}</button>
         </div>
       </div>

@@ -389,24 +389,61 @@ p, li { max-width: 68ch; }     /* readable measure */
 }
 .store-cart-count.is-active { transform: scale(1); }
 
-/* Language toggle */
-.store-lang {
+/* Animated language toggle */
+.store-lang-toggle {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
   margin-inline-start: var(--sp-1);
-  padding: 0.45rem 0.8rem;
-  font-size: var(--fs-sm);
-  font-weight: var(--fw-semibold);
-  color: var(--gold);
+  padding: 0.2rem;
+  width: 4.4rem;
+  height: 2.2rem;
+  background: transparent;
   border: 1px solid var(--gold-line);
-  border-radius: var(--r-sm);
-  white-space: nowrap;
-  transition: background var(--dur) var(--ease-out),
-              border-color var(--dur) var(--ease-out);
+  border-radius: 99px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color var(--dur) var(--ease-out);
 }
-.store-lang svg { inline-size: 1.05rem; block-size: 1.05rem; flex: none; }
-.store-lang:hover { background: var(--gold-ghost); border-color: var(--gold); }
+.store-lang-toggle:hover {
+  border-color: var(--gold);
+}
+.store-lang-toggle__slider {
+  position: absolute;
+  top: 0.2rem;
+  bottom: 0.2rem;
+  inset-inline-start: 0.2rem;
+  width: calc(50% - 0.2rem);
+  background: var(--gold);
+  border-radius: 99px;
+  z-index: 1;
+  transition: transform var(--dur) cubic-bezier(0.25, 1, 0.5, 1);
+}
+.store-lang-toggle__opt {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  color: var(--gold);
+  z-index: 2;
+  transition: color var(--dur);
+  user-select: none;
+}
+
+:root[lang="en"] .store-lang-toggle__slider {
+  transform: translateX(100%);
+}
+:root[lang="en"] .store-lang-toggle__opt[data-opt="en"] {
+  color: var(--on-gold);
+}
+
+:root[lang="ar"] .store-lang-toggle__slider {
+  transform: translateX(0);
+}
+:root[lang="ar"] .store-lang-toggle__opt[data-opt="ar"] {
+  color: var(--on-gold);
+}
 
 @media (prefers-reduced-motion: reduce) {
   .store-iconbtn { transition: color var(--dur) var(--ease-out), background var(--dur) var(--ease-out); }

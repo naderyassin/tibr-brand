@@ -38,11 +38,15 @@
           <div data-impeccable-variants="0e70542d" data-impeccable-variant-count="4" style="display: contents">
             <div data-impeccable-variant="original">
               <div class="store-utils">
-                <button class="store-iconbtn store-util-extra" type="button" data-ar-label="بحث" data-en-label="Search" aria-label="بحث"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg></button>
-                <a class="store-iconbtn store-util-extra" href="/wishlist" data-ar-label="المفضلة" data-en-label="Wishlist" aria-label="المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></a>
-                <a class="store-iconbtn store-util-extra" href="/account" data-ar-label="حسابي" data-en-label="Account" aria-label="حسابي"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 19.5a6.5 6.5 0 0 1 13 0" stroke-linecap="round"/></svg></a>
-                <a class="store-iconbtn" href="/cart" id="cart-btn" data-ar-label="سلة التسوق" data-en-label="Cart" aria-label="سلة التسوق"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6.6 8h10.8l.7 11.4a1.1 1.1 0 0 1-1.1 1.1H7a1.1 1.1 0 0 1-1.1-1.1z" stroke-linejoin="round"/><path d="M9.2 8.5V7a2.8 2.8 0 0 1 5.6 0v1.5" stroke-linecap="round"/></svg><span class="store-cart-count" id="cart-count" aria-hidden="true">0</span></a>
-                <button class="store-lang" id="lang-switch" type="button" aria-label="Switch language"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="8.2"/><path d="M3.8 12h16.4M12 3.8c2.2 2.3 3.4 5.2 3.4 8.2s-1.2 5.9-3.4 8.2c-2.2-2.3-3.4-5.2-3.4-8.2s1.2-5.9 3.4-8.2z"/></svg><span class="lang-text"><span data-lang-ar>EN</span><span data-lang-en>العربية</span></span></button>
+                <button class="store-iconbtn store-util-extra" type="button" data-ar-label="بحث" data-en-label="Search" aria-label="بحث"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
+                <a class="store-iconbtn store-util-extra" href="/wishlist" data-ar-label="المفضلة" data-en-label="Wishlist" aria-label="المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></a>
+                <a class="store-iconbtn store-util-extra" href="/account" data-ar-label="حسابي" data-en-label="Account" aria-label="حسابي"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></a>
+                <a class="store-iconbtn" href="/cart" id="cart-btn" data-ar-label="سلة التسوق" data-en-label="Cart" aria-label="سلة التسوق"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 8V6a4 4 0 0 1 8 0v2"/><rect width="16" height="14" x="4" y="8" rx="2"/></svg><span class="store-cart-count" id="cart-count" aria-hidden="true">0</span></a>
+                <button class="store-lang-toggle" id="lang-switch" type="button" aria-label="Switch language">
+  <div class="store-lang-toggle__slider"></div>
+  <span class="store-lang-toggle__opt" data-opt="ar">AR</span>
+  <span class="store-lang-toggle__opt" data-opt="en">EN</span>
+</button>
                 <button class="store-burger" id="burger" type="button" aria-expanded="false" aria-controls="drawer" data-ar-label="القائمة" data-en-label="Menu" aria-label="القائمة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10" stroke-linecap="round"/></svg></button>
               </div>
             </div>
@@ -148,7 +152,7 @@
             <img class="product__img" src="https://placehold.co/600x750/171311/c9a84c/png?text=Wadi+High&amp;font=playfair-display" loading="lazy" decoding="async" data-ar-alt="حذاء جلدي مرتفع الرقبة" data-en-alt="Leather high-top sneaker" alt="حذاء جلدي مرتفع الرقبة">
           </a>
           <button class="product__wish" type="button" aria-pressed="false" data-ar-label="أضف وادي هاي إلى المفضلة" data-en-label="Add Wadi High to wishlist" aria-label="أضف وادي هاي إلى المفضلة">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
         </div>
         <div class="product__body">
@@ -172,7 +176,7 @@
           </a>
           <span class="product__badge product__badge--soft"><span data-lang-ar>جديد</span><span data-lang-en>New</span></span>
           <button class="product__wish" type="button" aria-pressed="false" data-ar-label="أضف نايل رنر إلى المفضلة" data-en-label="Add Nile Runner to wishlist" aria-label="أضف نايل رنر إلى المفضلة">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
         </div>
         <div class="product__body">
@@ -195,7 +199,7 @@
             <img class="product__img" src="https://placehold.co/600x750/171311/c9a84c/png?text=Cairo+Low&amp;font=playfair-display" loading="lazy" decoding="async" data-ar-alt="حذاء جلدي منخفض الرقبة" data-en-alt="Full-grain leather low-top sneaker" alt="حذاء جلدي منخفض الرقبة">
           </a>
           <button class="product__wish" type="button" aria-pressed="false" data-ar-label="أضف كايرو لو إلى المفضلة" data-en-label="Add Cairo Low to wishlist" aria-label="أضف كايرو لو إلى المفضلة">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
         </div>
         <div class="product__body">
@@ -218,7 +222,7 @@
             <img class="product__img" src="https://placehold.co/600x750/171311/c9a84c/png?text=Linen+Court&amp;font=playfair-display" loading="lazy" decoding="async" data-ar-alt="حذاء كورت من كانفاس الكتان" data-en-alt="Linen-canvas court shoe" alt="حذاء كورت من كانفاس الكتان">
           </a>
           <button class="product__wish" type="button" aria-pressed="false" data-ar-label="أضف كورت الكتان إلى المفضلة" data-en-label="Add Linen Court to wishlist" aria-label="أضف كورت الكتان إلى المفضلة">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
         </div>
         <div class="product__body">
