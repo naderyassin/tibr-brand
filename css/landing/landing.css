@@ -8,6 +8,9 @@
 
 /* ---- Base --------------------------------------------------- */
 html { scroll-behavior: smooth; }
+/* Hide the scrollbar while keeping scrolling */
+html { scrollbar-width: none; -ms-overflow-style: none; }
+html::-webkit-scrollbar { width: 0; height: 0; display: none; }
 
 body {
   background-color: var(--bg);

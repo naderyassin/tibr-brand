@@ -1,97 +1,87 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
-<style id="lang-cloak">html{visibility:hidden}</style>
 <style>html,body{background:oklch(0.165 0.006 75)}</style>
-<style>:root[lang="en"] [data-lang-ar]{display:none}:root[lang="ar"] [data-lang-en]{display:none}</style>
-<style id="attr-cloak">:root[lang="en"] [data-en-ph]::placeholder{color:transparent}</style>
-<meta name="title-en" content="Control panel · Tibr">
-<script>(function(){var l=localStorage.getItem("tibr-lang");if(l!=="ar")l="en";var d=document.documentElement;d.lang=l;d.dir=l==="ar"?"rtl":"ltr";if(l==="en"){var m=document.querySelector('meta[name="title-en"]');if(m)document.title=m.content}var c=document.getElementById("lang-cloak");if(c)c.parentNode.removeChild(c)})();</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="لوحة تحكم تِبْر.">
-  <title>لوحة التحكم · تِبْر</title>
+  <meta name="description" content="Tibr control panel.">
+  <title>Control panel · Tibr</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=Hanken+Grotesk:wght@400;500;600;700&family=Reem+Kufi:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="/css/store/store.css">
 </head>
-<body data-nav="" data-title-ar="لوحة التحكم · تِبْر" data-title-en="Control panel · Tibr">
-  <a class="skip-link" href="#main"><span data-lang-ar>تخطَّ إلى المحتوى</span><span data-lang-en>Skip to content</span></a>
+<body data-nav="">
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <!-- ============================ HEADER ============================ -->
-  <header class="store-header" id="store-header">
+  <header class="store-header" id="store-header" dir="ltr">
     <div class="store-container store-header__inner">
-      <a class="store-wordmark" href="/" aria-label="تِبْر">
-        <span data-lang-ar>تِبْر</span><span data-lang-en>Tibr<span class="dot">.</span></span>
+      <a class="store-wordmark" href="/" aria-label="Tibr">
+        Tibr<span class="dot">.</span>
       </a>
-      <nav class="store-nav" aria-label="التصنيفات">
+      <nav class="store-nav" aria-label="Categories">
         <ul class="store-nav__list">
-          <li><a class="store-nav__link" href="/shop/perfumes"><span data-lang-ar>العطور</span><span data-lang-en>Perfumes</span></a></li>
-          <li><a class="store-nav__link" href="/shop/clothing"><span data-lang-ar>الملابس</span><span data-lang-en>Clothing</span></a></li>
-          <li><a class="store-nav__link" href="/shop/sneakers"><span data-lang-ar>الأحذية</span><span data-lang-en>Sneakers</span></a></li>
+          <li><a class="store-nav__link" href="/shop/perfumes">Perfumes</a></li>
+          <li><a class="store-nav__link" href="/shop/clothing">Clothing</a></li>
+          <li><a class="store-nav__link" href="/shop/sneakers">Sneakers</a></li>
         </ul>
       </nav>
       <div class="store-utils">
-        <button class="store-iconbtn store-util-extra" type="button" data-ar-label="بحث" data-en-label="Search" aria-label="بحث"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
-        <a class="store-iconbtn store-util-extra" href="/account?tab=wishlist" data-ar-label="المفضلة" data-en-label="Wishlist" aria-label="المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></a>
-        <a class="store-iconbtn store-util-extra" href="/account" data-ar-label="حسابي" data-en-label="Account" aria-label="حسابي"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></a>
-        <a class="store-iconbtn" href="/cart" id="cart-btn" data-ar-label="سلة التسوق" data-en-label="Cart" aria-label="سلة التسوق"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 8V6a4 4 0 0 1 8 0v2"/><rect width="16" height="14" x="4" y="8" rx="2"/></svg><span class="store-cart-count" id="cart-count" aria-hidden="true">0</span></a>
-        <button class="store-lang-toggle" id="lang-switch" type="button" aria-label="Switch language">
-          <div class="store-lang-toggle__slider"></div>
-          <span class="store-lang-toggle__opt" data-opt="ar">AR</span>
-          <span class="store-lang-toggle__opt" data-opt="en">EN</span>
-        </button>
-        <button class="store-burger" id="burger" type="button" aria-expanded="false" aria-controls="drawer" data-ar-label="القائمة" data-en-label="Menu" aria-label="القائمة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10" stroke-linecap="round"/></svg></button>
+        <button class="store-iconbtn store-util-extra" type="button" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
+        <a class="store-iconbtn store-util-extra" href="/account?tab=wishlist" aria-label="Wishlist"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></a>
+        <a class="store-iconbtn store-util-extra" href="/account" aria-label="Account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></a>
+        <a class="store-iconbtn" href="/cart" id="cart-btn" aria-label="Cart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 8V6a4 4 0 0 1 8 0v2"/><rect width="16" height="14" x="4" y="8" rx="2"/></svg><span class="store-cart-count" id="cart-count" aria-hidden="true">0</span></a>
+        <button class="store-burger" id="burger" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10" stroke-linecap="round"/></svg></button>
       </div>
     </div>
   </header>
 
   <!-- ============================ MOBILE DRAWER ============================ -->
   <div class="store-scrim" id="scrim" hidden></div>
-  <aside class="store-drawer" id="drawer" aria-label="القائمة" aria-hidden="true" hidden>
+  <aside class="store-drawer" id="drawer" aria-label="Menu" aria-hidden="true" hidden>
     <div class="store-drawer__head">
-      <span class="store-wordmark"><span data-lang-ar>تِبْر</span><span data-lang-en>Tibr<span class="dot">.</span></span></span>
-      <button class="store-iconbtn" id="drawer-close" type="button" data-ar-label="إغلاق" data-en-label="Close" aria-label="إغلاق"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg></button>
+      <span class="store-wordmark">Tibr<span class="dot">.</span></span>
+      <button class="store-iconbtn" id="drawer-close" type="button" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg></button>
     </div>
-    <nav class="store-drawer__nav" aria-label="التصنيفات">
-      <a class="store-drawer__link" href="/shop/perfumes"><span data-lang-ar>العطور</span><span data-lang-en>Perfumes</span></a>
-      <a class="store-drawer__link" href="/shop/clothing"><span data-lang-ar>الملابس</span><span data-lang-en>Clothing</span></a>
-      <a class="store-drawer__link" href="/shop/sneakers"><span data-lang-ar>الأحذية</span><span data-lang-en>Sneakers</span></a>
-      <a class="store-drawer__link" href="/account?tab=wishlist"><span data-lang-ar>المفضلة</span><span data-lang-en>Wishlist</span></a>
-      <a class="store-drawer__link" href="/account"><span data-lang-ar>حسابي</span><span data-lang-en>Account</span></a>
+    <nav class="store-drawer__nav" aria-label="Categories">
+      <a class="store-drawer__link" href="/shop/perfumes">Perfumes</a>
+      <a class="store-drawer__link" href="/shop/clothing">Clothing</a>
+      <a class="store-drawer__link" href="/shop/sneakers">Sneakers</a>
+      <a class="store-drawer__link" href="/account?tab=wishlist">Wishlist</a>
+      <a class="store-drawer__link" href="/account">Account</a>
     </nav>
     <div class="store-drawer__foot">
       <a class="store-footer__whatsapp" href="https://wa.me/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2zm0 2a8 8 0 1 1-4.1 14.9l-.3-.2-2.8.8.8-2.7-.2-.3A8 8 0 0 1 12 4zm4.4 10.2c-.2-.1-1.3-.7-1.5-.8-.2-.1-.4-.1-.5.1l-.7.9c-.1.1-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.1-.2 0-.4.1-.5l.4-.5c.1-.1.1-.3 0-.4l-.7-1.7c-.2-.4-.4-.4-.5-.4h-.5c-.2 0-.5.1-.7.3-.8.8-.8 2 0 3.2a9 9 0 0 0 3.9 3.5c1.3.6 1.9.6 2.6.5.4 0 1.3-.5 1.5-1 .2-.5.2-1 .1-1z"/></svg>
-        <span data-lang-ar>تواصل عبر واتساب</span><span data-lang-en>Chat on WhatsApp</span>
+        Chat on WhatsApp
       </a>
     </div>
   </aside>
 
   <main id="main" class="store-container">
     <header class="page-head">
-      <h1 class="page-head__title"><span data-lang-ar>لوحة التحكم</span><span data-lang-en>Control panel</span></h1>
-      <p class="page-head__sub"><span data-lang-ar>إدارة الطلبات وتحديث حالات التوصيل.</span><span data-lang-en>Manage orders and update delivery status.</span></p>
+      <h1 class="page-head__title">Control panel</h1>
+      <p class="page-head__sub">Manage orders and update delivery status.</p>
     </header>
 
     <div class="admin-stats" id="admin-stats"></div>
 
     <div class="admin-tabs" role="tablist" aria-label="Admin views">
       <button class="admin-tab is-active" type="button" data-admin-tab="orders" aria-selected="true">
-        <span data-lang-ar>الطلبات</span><span data-lang-en>Orders</span>
+        Orders
       </button>
       <button class="admin-tab" type="button" data-admin-tab="products" aria-selected="false">
-        <span data-lang-ar>المنتجات</span><span data-lang-en>Products</span>
+        Products
       </button>
     </div>
 
     <section class="admin-panel admin-pane" data-admin-pane="products" aria-labelledby="admin-products-title">
       <div class="admin-panel__head">
         <div>
-          <h2 class="admin-panel__title" id="admin-products-title"><span data-lang-ar>المنتجات</span><span data-lang-en>Products</span></h2>
-          <p class="admin-panel__sub"><span data-lang-ar>إدارة المنتجات من جدول واحد واضح: إضافة، تعديل، أو حذف مباشرة من قاعدة البيانات.</span><span data-lang-en>Manage products from one clear table: add, edit, or delete directly in the database.</span></p>
+          <h2 class="admin-panel__title" id="admin-products-title">Products</h2>
+          <p class="admin-panel__sub">Manage products from one clear table: add, edit, or delete directly in the database.</p>
         </div>
-        <button class="btn btn--secondary" type="button" id="product-new"><span data-lang-ar>منتج جديد</span><span data-lang-en>New product</span></button>
+        <button class="btn btn--secondary" type="button" id="product-new">New product</button>
       </div>
 
       <div class="admin-product-table-wrap">
@@ -99,10 +89,10 @@
           <table class="table admin-product-table">
             <thead>
               <tr>
-                <th><span data-lang-ar>التصنيف</span><span data-lang-en>Category</span></th>
-                <th><span data-lang-ar>الاسم</span><span data-lang-en>Name</span></th>
-                <th><span data-lang-ar>السعر</span><span data-lang-en>Price</span></th>
-                <th><span data-lang-ar>إجراءات</span><span data-lang-en>Actions</span></th>
+                <th>Category</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody id="admin-products"></tbody>
@@ -114,18 +104,18 @@
 
     <section class="admin-pane is-active" data-admin-pane="orders" aria-labelledby="admin-orders-title">
     <header class="page-head page-head--compact">
-      <h2 class="page-head__title" id="admin-orders-title"><span data-lang-ar>الطلبات</span><span data-lang-en>Orders</span></h2>
-      <p class="page-head__sub"><span data-lang-ar>راجع الطلبات وغيّر حالتها مباشرة من هنا.</span><span data-lang-en>Review orders and change their status here.</span></p>
+      <h2 class="page-head__title" id="admin-orders-title">Orders</h2>
+      <p class="page-head__sub">Review orders and change their status here.</p>
     </header>
 
     <div class="admin-toolbar">
-      <div class="admin-filters" role="group" aria-label="تصفية حسب الحالة">
-        <button class="filter-chip" type="button" data-status="all" aria-pressed="true"><span data-lang-ar>الكل</span><span data-lang-en>All</span></button>
-        <button class="filter-chip" type="button" data-status="pending" aria-pressed="false"><span data-lang-ar>قيد المراجعة</span><span data-lang-en>Pending</span></button>
-        <button class="filter-chip" type="button" data-status="confirmed" aria-pressed="false"><span data-lang-ar>مؤكّد</span><span data-lang-en>Confirmed</span></button>
-        <button class="filter-chip" type="button" data-status="shipped" aria-pressed="false"><span data-lang-ar>في الطريق</span><span data-lang-en>Shipped</span></button>
-        <button class="filter-chip" type="button" data-status="delivered" aria-pressed="false"><span data-lang-ar>تم التوصيل</span><span data-lang-en>Delivered</span></button>
-        <button class="filter-chip" type="button" data-status="cancelled" aria-pressed="false"><span data-lang-ar>ملغي</span><span data-lang-en>Cancelled</span></button>
+      <div class="admin-filters" role="group" aria-label="Filter by status">
+        <button class="filter-chip" type="button" data-status="all" aria-pressed="true">All</button>
+        <button class="filter-chip" type="button" data-status="pending" aria-pressed="false">Pending</button>
+        <button class="filter-chip" type="button" data-status="confirmed" aria-pressed="false">Confirmed</button>
+        <button class="filter-chip" type="button" data-status="shipped" aria-pressed="false">Shipped</button>
+        <button class="filter-chip" type="button" data-status="delivered" aria-pressed="false">Delivered</button>
+        <button class="filter-chip" type="button" data-status="cancelled" aria-pressed="false">Cancelled</button>
       </div>
       <p class="catalog-count" id="admin-count" aria-live="polite"></p>
     </div>
@@ -134,12 +124,12 @@
       <table class="table">
         <thead>
           <tr>
-            <th><span data-lang-ar>رقم الطلب</span><span data-lang-en>Order</span></th>
-            <th><span data-lang-ar>العميل</span><span data-lang-en>Customer</span></th>
-            <th><span data-lang-ar>المنتجات</span><span data-lang-en>Items</span></th>
-            <th><span data-lang-ar>الإجمالي</span><span data-lang-en>Total</span></th>
-            <th><span data-lang-ar>التاريخ</span><span data-lang-en>Date</span></th>
-            <th><span data-lang-ar>الحالة</span><span data-lang-en>Status</span></th>
+            <th>Order</th>
+            <th>Customer</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Date</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody id="admin-rows"></tbody>
@@ -159,38 +149,38 @@
     <div class="store-container">
       <div class="store-footer__grid">
         <div class="store-footer__brand">
-          <span class="store-wordmark"><span data-lang-ar>تِبْر</span><span data-lang-en>Tibr<span class="dot">.</span></span></span>
-          <p class="store-footer__tagline"><span data-lang-ar>عطور وأزياء وأحذية مصرية فاخرة، تجمع تراث الماضي بفخامة الحاضر.</span><span data-lang-en>Egyptian perfume, clothing, and footwear, joining the heritage of the past to the luxury of the present.</span></p>
+          <span class="store-wordmark">Tibr<span class="dot">.</span></span>
+          <p class="store-footer__tagline">Egyptian perfume, clothing, and footwear, joining the heritage of the past to the luxury of the present.</p>
         </div>
         <div class="store-footer__col">
-          <h4><span data-lang-ar>تسوّق</span><span data-lang-en>Shop</span></h4>
+          <h4>Shop</h4>
           <ul>
-            <li><a href="/shop/perfumes"><span data-lang-ar>العطور</span><span data-lang-en>Perfumes</span></a></li>
-            <li><a href="/shop/clothing"><span data-lang-ar>الملابس</span><span data-lang-en>Clothing</span></a></li>
-            <li><a href="/shop/sneakers"><span data-lang-ar>الأحذية</span><span data-lang-en>Sneakers</span></a></li>
-            <li><a href="/account?tab=wishlist"><span data-lang-ar>المفضلة</span><span data-lang-en>Wishlist</span></a></li>
+            <li><a href="/shop/perfumes">Perfumes</a></li>
+            <li><a href="/shop/clothing">Clothing</a></li>
+            <li><a href="/shop/sneakers">Sneakers</a></li>
+            <li><a href="/account?tab=wishlist">Wishlist</a></li>
           </ul>
         </div>
         <div class="store-footer__col">
-          <h4><span data-lang-ar>المساعدة</span><span data-lang-en>Help</span></h4>
+          <h4>Help</h4>
           <ul>
-            <li><a href="/help/ordering"><span data-lang-ar>كيف أطلب</span><span data-lang-en>How to order</span></a></li>
-            <li><a href="/help/shipping"><span data-lang-ar>الشحن والدفع عند الاستلام</span><span data-lang-en>Shipping &amp; cash on delivery</span></a></li>
-            <li><a href="/help/returns"><span data-lang-ar>الإرجاع والاستبدال</span><span data-lang-en>Returns &amp; exchanges</span></a></li>
-            <li><a href="/account"><span data-lang-ar>حسابي</span><span data-lang-en>My account</span></a></li>
+            <li><a href="/help/ordering">How to order</a></li>
+            <li><a href="/help/shipping">Shipping &amp; cash on delivery</a></li>
+            <li><a href="/help/returns">Returns &amp; exchanges</a></li>
+            <li><a href="/account">My account</a></li>
           </ul>
         </div>
         <div class="store-footer__col">
-          <h4><span data-lang-ar>تواصل</span><span data-lang-en>Contact</span></h4>
+          <h4>Contact</h4>
           <a class="store-footer__whatsapp" href="https://wa.me/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2zm0 2a8 8 0 1 1-4.1 14.9l-.3-.2-2.8.8.8-2.7-.2-.3A8 8 0 0 1 12 4zm4.4 10.2c-.2-.1-1.3-.7-1.5-.8-.2-.1-.4-.1-.5.1l-.7.9c-.1.1-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.1-.2 0-.4.1-.5l.4-.5c.1-.1.1-.3 0-.4l-.7-1.7c-.2-.4-.4-.4-.5-.4h-.5c-.2 0-.5.1-.7.3-.8.8-.8 2 0 3.2a9 9 0 0 0 3.9 3.5c1.3.6 1.9.6 2.6.5.4 0 1.3-.5 1.5-1 .2-.5.2-1 .1-1z"/></svg>
-            <span data-lang-ar>تواصل عبر واتساب</span><span data-lang-en>Chat on WhatsApp</span>
+            Chat on WhatsApp
           </a>
-          <p class="store-footer__note"><span data-lang-ar>الدفع عند الاستلام في كل محافظات مصر.</span><span data-lang-en>Cash on delivery across every Egyptian governorate.</span></p>
+          <p class="store-footer__note">Cash on delivery across every Egyptian governorate.</p>
         </div>
       </div>
       <div class="store-footer__bar">
-        <span data-lang-ar>© ٢٠٢٦ تِبْر. كل الحقوق محفوظة.</span><span data-lang-en>© 2026 Tibr. All rights reserved.</span>
-        <span><span data-lang-ar>صُنع في القاهرة</span><span data-lang-en>Made in Cairo</span></span>
+        © 2026 Tibr. All rights reserved.
+        <span>Made in Cairo</span>
       </div>
     </div>
   </footer>

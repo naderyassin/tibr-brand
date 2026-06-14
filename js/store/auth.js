@@ -10,10 +10,10 @@
   if (!form) return;
 
   const kind = form.dataset.form; // "login" | "signup"
-  const isAr = () => (localStorage.getItem("tibr-lang") || "ar") === "ar";
   const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const PHONE = /^01[0125]\d{8}$/;
-  const toLatinDigits = (s) => String(s).replace(/[٠-٩]/g, function (d) { return "٠١٢٣٤٥٦٧٨٩".indexOf(d); });
+  // Normalize Arabic-Indic digits to Latin so pasted phone numbers still validate.
+  const toLatinDigits = (s) => String(s).replace(/[٠-٩]/g, (d) => d.charCodeAt(0) - 0x0660);
 
   // If already logged in, skip to destination
   (function redirectIfLoggedIn() {
@@ -95,7 +95,7 @@
 
     var supabase = window.RB && window.RB.supabase;
     if (!supabase) {
-      showFormError(isAr() ? "خطأ في الاتصال بالخادم. حاول مجددًا." : "Server connection error. Please try again.");
+      showFormError("Server connection error. Please try again.");
       btn.classList.remove("is-loading");
       btn.disabled = false;
       return;
@@ -108,9 +108,7 @@
       }).then(function (result) {
         if (result.error) {
           var isServerError = result.error.status >= 500;
-          showFormError(isAr()
-            ? (isServerError ? "خطأ في الخادم. حاول مجددًا." : "البريد الإلكتروني أو كلمة المرور غير صحيحة.")
-            : (isServerError ? "Server error. Please try again." : "Incorrect email or password."));
+          showFormError(isServerError ? "Server error. Please try again." : "Incorrect email or password.");
           btn.classList.remove("is-loading");
           btn.disabled = false;
           return;
@@ -118,7 +116,7 @@
         var next = new URLSearchParams(location.search).get("next") || "/account";
         location.href = next;
       }).catch(function () {
-        showFormError(isAr() ? "حدث خطأ. حاول مجددًا." : "An error occurred. Please try again.");
+        showFormError("An error occurred. Please try again.");
         btn.classList.remove("is-loading");
         btn.disabled = false;
       });
@@ -137,9 +135,7 @@
       }).then(function (result) {
         if (result.error) {
           var isExisting = /already registered|already exists/i.test(result.error.message);
-          showFormError(isAr()
-            ? (isExisting ? "هذا البريد الإلكتروني مسجّل بالفعل." : "حدث خطأ أثناء إنشاء الحساب.")
-            : (isExisting ? "This email is already registered." : "An error occurred during sign-up."));
+          showFormError(isExisting ? "This email is already registered." : "An error occurred during sign-up.");
           btn.classList.remove("is-loading");
           btn.disabled = false;
           return;
@@ -151,9 +147,7 @@
           var card = form.closest(".auth__card");
           var msg = document.createElement("div");
           msg.style.cssText = "text-align:center;padding:var(--sp-6) var(--sp-4)";
-          msg.innerHTML = isAr()
-            ? "<h2 style='margin-block-end:var(--sp-3)'>راجع بريدك الإلكتروني</h2><p>أرسلنا إليك رسالة تأكيد على <strong>" + result.data.user.email + "</strong>.<br>انقر على الرابط في الرسالة لتفعيل حسابك.</p>"
-            : "<h2 style='margin-block-end:var(--sp-3)'>Check your email</h2><p>We sent a confirmation link to <strong>" + result.data.user.email + "</strong>.<br>Click the link to activate your account.</p>";
+          msg.innerHTML = "<h2 style='margin-block-end:var(--sp-3)'>Check your email</h2><p>We sent a confirmation link to <strong>" + result.data.user.email + "</strong>.<br>Click the link to activate your account.</p>";
           if (card) card.appendChild(msg);
           else document.body.appendChild(msg);
           return;
@@ -163,7 +157,7 @@
         var next = new URLSearchParams(location.search).get("next") || "/account";
         location.href = next;
       }).catch(function () {
-        showFormError(isAr() ? "حدث خطأ. حاول مجددًا." : "An error occurred. Please try again.");
+        showFormError("An error occurred. Please try again.");
         btn.classList.remove("is-loading");
         btn.disabled = false;
       });

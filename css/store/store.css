@@ -138,7 +138,10 @@ html {
   scroll-behavior: smooth;
   -webkit-tap-highlight-color: transparent;
   background: var(--bg);
+  scrollbar-width: none;        /* Firefox: hide scrollbar, keep scrolling */
+  -ms-overflow-style: none;     /* old Edge/IE */
 }
+html::-webkit-scrollbar { width: 0; height: 0; display: none; }  /* Chrome / Safari / Edge */
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -157,9 +160,6 @@ body {
   min-height: 100svh;
   overflow-x: hidden;
 }
-
-/* RTL gets slightly looser tracking; Arabic faces read better with air */
-:root[lang="ar"] body { letter-spacing: 0; }
 
 img, picture, svg, video {
   display: block;
@@ -207,12 +207,6 @@ h1, h2, h3 {
   letter-spacing: var(--tracking-tight);
   text-wrap: balance;
 }
-:root[lang="ar"] h1,
-:root[lang="ar"] h2,
-:root[lang="ar"] h3 {
-  letter-spacing: 0;          /* Reem Kufi: never negative-track Arabic */
-  line-height: 1.25;
-}
 
 p { text-wrap: pretty; }
 p, li { max-width: 68ch; }     /* readable measure */
@@ -257,10 +251,6 @@ p, li { max-width: 68ch; }     /* readable measure */
   animation-duration: 0s !important;
 }
 
-/* Bilingual visibility: show the active script, hide the other.
-   JS sets <html lang>; these rules swap which span renders. */
-:root[lang="ar"] [data-lang-en] { display: none; }
-:root[lang="en"] [data-lang-ar] { display: none; }
 /* -------------------------------------------------------------
  * STORE / CHROME.CSS — Header, nav, mobile drawer, footer
  * The shared frame every store page inherits.
@@ -290,25 +280,19 @@ p, li { max-width: 68ch; }     /* readable measure */
   gap: var(--sp-4);
   min-height: 4.75rem;
   padding-block: var(--sp-3);
-  transition: min-height var(--dur) var(--ease-out),
-              padding-block var(--dur) var(--ease-out);
-}
-.store-header.is-scrolled .store-header__inner {
-  min-height: 3.75rem;
-  padding-block: var(--sp-2);
 }
 
 /* Wordmark (text only in the store; ornamental logo stays on the landing) */
 .store-wordmark {
   font-family: var(--font-display);
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   font-weight: var(--fw-semibold);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: var(--ink);
   line-height: 1;
   white-space: nowrap;
 }
-:root[lang="en"] .store-wordmark { letter-spacing: 0.14em; text-transform: uppercase; font-size: 1.2rem; }
 .store-wordmark:hover { color: var(--gold); }
 .store-wordmark .dot { color: var(--gold); }
 
@@ -388,62 +372,6 @@ p, li { max-width: 68ch; }     /* readable measure */
   transition: transform var(--dur) var(--ease-out);
 }
 .store-cart-count.is-active { transform: scale(1); }
-
-/* Animated language toggle */
-.store-lang-toggle {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  margin-inline-start: var(--sp-1);
-  padding: 0.2rem;
-  width: 4.4rem;
-  height: 2.2rem;
-  background: transparent;
-  border: 1px solid var(--gold-line);
-  border-radius: 99px;
-  cursor: pointer;
-  overflow: hidden;
-  transition: border-color var(--dur) var(--ease-out);
-}
-.store-lang-toggle:hover {
-  border-color: var(--gold);
-}
-.store-lang-toggle__slider {
-  position: absolute;
-  top: 0.2rem;
-  bottom: 0.2rem;
-  inset-inline-start: 0.2rem;
-  width: calc(50% - 0.2rem);
-  background: var(--gold);
-  border-radius: 99px;
-  z-index: 1;
-  transition: transform var(--dur) cubic-bezier(0.25, 1, 0.5, 1);
-}
-.store-lang-toggle__opt {
-  flex: 1;
-  text-align: center;
-  font-family: var(--font-body);
-  font-size: var(--fs-xs);
-  font-weight: var(--fw-bold);
-  color: var(--gold);
-  z-index: 2;
-  transition: color var(--dur);
-  user-select: none;
-}
-
-:root[lang="en"] .store-lang-toggle__slider {
-  transform: translateX(100%);
-}
-:root[lang="en"] .store-lang-toggle__opt[data-opt="en"] {
-  color: var(--on-gold);
-}
-
-:root[lang="ar"] .store-lang-toggle__slider {
-  transform: translateX(0);
-}
-:root[lang="ar"] .store-lang-toggle__opt[data-opt="ar"] {
-  color: var(--on-gold);
-}
 
 @media (prefers-reduced-motion: reduce) {
   .store-iconbtn { transition: color var(--dur) var(--ease-out), background var(--dur) var(--ease-out); }
@@ -531,7 +459,6 @@ p, li { max-width: 68ch; }     /* readable measure */
   color: var(--muted);
   margin-block-end: var(--sp-4);
 }
-:root[lang="ar"] .store-footer__col h4 { letter-spacing: 0; }
 .store-footer__col li { margin-block-end: var(--sp-3); }
 .store-footer__col a {
   color: var(--ink-2);
@@ -679,7 +606,6 @@ p, li { max-width: 68ch; }     /* readable measure */
   line-height: 1.08; color: var(--ink);
   letter-spacing: var(--tracking-tight);
 }
-:root[lang="ar"] .page-head__title { letter-spacing: 0; line-height: 1.25; }
 .page-head__sub { color: var(--muted); margin-block-start: var(--sp-3); font-size: var(--fs-lg); }
 
 /* ============================ FORM CONTROLS ============================ */
@@ -896,7 +822,6 @@ p, li { max-width: 68ch; }     /* readable measure */
   font-size: clamp(2.1rem, 1.4rem + 2.6vw, 3rem); line-height: 1.05; color: var(--ink);
   letter-spacing: var(--tracking-tight);
 }
-:root[lang="ar"] .pdp__title { letter-spacing: 0; line-height: 1.25; }
 .pdp__price { font-size: var(--fs-h2); font-weight: var(--fw-semibold); color: var(--gold); font-variant-numeric: tabular-nums; }
 .pdp__desc { color: var(--ink-2); line-height: var(--lh-normal); }
 
@@ -991,7 +916,6 @@ p, li { max-width: 68ch; }     /* readable measure */
 .auth__brand { text-align: center; margin-block-end: var(--sp-6); }
 .auth__brand .store-wordmark { font-size: 1.8rem; }
 .auth__title { font-family: var(--font-display); font-size: var(--fs-h1); color: var(--ink); text-align: center; }
-:root[lang="ar"] .auth__title { line-height: 1.3; }
 .auth__sub { color: var(--muted); text-align: center; margin-block-start: var(--sp-2); margin-block-end: var(--sp-6); }
 .auth__form { display: flex; flex-direction: column; gap: var(--sp-4); }
 .auth__row { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); flex-wrap: wrap; }

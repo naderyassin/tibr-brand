@@ -10,8 +10,6 @@
   var $$ = function (selector, context) { return Array.from((context || document).querySelectorAll(selector)); };
   if (!window.RB) return;
 
-  var bi = function (ar, en) { return "<span data-lang-ar>" + ar + "</span><span data-lang-en>" + en + "</span>"; };
-  var isAr = function () { return RB.lang() === "ar"; };
   var escapeHtml = function (value) {
     return String(value == null ? "" : value)
       .replace(/&/g, "&amp;")
@@ -20,21 +18,20 @@
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#39;");
   };
-  var biSafe = function (ar, en) { return bi(escapeHtml(ar), escapeHtml(en)); };
 
   var STATUS = {
-    pending:   { ar: "قيد المراجعة", en: "Pending" },
-    confirmed: { ar: "مؤكّد", en: "Confirmed" },
-    shipped:   { ar: "في الطريق", en: "Shipped" },
-    delivered: { ar: "تم التوصيل", en: "Delivered" },
-    cancelled: { ar: "ملغي", en: "Cancelled" }
+    pending:   "Pending",
+    confirmed: "Confirmed",
+    shipped:   "Shipped",
+    delivered: "Delivered",
+    cancelled: "Cancelled"
   };
   var ORDER = ["pending", "confirmed", "shipped", "delivered", "cancelled"];
 
   var PRODUCT_CATEGORIES = {
-    perfumes: { ar: "العطور", en: "Perfumes" },
-    clothing: { ar: "الملابس", en: "Clothing" },
-    sneakers: { ar: "الأحذية", en: "Sneakers" }
+    perfumes: "Perfumes",
+    clothing: "Clothing",
+    sneakers: "Sneakers"
   };
 
   var _token = null;
@@ -54,14 +51,14 @@
 
   function fmtDate(iso) {
     try {
-      return new Date(iso).toLocaleDateString(isAr() ? "ar-EG" : "en-GB", { month: "short", day: "numeric" });
+      return new Date(iso).toLocaleDateString("en-GB", { month: "short", day: "numeric" });
     } catch (_) {
       return "";
     }
   }
 
   function formatMoney(value) {
-    return biSafe(RB.formatPrice(value || 0, "ar"), RB.formatPrice(value || 0, "en"));
+    return escapeHtml(RB.formatPrice(value || 0));
   }
 
   function setActivePane(name) {
@@ -76,11 +73,11 @@
   }
 
   function categoryLabel(key) {
-    return PRODUCT_CATEGORIES[key] || { ar: key || "", en: key || "" };
+    return PRODUCT_CATEGORIES[key] || key || "";
   }
 
   function productPrice(product) {
-    return Number(product.ar_price || product.en_price || product.price || 0);
+    return Number(product.en_price || product.ar_price || product.price || 0);
   }
 
   function renderStats() {
@@ -91,28 +88,27 @@
       .filter(function (order) { return order.status !== "cancelled"; })
       .reduce(function (sum, order) { return sum + (order.order_total || 0); }, 0);
 
-    var stat = function (val, gold, labAr, labEn) {
+    var stat = function (val, gold, label) {
       return "<div class='stat'><p class='stat__value" + (gold ? " stat__value--gold" : "") + "'>" + val + "</p>" +
-             "<p class='stat__label'>" + bi(labAr, labEn) + "</p></div>";
+             "<p class='stat__label'>" + label + "</p></div>";
     };
 
     var stats = $("#admin-stats");
     if (!stats) return;
     stats.innerHTML =
-      stat(isAr() ? RB.arDigits(total) : total, false, "إجمالي الطلبات", "Total orders") +
-      stat(isAr() ? RB.arDigits(pending) : pending, false, "قيد المراجعة", "Pending") +
-      stat(isAr() ? RB.arDigits(delivered) : delivered, false, "تم التوصيل", "Delivered") +
-      stat(formatMoney(revenue), true, "الإيرادات", "Revenue");
+      stat(total, false, "Total orders") +
+      stat(pending, false, "Pending") +
+      stat(delivered, false, "Delivered") +
+      stat(formatMoney(revenue), true, "Revenue");
   }
 
   function statusSelect(order) {
     var options = ORDER.map(function (statusKey) {
       return "<option value='" + statusKey + "'" + (statusKey === order.status ? " selected" : "") + ">" +
-        (isAr() ? STATUS[statusKey].ar : STATUS[statusKey].en) + "</option>";
+        STATUS[statusKey] + "</option>";
     }).join("");
 
-    return "<select class='status-select' data-id='" + escapeHtml(order.id) + "' aria-label='" +
-      (isAr() ? "تغيير حالة الطلب" : "Change order status") + "'>" + options + "</select>";
+    return "<select class='status-select' data-id='" + escapeHtml(order.id) + "' aria-label='Change order status'>" + options + "</select>";
   }
 
   function renderOrders() {
@@ -124,17 +120,15 @@
     if (_ordersLoadFailed) {
       if (tbody) tbody.innerHTML = "";
       if (tableWrap) tableWrap.style.display = "none";
-      if (count) count.innerHTML = bi("تعذّر التحميل", "Load failed");
+      if (count) count.textContent = "Load failed";
       if (emptyWrap) {
         emptyWrap.innerHTML =
-          "<div class='rb-empty'><h3 class='rb-empty__title'>" +
-          bi("تعذّر تحميل الطلبات", "Failed to load orders") +
-          "</h3></div>";
+          "<div class='rb-empty'><h3 class='rb-empty__title'>Failed to load orders</h3></div>";
       }
       return;
     }
 
-    if (count) count.innerHTML = bi(RB.arDigits(rows.length) + " طلب", rows.length + " orders");
+    if (count) count.textContent = rows.length + " orders";
 
     if (!rows.length) {
       if (tbody) tbody.innerHTML = "";
@@ -143,7 +137,7 @@
         emptyWrap.innerHTML =
           "<div class='rb-empty'>" +
           "<span class='rb-empty__icon'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.3' aria-hidden='true'><circle cx='11' cy='11' r='7'/><path d='M21 21l-4.3-4.3' stroke-linecap='round'/></svg></span>" +
-          "<h3 class='rb-empty__title'>" + bi("لا توجد طلبات بهذه الحالة", "No orders with this status") + "</h3>" +
+          "<h3 class='rb-empty__title'>No orders with this status</h3>" +
           "</div>";
       }
       return;
@@ -155,9 +149,9 @@
     if (tbody) {
       tbody.innerHTML = rows.map(function (order) {
         var product = order.products || {};
-        var itemName = isAr() ? (product.ar_name || "") : (product.en_name || "");
+        var itemName = product.en_name || "";
         var qty = order.qty || 1;
-        var itemLabel = escapeHtml(itemName) + (qty > 1 ? " ×" + (isAr() ? RB.arDigits(qty) : qty) : "");
+        var itemLabel = escapeHtml(itemName) + (qty > 1 ? " ×" + qty : "");
         var total = order.order_total != null ? order.order_total : (order.unit_price ? order.unit_price * qty : 0);
         return "<tr>" +
           "<td class='num'>" + escapeHtml(order.checkout_reference || String(order.id).slice(0, 8)) + "</td>" +
@@ -180,9 +174,7 @@
       if (productTableWrap) productTableWrap.style.display = "none";
       if (productEmpty) {
         productEmpty.innerHTML =
-          "<div class='admin-product-empty rb-empty'><h3 class='rb-empty__title'>" +
-          bi("تعذّر تحميل المنتجات", "Failed to load products") +
-          "</h3></div>";
+          "<div class='admin-product-empty rb-empty'><h3 class='rb-empty__title'>Failed to load products</h3></div>";
       }
       return;
     }
@@ -193,8 +185,8 @@
       if (productEmpty) {
         productEmpty.innerHTML =
           "<div class='admin-product-empty rb-empty'>" +
-          "<h3 class='rb-empty__title'>" + bi("لا توجد منتجات بعد", "No products yet") + "</h3>" +
-          "<p class='rb-empty__text'>" + bi("ابدأ بإضافة أول منتج من زر المنتج الجديد.", "Start by adding the first product from the New product button.") + "</p>" +
+          "<h3 class='rb-empty__title'>No products yet</h3>" +
+          "<p class='rb-empty__text'>Start by adding the first product from the New product button.</p>" +
           "</div>";
       }
       return;
@@ -207,15 +199,15 @@
       var category = categoryLabel(product.category);
       var price = formatMoney(productPrice(product));
       return "<tr data-product-id='" + escapeHtml(product.id) + "'>" +
-        "<td>" + biSafe(category.ar, category.en) + "</td>" +
-        "<td><div class='admin-product-meta'><span class='admin-product-meta__name'>" + escapeHtml(product.ar_name || "") + "</span><span class='admin-product-meta__sub'>" + escapeHtml(product.en_name || "") + "</span></div></td>" +
+        "<td>" + escapeHtml(category) + "</td>" +
+        "<td><div class='admin-product-meta'><span class='admin-product-meta__name'>" + escapeHtml(product.en_name || "") + "</span></div></td>" +
         "<td>" + price + "</td>" +
         "<td><div class='product-actions'>" +
           "<button class='btn btn--secondary' type='button' data-product-action='edit' data-id='" + escapeHtml(product.id) + "'>" +
-            bi("تعديل", "Edit") +
+            "Edit" +
           "</button>" +
           "<button class='btn btn--danger' type='button' data-product-action='delete' data-id='" + escapeHtml(product.id) + "'>" +
-            bi("حذف", "Delete") +
+            "Delete" +
           "</button>" +
         "</div></td>" +
         "</tr>";
@@ -241,9 +233,7 @@
         if (tableWrap) tableWrap.style.display = "none";
         if (emptyWrap) {
           emptyWrap.innerHTML =
-            "<div class='rb-empty'><h3 class='rb-empty__title'>" +
-            bi("تعذّر تحميل الطلبات", "Failed to load orders") +
-            "</h3></div>";
+            "<div class='rb-empty'><h3 class='rb-empty__title'>Failed to load orders</h3></div>";
         }
       });
   }
@@ -261,17 +251,14 @@
         if (productTbody) productTbody.innerHTML = "";
         if (productEmpty) {
           productEmpty.innerHTML =
-            "<div class='admin-product-empty rb-empty'><h3 class='rb-empty__title'>" +
-            bi("تعذّر تحميل المنتجات", "Failed to load products") +
-            "</h3></div>";
+            "<div class='admin-product-empty rb-empty'><h3 class='rb-empty__title'>Failed to load products</h3></div>";
         }
       });
   }
 
   function deleteProduct(productId) {
     if (!productId) return;
-    var confirmMessage = isAr() ? "هل تريد حذف هذا المنتج؟" : "Delete this product?";
-    if (!window.confirm(confirmMessage)) return;
+    if (!window.confirm("Delete this product?")) return;
 
     fetch("/api/admin/products/" + encodeURIComponent(productId), {
       method: "DELETE",
@@ -283,11 +270,11 @@
         });
       })
       .then(function () {
-        RB.toast(isAr() ? "تم حذف المنتج" : "Product deleted");
+        RB.toast("Product deleted");
         return loadProducts().then(renderProducts);
       })
       .catch(function (error) {
-        RB.toast(error && error.message ? error.message : (isAr() ? "فشل حذف المنتج" : "Failed to delete product"));
+        RB.toast(error && error.message ? error.message : "Failed to delete product");
       });
   }
 
@@ -336,10 +323,10 @@
             if (index !== -1) _orders[index].status = updated.status;
           }
           renderAll();
-          RB.toast(isAr() ? "تم تحديث الحالة" : "Status updated");
+          RB.toast("Status updated");
         })
         .catch(function () {
-          RB.toast(isAr() ? "فشل تحديث الحالة" : "Failed to update status");
+          RB.toast("Failed to update status");
           loadOrders().then(renderOrders);
         });
     });
@@ -360,10 +347,6 @@
     });
   });
 
-  document.addEventListener("languageChanged", function () {
-    renderAll();
-  });
-
   function init() {
     if (!RB.requireAuth) {
       location.replace("/login?next=/admin");
@@ -381,10 +364,9 @@
           if (role !== "admin") {
             document.body.innerHTML =
               "<div style='display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:2rem'>" +
-              "<div><h1 style='font-size:1.5rem;margin-bottom:1rem'>" +
-              bi("غير مصرّح", "Access denied") +
-              "</h1><p>" + bi("هذه الصفحة للمسؤولين فقط.", "This page is for admins only.") + "</p>" +
-              "<a href='/account' style='margin-top:1.5rem;display:inline-block'>" + bi("العودة للحساب", "Back to account") + "</a></div></div>";
+              "<div><h1 style='font-size:1.5rem;margin-bottom:1rem'>Access denied</h1>" +
+              "<p>This page is for admins only.</p>" +
+              "<a href='/account' style='margin-top:1.5rem;display:inline-block'>Back to account</a></div></div>";
             return;
           }
 

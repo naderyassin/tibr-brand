@@ -9,9 +9,8 @@
   var $ = function (s, c) { return (c || document).querySelector(s); };
   if (!window.RB) return;
 
-  var bi = function (ar, en) { return "<span data-lang-ar>" + ar + "</span><span data-lang-en>" + en + "</span>"; };
-  var isAr = function () { return RB.lang() === "ar"; };
-  var toLatinDigits = function (s) { return String(s).replace(/[٠-٩]/g, function (d) { return "٠١٢٣٤٥٦٧٨٩".indexOf(d); }); };
+  // Normalize Arabic-Indic digits to Latin so pasted phone numbers still validate.
+  var toLatinDigits = function (s) { return String(s).replace(/[٠-٩]/g, function (d) { return d.charCodeAt(0) - 0x0660; }); };
 
   var form       = $("#checkout-form");
   var emptyEl    = $("#checkout-empty");
@@ -31,23 +30,22 @@
     var subtotal = RB.cart.subtotal();
     var count    = RB.cart.count();
     summaryEl.innerHTML =
-      "<h2 class='summary__title'>" + bi("ملخص الطلب", "Order summary") + "</h2>" +
+      "<h2 class='summary__title'>Order summary</h2>" +
       items.map(function (it) {
         return "<div class='summary__row'>" +
-          "<span>" + bi(it.ar_name, it.en_name) + (it.size ? " · " + it.size : "") +
-          " ×" + (isAr() ? RB.arDigits(it.qty) : it.qty) + "</span>" +
-          "<span class='val'>" + bi(RB.formatPrice(it.price * it.qty, "ar"), RB.formatPrice(it.price * it.qty, "en")) + "</span>" +
+          "<span>" + (it.en_name || it.ar_name || "") + (it.size ? " · " + it.size : "") +
+          " ×" + it.qty + "</span>" +
+          "<span class='val'>" + RB.formatPrice(it.price * it.qty) + "</span>" +
           "</div>";
       }).join("") +
-      "<div class='summary__row'><span>" + bi("عدد القطع", "Items") + "</span><span class='val'>" + (isAr() ? RB.arDigits(count) : count) + "</span></div>" +
-      "<div class='summary__row summary__row--total'><span>" + bi("الإجمالي", "Total") + "</span><span class='val'>" +
-        bi(RB.formatPrice(subtotal, "ar"), RB.formatPrice(subtotal, "en")) + "</span></div>" +
+      "<div class='summary__row'><span>Items</span><span class='val'>" + count + "</span></div>" +
+      "<div class='summary__row summary__row--total'><span>Total</span><span class='val'>" +
+        RB.formatPrice(subtotal) + "</span></div>" +
       "<button class='btn btn--primary btn--block btn--lg' type='submit' id='place-order' style='margin-block-start:var(--sp-5)'>" +
-        bi("تأكيد الطلب", "Place order") + "</button>" +
-      "<p class='summary__note'>" + bi(
-        "بالضغط على تأكيد الطلب أنت توافق على التواصل عبر واتساب لتأكيد التوصيل.",
-        "By placing the order you agree to be contacted over WhatsApp to confirm delivery."
-      ) + "</p>";
+        "Place order</button>" +
+      "<p class='summary__note'>" +
+        "By placing the order you agree to be contacted over WhatsApp to confirm delivery." +
+      "</p>";
   }
 
   function setInvalid(field, invalid) {
@@ -90,7 +88,7 @@
     var gov    = $("#co-gov").value;
     var city   = ($("#co-city") ? $("#co-city").value.trim() : "");
     var street = $("#co-street").value.trim();
-    var fullAddress = [gov, city, street].filter(Boolean).join("، ");
+    var fullAddress = [gov, city, street].filter(Boolean).join(", ");
 
     var payload = {
       items: RB.cart.items().map(function (it) { return { productId: it.id, size: it.size || null, qty: it.qty }; }),
@@ -108,7 +106,7 @@
       .then(function (r) { return r.json().then(function (body) { return { ok: r.ok, body: body }; }); })
       .then(function (result) {
         if (!result.ok) {
-          var errMsg = (result.body && result.body.error) || (isAr() ? "حدث خطأ أثناء الطلب." : "An error occurred.");
+          var errMsg = (result.body && result.body.error) || "An error occurred.";
           RB.toast(errMsg);
           if (btn) { btn.classList.remove("is-loading"); btn.disabled = false; }
           return;
@@ -123,12 +121,10 @@
         window.scrollTo({ top: 0, behavior: RB.reduced ? "auto" : "smooth" });
       })
       .catch(function () {
-        RB.toast(isAr() ? "حدث خطأ في الاتصال." : "Connection error.");
+        RB.toast("Connection error.");
         if (btn) { btn.classList.remove("is-loading"); btn.disabled = false; }
       });
   });
-
-  document.addEventListener("languageChanged", function () { if (form && !form.hidden) renderSummary(); });
 
   // ---- Init (auth-guarded) ----
   function init() {

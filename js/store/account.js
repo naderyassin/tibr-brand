@@ -10,15 +10,12 @@
   var $$ = function (s, c) { return Array.from((c || document).querySelectorAll(s)); };
   if (!window.RB) return;
 
-  var bi = function (ar, en) { return "<span data-lang-ar>" + ar + "</span><span data-lang-en>" + en + "</span>"; };
-  var isAr = function () { return RB.lang() === "ar"; };
-
   var STATUS = {
-    pending:   { ar: "قيد المراجعة", en: "Pending" },
-    confirmed: { ar: "مؤكّد",         en: "Confirmed" },
-    shipped:   { ar: "في الطريق",     en: "Shipped" },
-    delivered: { ar: "تم التوصيل",   en: "Delivered" },
-    cancelled: { ar: "ملغي",          en: "Cancelled" }
+    pending:   "Pending",
+    confirmed: "Confirmed",
+    shipped:   "Shipped",
+    delivered: "Delivered",
+    cancelled: "Cancelled"
   };
 
   var _token = null;
@@ -81,25 +78,23 @@
         })
       })
         .then(function (r) {
-          RB.toast(r.ok
-            ? (isAr() ? "تم حفظ التغييرات" : "Changes saved")
-            : (isAr() ? "حدث خطأ أثناء الحفظ" : "Error saving changes"));
+          RB.toast(r.ok ? "Changes saved" : "Error saving changes");
         })
-        .catch(function () { RB.toast(isAr() ? "حدث خطأ أثناء الحفظ" : "Error saving changes"); })
+        .catch(function () { RB.toast("Error saving changes"); })
         .finally(function () { if (btn) { btn.disabled = false; btn.classList.remove("is-loading"); } });
     });
   }
 
   // ---- Orders ----
   function fmtDate(iso) {
-    try { return new Date(iso).toLocaleDateString(isAr() ? "ar-EG" : "en-GB", { year: "numeric", month: "short", day: "numeric" }); }
+    try { return new Date(iso).toLocaleDateString("en-GB", { year: "numeric", month: "short", day: "numeric" }); }
     catch (_) { return ""; }
   }
 
   function renderOrders() {
     var list = $("#orders-list");
     if (!list) return;
-    list.innerHTML = "<div class='dash-loading'><span>" + bi("جارٍ التحميل…", "Loading…") + "</span></div>";
+    list.innerHTML = "<div class='dash-loading'><span>Loading…</span></div>";
     fetch("/api/orders", { headers: { "Authorization": "Bearer " + _token } })
       .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
       .then(function (body) {
@@ -108,9 +103,9 @@
           list.innerHTML =
             "<div class='rb-empty'>" +
             "<span class='rb-empty__icon'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.3' aria-hidden='true'><path d='M6 7h12l-1 13H7L6 7z' stroke-linejoin='round'/><path d='M9 7V5.5a3 3 0 0 1 6 0V7' stroke-linecap='round'/></svg></span>" +
-            "<h3 class='rb-empty__title'>" + bi("لا طلبات بعد", "No orders yet") + "</h3>" +
-            "<p class='rb-empty__text'>" + bi("أول طلب يبدأ من هنا.", "Your first order starts here.") + "</p>" +
-            "<a class='btn btn--primary' href='/shop/perfumes'>" + bi("تصفّح العطور", "Browse perfumes") + "</a>" +
+            "<h3 class='rb-empty__title'>No orders yet</h3>" +
+            "<p class='rb-empty__text'>Your first order starts here.</p>" +
+            "<a class='btn btn--primary' href='/shop/perfumes'>Browse perfumes</a>" +
             "</div>";
           return;
         }
@@ -120,20 +115,20 @@
           var price = o.order_total != null ? o.order_total : (o.unit_price ? o.unit_price * (o.qty || 1) : 0);
           var ref = o.checkout_reference || o.id.slice(0, 8);
           return "<article class='order-card'>" +
-            (product.image ? "<img class='order-card__thumb' src='" + product.image + "' alt='" + (isAr() ? (product.ar_name || "") : (product.en_name || "")) + "'>" : "") +
+            (product.image ? "<img class='order-card__thumb' src='" + product.image + "' alt='" + (product.en_name || "") + "'>" : "") +
             "<div>" +
-              "<p class='order-card__name'>" + bi(product.ar_name || "", product.en_name || "") + "</p>" +
+              "<p class='order-card__name'>" + (product.en_name || "") + "</p>" +
               "<p class='order-card__meta'>" + ref + " · " + fmtDate(o.created_at) + "</p>" +
             "</div>" +
             "<div class='order-card__side'>" +
-              "<span class='badge badge--" + o.status + "'>" + bi(st.ar, st.en) + "</span>" +
-              (price ? "<span class='order-card__price'>" + bi(RB.formatPrice(price, "ar"), RB.formatPrice(price, "en")) + "</span>" : "") +
+              "<span class='badge badge--" + o.status + "'>" + st + "</span>" +
+              (price ? "<span class='order-card__price'>" + RB.formatPrice(price) + "</span>" : "") +
             "</div>" +
             "</article>";
         }).join("");
       })
       .catch(function () {
-        list.innerHTML = "<p>" + bi("تعذّر تحميل الطلبات.", "Failed to load orders.") + "</p>";
+        list.innerHTML = "<p>Failed to load orders.</p>";
       });
   }
 
@@ -214,16 +209,16 @@
             .then(function (upd) {
               if (btn) { btn.disabled = false; btn.classList.remove("is-loading"); }
               if (upd.error) {
-                RB.toast(isAr() ? "حدث خطأ أثناء تغيير كلمة المرور" : "Error changing password");
+                RB.toast("Error changing password");
               } else {
                 form.reset();
                 closePwModal();
-                RB.toast(isAr() ? "تم تغيير كلمة المرور بنجاح" : "Password changed successfully");
+                RB.toast("Password changed successfully");
               }
             });
         })
         .catch(function () {
-          RB.toast(isAr() ? "حدث خطأ أثناء تغيير كلمة المرور" : "Error changing password");
+          RB.toast("Error changing password");
           if (btn) { btn.disabled = false; btn.classList.remove("is-loading"); }
         });
     });
@@ -242,9 +237,7 @@
       var email = (session.user && session.user.email) || "";
 
       var greet = $("#account-greeting");
-      if (greet) greet.innerHTML = email
-        ? bi("مرحبًا، " + email, "Welcome, " + email)
-        : bi("أهلاً بك في حسابك.", "Welcome to your account.");
+      if (greet) greet.textContent = email ? "Welcome, " + email : "Welcome to your account.";
       if ($("#pf-email")) $("#pf-email").value = email;
 
       setupTabs();
@@ -255,16 +248,6 @@
 
       var logoutBtn = $("#logout-btn");
       if (logoutBtn) logoutBtn.addEventListener("click", function () { RB.signOut(); });
-
-      function syncSelectLang() {
-    var ar = isAr();
-    $$("select[id] option[data-text-ar]").forEach(function (opt) {
-      opt.textContent = ar ? opt.dataset.textAr : opt.dataset.textEn;
-    });
-  }
-
-  syncSelectLang();
-  document.addEventListener("languageChanged", function () { renderOrders(); syncSelectLang(); });
     });
   }
 

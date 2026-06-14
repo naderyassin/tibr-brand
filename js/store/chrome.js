@@ -10,7 +10,6 @@
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const $  = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
-  const arDigits = (n) => String(n).replace(/\d/g, (d) => "٠١٢٣٤٥٦٧٨٩"[d]);
 
   /* ============================ ICONS ============================ */
   const I = {
@@ -24,8 +23,7 @@
     check:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     whatsapp: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2zm0 2a8 8 0 1 1-4.1 14.9l-.3-.2-2.8.8.8-2.7-.2-.3A8 8 0 0 1 12 4zm4.4 10.2c-.2-.1-1.3-.7-1.5-.8-.2-.1-.4-.1-.5.1l-.7.9c-.1.1-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.1-.2 0-.4.1-.5l.4-.5c.1-.1.1-.3 0-.4l-.7-1.7c-.2-.4-.4-.4-.5-.4h-.5c-.2 0-.5.1-.7.3-.8.8-.8 2 0 3.2a9 9 0 0 0 3.9 3.5c1.3.6 1.9.6 2.6.5.4 0 1.3-.5 1.5-1 .2-.5.2-1 .1-1z"/></svg>'
   };
-  const bi = (ar, en) => `<span data-lang-ar>${ar}</span><span data-lang-en>${en}</span>`;
-  const wordmark = () => `<span data-lang-ar>تِبْر</span><span data-lang-en>Tibr<span class="dot">.</span></span>`;
+  const wordmark = () => `Tibr<span class="dot">.</span>`;
 
   /* ============================ CART STORE ============================ */
   const CART_KEY = "tibr-cart";
@@ -65,59 +63,57 @@
     }
   };
 
-  function formatPrice(n, lang) {
-    lang = lang || RB.lang();
-    return lang === "ar" ? `${arDigits(n)} ج.م` : `${n} EGP`;
+  function formatPrice(n) {
+    return `${n} EGP`;
   }
 
   /* ============================ CHROME INJECTION ============================ */
   function buildHeader(activeNav) {
-    const link = (href, ar, en, key) =>
-      `<li><a class="store-nav__link"${key === activeNav ? ' aria-current="page"' : ""} href="${href}">${bi(ar, en)}</a></li>`;
+    const link = (href, label, key) =>
+      `<li><a class="store-nav__link"${key === activeNav ? ' aria-current="page"' : ""} href="${href}">${label}</a></li>`;
     return `
-    <header class="store-header" id="store-header">
+    <header class="store-header" id="store-header" dir="ltr">
       <div class="store-container store-header__inner">
-        <a class="store-wordmark" href="/" aria-label="تِبْر">${wordmark()}</a>
-        <nav class="store-nav" aria-label="التصنيفات">
+        <a class="store-wordmark" href="/" aria-label="Tibr">${wordmark()}</a>
+        <nav class="store-nav" aria-label="Categories">
           <ul class="store-nav__list">
-            ${link("/shop/perfumes", "العطور", "Perfumes", "perfumes")}
-            ${link("/shop/clothing", "الملابس", "Clothing", "clothing")}
-            ${link("/shop/sneakers", "الأحذية", "Sneakers", "sneakers")}
+            ${link("/shop/perfumes", "Perfumes", "perfumes")}
+            ${link("/shop/clothing", "Clothing", "clothing")}
+            ${link("/shop/sneakers", "Sneakers", "sneakers")}
           </ul>
         </nav>
         <div class="store-utils">
-          <button class="store-iconbtn store-util-extra" type="button" data-ar-label="بحث" data-en-label="Search" aria-label="بحث">${I.search}</button>
-          <a class="store-iconbtn store-util-extra" href="/account?tab=wishlist" data-ar-label="المفضلة" data-en-label="Wishlist" aria-label="المفضلة">${I.heart}</a>
-          <a class="store-iconbtn store-util-extra" href="/account" data-ar-label="حسابي" data-en-label="Account" aria-label="حسابي">${I.user}</a>
-          <a class="store-iconbtn" href="/cart" id="cart-btn" data-ar-label="سلة التسوق" data-en-label="Cart" aria-label="سلة التسوق">
+          <button class="store-iconbtn store-util-extra" type="button" aria-label="Search">${I.search}</button>
+          <a class="store-iconbtn store-util-extra" href="/account?tab=wishlist" aria-label="Wishlist">${I.heart}</a>
+          <a class="store-iconbtn store-util-extra" href="/account" aria-label="Account">${I.user}</a>
+          <a class="store-iconbtn" href="/cart" id="cart-btn" aria-label="Cart">
             ${I.bag}<span class="store-cart-count" id="cart-count" aria-hidden="true">0</span>
           </a>
-          <button class="store-lang-toggle" id="lang-switch" type="button" aria-label="Switch language"><div class="store-lang-toggle__slider"></div><span class="store-lang-toggle__opt" data-opt="ar">AR</span><span class="store-lang-toggle__opt" data-opt="en">EN</span></button>
-          <button class="store-burger" id="burger" type="button" aria-expanded="false" aria-controls="drawer" data-ar-label="القائمة" data-en-label="Menu" aria-label="القائمة">${I.menu}</button>
+          <button class="store-burger" id="burger" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Menu">${I.menu}</button>
         </div>
       </div>
     </header>`;
   }
 
   function buildDrawer(activeNav) {
-    const link = (href, ar, en, key) =>
-      `<a class="store-drawer__link"${key === activeNav ? ' aria-current="page"' : ""} href="${href}">${bi(ar, en)}</a>`;
+    const link = (href, label, key) =>
+      `<a class="store-drawer__link"${key === activeNav ? ' aria-current="page"' : ""} href="${href}">${label}</a>`;
     return `
     <div class="store-scrim" id="scrim" hidden></div>
-    <aside class="store-drawer" id="drawer" aria-label="القائمة" aria-hidden="true" hidden>
+    <aside class="store-drawer" id="drawer" aria-label="Menu" aria-hidden="true" hidden>
       <div class="store-drawer__head">
         <span class="store-wordmark">${wordmark()}</span>
-        <button class="store-iconbtn" id="drawer-close" type="button" data-ar-label="إغلاق" data-en-label="Close" aria-label="إغلاق">${I.close}</button>
+        <button class="store-iconbtn" id="drawer-close" type="button" aria-label="Close">${I.close}</button>
       </div>
-      <nav class="store-drawer__nav" aria-label="التصنيفات">
-        ${link("/shop/perfumes", "العطور", "Perfumes", "perfumes")}
-        ${link("/shop/clothing", "الملابس", "Clothing", "clothing")}
-        ${link("/shop/sneakers", "الأحذية", "Sneakers", "sneakers")}
-        ${link("/account?tab=wishlist", "المفضلة", "Wishlist")}
-        ${link("/account", "حسابي", "Account")}
+      <nav class="store-drawer__nav" aria-label="Categories">
+        ${link("/shop/perfumes", "Perfumes", "perfumes")}
+        ${link("/shop/clothing", "Clothing", "clothing")}
+        ${link("/shop/sneakers", "Sneakers", "sneakers")}
+        ${link("/account?tab=wishlist", "Wishlist")}
+        ${link("/account", "Account")}
       </nav>
       <div class="store-drawer__foot">
-        <a class="store-footer__whatsapp" href="https://wa.me/" target="_blank" rel="noopener">${I.whatsapp}${bi("تواصل عبر واتساب", "Chat on WhatsApp")}</a>
+        <a class="store-footer__whatsapp" href="https://wa.me/" target="_blank" rel="noopener">${I.whatsapp}Chat on WhatsApp</a>
       </div>
     </aside>`;
   }
@@ -125,28 +121,28 @@
   function buildFooter() {
     const fcol = (h, links) =>
       `<div class="store-footer__col"><h4>${h}</h4><ul>${links}</ul></div>`;
-    const fl = (href, ar, en) => `<li><a href="${href}">${bi(ar, en)}</a></li>`;
+    const fl = (href, label) => `<li><a href="${href}">${label}</a></li>`;
     return `
     <footer class="store-footer">
       <div class="store-container">
         <div class="store-footer__grid">
           <div class="store-footer__brand">
             <span class="store-wordmark">${wordmark()}</span>
-            <p class="store-footer__tagline">${bi("عطور وأزياء وأحذية مصرية فاخرة، تجمع تراث الماضي بفخامة الحاضر.", "Egyptian perfume, clothing, and footwear, joining the heritage of the past to the luxury of the present.")}</p>
+            <p class="store-footer__tagline">Egyptian perfume, clothing, and footwear, joining the heritage of the past to the luxury of the present.</p>
           </div>
-          ${fcol(bi("تسوّق", "Shop"),
-            fl("/shop/perfumes", "العطور", "Perfumes") + fl("/shop/clothing", "الملابس", "Clothing") + fl("/shop/sneakers", "الأحذية", "Sneakers") + fl("/account?tab=wishlist", "المفضلة", "Wishlist"))}
-          ${fcol(bi("المساعدة", "Help"),
-            fl("/help/ordering", "كيف أطلب", "How to order") + fl("/help/shipping", "الشحن والدفع عند الاستلام", "Shipping &amp; cash on delivery") + fl("/help/returns", "الإرجاع والاستبدال", "Returns &amp; exchanges") + fl("/account", "حسابي", "My account"))}
+          ${fcol("Shop",
+            fl("/shop/perfumes", "Perfumes") + fl("/shop/clothing", "Clothing") + fl("/shop/sneakers", "Sneakers") + fl("/account?tab=wishlist", "Wishlist"))}
+          ${fcol("Help",
+            fl("/help/ordering", "How to order") + fl("/help/shipping", "Shipping &amp; cash on delivery") + fl("/help/returns", "Returns &amp; exchanges") + fl("/account", "My account"))}
           <div class="store-footer__col">
-            <h4>${bi("تواصل", "Contact")}</h4>
-            <a class="store-footer__whatsapp" href="https://wa.me/" target="_blank" rel="noopener">${I.whatsapp}${bi("تواصل عبر واتساب", "Chat on WhatsApp")}</a>
-            <p class="store-footer__note">${bi("الدفع عند الاستلام في كل محافظات مصر.", "Cash on delivery across every Egyptian governorate.")}</p>
+            <h4>Contact</h4>
+            <a class="store-footer__whatsapp" href="https://wa.me/" target="_blank" rel="noopener">${I.whatsapp}Chat on WhatsApp</a>
+            <p class="store-footer__note">Cash on delivery across every Egyptian governorate.</p>
           </div>
         </div>
         <div class="store-footer__bar">
-          ${bi("© ٢٠٢٦ تِبْر. كل الحقوق محفوظة.", "© 2026 Tibr. All rights reserved.")}
-          <span>${bi("صُنع في القاهرة", "Made in Cairo")}</span>
+          © 2026 Tibr. All rights reserved.
+          <span>Made in Cairo</span>
         </div>
       </div>
     </footer>`;
@@ -178,37 +174,13 @@
   }
 
   /* ============================ LANGUAGE ============================ */
-  const LANG_KEY = "tibr-lang";
-  let currentLang = localStorage.getItem(LANG_KEY) || document.documentElement.lang || "ar";
+  // English-only store. Lock the document to English / LTR.
+  const currentLang = "en";
 
-  function applyLang(lang) {
+  function applyLang() {
     const root = document.documentElement;
-    root.setAttribute("lang", lang);
-    root.setAttribute("dir", lang === "ar" ? "rtl" : "ltr");
-
-    const tAr = document.body.dataset.titleAr, tEn = document.body.dataset.titleEn;
-    if (tAr && tEn) document.title = lang === "ar" ? tAr : tEn;
-
-    $$("[data-ar-label]").forEach((el) => el.setAttribute("aria-label", el.getAttribute(`data-${lang}-label`)));
-    $$("[data-ar-alt]").forEach((el) => el.setAttribute("alt", el.getAttribute(`data-${lang}-alt`)));
-    $$("[data-ar-ph]").forEach((el) => el.setAttribute("placeholder", el.getAttribute(`data-${lang}-ph`)));
-    $$("select[data-ar]").forEach((sel) => {
-      let labels; try { labels = JSON.parse(sel.getAttribute(`data-${lang}`)); } catch (_) { return; }
-      Array.from(sel.options).forEach((o, i) => { if (labels[i] != null) o.textContent = labels[i]; });
-    });
-
-    const ac = document.getElementById("attr-cloak");
-    if (ac) ac.parentNode.removeChild(ac);
-
-    document.dispatchEvent(new CustomEvent("languageChanged", { detail: { lang } }));
-  }
-
-  function toggleLang() {
-    currentLang = currentLang === "ar" ? "en" : "ar";
-    localStorage.setItem(LANG_KEY, currentLang);
-    document.body.classList.add("no-transitions");
-    applyLang(currentLang);
-    requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.remove("no-transitions")));
+    root.setAttribute("lang", "en");
+    root.setAttribute("dir", "ltr");
   }
 
   /* ============================ TOAST + CART BADGE ============================ */
@@ -225,14 +197,14 @@
     const el = $("#cart-count");
     if (!el) return;
     const n = cart.count();
-    el.textContent = currentLang === "ar" ? arDigits(n) : String(n);
+    el.textContent = String(n);
     el.classList.toggle("is-active", n > 0);
     el.setAttribute("aria-hidden", n > 0 ? "false" : "true");
   }
   function addToCart(item) {
     cart.add(item);
-    const name = currentLang === "ar" ? item.ar_name : item.en_name;
-    toast(currentLang === "ar" ? `أُضيف <strong>${name}</strong> إلى السلة` : `Added <strong>${name}</strong> to cart`);
+    const name = item.en_name || item.ar_name || "";
+    toast(`Added <strong>${name}</strong> to cart`);
   }
 
   /* ============================ HEADER CONDENSE ============================ */
@@ -300,52 +272,22 @@
   /* ============================ INIT ============================ */
   document.body.classList.add("no-transitions");
   injectChrome();
-  applyLang(currentLang);
+  applyLang();
   document.documentElement.style.visibility = "";
   var _cloak = document.getElementById("lang-cloak");
   if (_cloak) _cloak.parentNode.removeChild(_cloak);
   requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.remove("no-transitions")));
 
-  // Observe future DOM additions for bilingual attributes (aria-label, alt, placeholder, select text).
-  // Runs AFTER applyLang handled the initial DOM, so only dynamic insertions are processed.
-  new MutationObserver(function (mutations) {
-    const lang = document.documentElement.lang;
-    for (const mut of mutations) {
-      for (const node of mut.addedNodes) {
-        if (node.nodeType !== 1) continue;
-        const targets = node.querySelectorAll
-          ? [node, ...node.querySelectorAll("[data-ar-label],[data-ar-alt],[data-ar-ph],select[data-ar]")]
-          : [node];
-        for (const el of targets) {
-          if (el.hasAttribute && el.hasAttribute("data-ar-label"))
-            el.setAttribute("aria-label", el.getAttribute("data-" + lang + "-label"));
-          if (el.hasAttribute && el.hasAttribute("data-ar-alt"))
-            el.setAttribute("alt", el.getAttribute("data-" + lang + "-alt"));
-          if (el.hasAttribute && el.hasAttribute("data-ar-ph"))
-            el.setAttribute("placeholder", el.getAttribute("data-" + lang + "-ph"));
-          if (el.tagName === "SELECT" && el.hasAttribute("data-ar")) {
-            try {
-              const labels = JSON.parse(el.getAttribute("data-" + lang));
-              Array.from(el.options).forEach((o, j) => { if (labels[j] != null) o.textContent = labels[j]; });
-            } catch (_) {}
-          }
-        }
-      }
-    }
-  }).observe(document.body, { childList: true, subtree: true });
-  const langBtn = $("#lang-switch");
-  if (langBtn) langBtn.addEventListener("click", toggleLang);
   wireHeader();
   wireDrawer();
   wireWishlist();
   syncCartBadge();
   document.addEventListener("cartChanged", syncCartBadge);
-  document.addEventListener("languageChanged", syncCartBadge);
 
   /* ============================ PUBLIC API ============================ */
   window.RB = {
     lang: () => currentLang,
-    cart, orders, toast, addToCart, formatPrice, arDigits,
+    cart, orders, toast, addToCart, formatPrice,
     reduced
   };
 })();

@@ -195,9 +195,9 @@
   gap: clamp(1.75rem, 1rem + 2.5vw, 3rem);
   margin-block-start: var(--sp-6);
 }
-@media (min-width: 40rem)  { .catalog-grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 40rem)  { .catalog-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; } }
 @media (min-width: 64rem)  {
-  .catalog-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .catalog-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 18px; }
 }
 
 /* ============================ PRODUCT TILE ============================ */

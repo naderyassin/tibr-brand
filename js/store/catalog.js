@@ -8,7 +8,6 @@
   const $  = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
   const reduced = window.RB ? RB.reduced : false;
-  const arDigits = window.RB ? RB.arDigits : (n) => String(n);
 
   const grid = $("#product-grid");
   const skeletonGrid = $("#skeleton-grid");
@@ -23,7 +22,6 @@
   const matches = (p) => {
     const q = state.search.trim().toLowerCase();
     const nameMatch = !q ||
-      (p.dataset.arName || "").toLowerCase().includes(q) ||
       (p.dataset.enName || "").toLowerCase().includes(q);
     return nameMatch &&
       (state.gender === "all" || p.dataset.gender === state.gender) &&
@@ -52,9 +50,7 @@
     const visible = products.filter(matches);
     products.forEach((p) => { p.hidden = !matches(p); });
     const n = visible.length;
-    countNodes.forEach((node) => {
-      node.textContent = node.closest('[data-lang-en]') ? String(n) : arDigits(n);
-    });
+    countNodes.forEach((node) => { node.textContent = String(n); });
     const isEmpty = n === 0;
     if (emptyEl) emptyEl.classList.toggle("is-shown", isEmpty);
     grid.style.display = isEmpty ? "none" : "";
@@ -142,7 +138,6 @@
       const size = (sizeChip ? sizeChip.textContent : (art.dataset.defaultSize || "")).trim();
       RB.addToCart({
         id: art.dataset.id,
-        ar_name: art.dataset.arName,
         en_name: art.dataset.enName,
         price: +art.dataset.price,
         image: img ? img.getAttribute("src") : "",
