@@ -325,7 +325,7 @@ app.get("/api/profile", requireUser, async (req, res) => {
 
   const { data, error } = await userClient
     .from("profiles")
-    .select("id, full_name, phone_number, address, gender, date_of_birth, role")
+    .select("id, full_name, phone_number, address, governorate, latitude, longitude, gender, date_of_birth, role")
     .eq("id", req.user.id)
     .maybeSingle();
 
@@ -576,13 +576,19 @@ app.patch("/api/admin/orders/:id", requireUser, requireAdmin, async (req, res) =
 
 app.put("/api/profile", requireUser, async (req, res) => {
   const userClient = createAuthedClient(req.accessToken);
-  const { full_name, phone_number, address, gender, date_of_birth } = req.body || {};
+  const { full_name, phone_number, address, governorate, latitude, longitude, gender, date_of_birth } = req.body || {};
 
   const { data, error } = await userClient
     .from("profiles")
-    .update({ full_name, phone_number, address, gender, date_of_birth: date_of_birth || null })
+    .update({
+      full_name, phone_number, address,
+      governorate: governorate || null,
+      latitude:  latitude  != null ? Number(latitude)  : null,
+      longitude: longitude != null ? Number(longitude) : null,
+      gender, date_of_birth: date_of_birth || null
+    })
     .eq("id", req.user.id)
-    .select("id, full_name, phone_number, address, gender, date_of_birth, role")
+    .select("id, full_name, phone_number, address, governorate, latitude, longitude, gender, date_of_birth, role")
     .single();
 
   if (error) {
@@ -609,7 +615,7 @@ app.get("/api/profile/addresses", requireUser, async (req, res) => {
 
 app.post("/api/profile/addresses", requireUser, async (req, res) => {
   const userClient = createAuthedClient(req.accessToken);
-  const { label, city, street, phone, is_default } = req.body || {};
+  const { label, city, street, phone, governorate, latitude, longitude, is_default } = req.body || {};
 
   if (!street) {
     return res.status(400).json({ error: "street is required." });
@@ -622,11 +628,14 @@ app.post("/api/profile/addresses", requireUser, async (req, res) => {
   const { data, error } = await userClient
     .from("addresses")
     .insert({
-      user_id: req.user.id,
-      label: label || "المنزل",
-      city: city || "",
+      user_id:    req.user.id,
+      label:      label || "Home",
+      city:       city || governorate || "",
+      governorate: governorate || null,
       street,
-      phone: phone || null,
+      phone:      phone || null,
+      latitude:   latitude  != null ? Number(latitude)  : null,
+      longitude:  longitude != null ? Number(longitude) : null,
       is_default: !!is_default
     })
     .select()
@@ -645,6 +654,38 @@ app.delete("/api/profile/addresses/:id", requireUser, async (req, res) => {
     .eq("user_id", req.user.id);
 
   if (error) return res.status(500).json({ error: "Failed to delete address." });
+  res.json({ success: true });
+});
+
+app.put("/api/profile/addresses/:id", requireUser, async (req, res) => {
+  const userClient = createAuthedClient(req.accessToken);
+  const { label, city, street, phone, governorate, latitude, longitude, is_default } = req.body || {};
+
+  if (!street) return res.status(400).json({ error: "street is required." });
+
+  if (is_default) {
+    await userClient.from("addresses").update({ is_default: false }).eq("user_id", req.user.id);
+  }
+
+  const { error } = await userClient
+    .from("addresses")
+    .update({
+      label:       label || "Home",
+      city:        city || governorate || "",
+      governorate: governorate || null,
+      street,
+      phone:       phone || null,
+      latitude:    latitude  != null ? Number(latitude)  : null,
+      longitude:   longitude != null ? Number(longitude) : null,
+      is_default:  !!is_default
+    })
+    .eq("id", req.params.id)
+    .eq("user_id", req.user.id);
+
+  if (error) {
+    console.error("PUT /api/profile/addresses/:id error:", error);
+    return res.status(500).json({ error: error.message || "Failed to update address." });
+  }
   res.json({ success: true });
 });
 

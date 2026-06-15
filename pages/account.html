@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=Hanken+Grotesk:wght@400;500;600;700&family=Reem+Kufi:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="/css/store/store.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 <body data-nav="">
   <a class="skip-link" href="#main">Skip to content</a>
@@ -98,6 +99,10 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" stroke-linejoin="round"/></svg>
               Wishlist
             </button>
+            <button class="dash-nav__item" type="button" data-tab="addresses">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z" stroke-linejoin="round"/><circle cx="12" cy="10" r="3"/></svg>
+              Addresses
+            </button>
             <a class="dash-nav__item dash-nav__item--admin" href="/admin" id="admin-tab" hidden>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z" stroke-linejoin="round"/></svg>
               Control panel
@@ -139,10 +144,6 @@
                     <label class="field__label" for="pf-dob">Date of birth</label>
                     <input class="input" id="pf-dob" name="date_of_birth" type="date">
                   </div>
-                  <div class="field field--full">
-                    <label class="field__label" for="pf-address">Address</label>
-                    <input class="input" id="pf-address" name="address" type="text" autocomplete="street-address">
-                  </div>
                   <div class="field--full" style="display:flex; gap:var(--sp-3); flex-wrap:wrap; align-items:center;">
                     <button class="btn btn--primary" type="submit">Save changes</button>
                     <button class="btn btn--secondary" type="button" id="change-pw-btn">
@@ -170,6 +171,75 @@
                 <a class="btn btn--primary" href="/shop/perfumes">Browse perfumes</a>
               </div>
             </section>
+
+            <!-- Addresses -->
+            <section class="dash-panel" data-panel="addresses" role="region" aria-label="Addresses">
+              <div class="dash-panel__head">
+                <h2 class="dash-panel__title">Addresses</h2>
+                <button class="btn btn--secondary" type="button" id="add-addr-btn">+ Add address</button>
+              </div>
+              <div id="addr-list" class="addr-grid"></div>
+
+              <!-- Add address form -->
+              <div class="addr-form-wrap" id="addr-form-wrap" hidden>
+                <h3 class="addr-form-wrap__title" id="addr-form-title">New address</h3>
+                <form class="addr-form" id="addr-form" novalidate>
+                  <div class="field">
+                    <label class="field__label" for="af-label">Label</label>
+                    <input class="input" id="af-label" placeholder="Home, Work, Parents…" value="Home">
+                  </div>
+                  <div class="field">
+                    <label class="field__label" for="af-phone">Phone (optional)</label>
+                    <input class="input" id="af-phone" type="tel" inputmode="numeric" placeholder="01XXXXXXXXX">
+                  </div>
+                  <div class="field">
+                    <label class="field__label" for="af-gov">Governorate<span class="field__req">*</span></label>
+                    <select class="input" id="af-gov">
+                      <option value="">Select governorate</option>
+                      <option value="cairo">Cairo</option><option value="giza">Giza</option><option value="alexandria">Alexandria</option>
+                      <option value="qalyubia">Qalyubia</option><option value="dakahlia">Dakahlia</option><option value="sharqia">Sharqia</option>
+                      <option value="gharbia">Gharbia</option><option value="monufia">Monufia</option><option value="beheira">Beheira</option>
+                      <option value="kafr-el-sheikh">Kafr El Sheikh</option><option value="damietta">Damietta</option><option value="port-said">Port Said</option>
+                      <option value="ismailia">Ismailia</option><option value="suez">Suez</option><option value="faiyum">Faiyum</option>
+                      <option value="beni-suef">Beni Suef</option><option value="minya">Minya</option><option value="asyut">Asyut</option>
+                      <option value="sohag">Sohag</option><option value="qena">Qena</option><option value="luxor">Luxor</option>
+                      <option value="aswan">Aswan</option><option value="red-sea">Red Sea</option><option value="new-valley">New Valley</option>
+                      <option value="matrouh">Matrouh</option><option value="north-sinai">North Sinai</option><option value="south-sinai">South Sinai</option>
+                    </select>
+                  </div>
+                  <div class="field field--full">
+                    <label class="field__label" for="af-street">Street address<span class="field__req">*</span></label>
+                    <input class="input" id="af-street" type="text" placeholder="Street, building, floor…">
+                  </div>
+                  <div class="field--full">
+                    <button class="btn btn--ghost locate-btn" type="button" id="af-locate-btn">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/><circle cx="12" cy="12" r="9" stroke-dasharray="2 4"/></svg>
+                      Detect my location
+                    </button>
+                    <div class="gps-pin" id="af-gps-pin" hidden>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+                      <span id="af-gps-coords"></span>
+                      <a class="gps-pin__link" id="af-gps-link" href="#" target="_blank" rel="noopener">View on map</a>
+                    </div>
+                  </div>
+                  <div class="field--full">
+                    <div class="addr-map-wrap" id="af-map-wrap" hidden>
+                      <div id="af-map"></div>
+                    </div>
+                  </div>
+                  <div class="field--full addr-form__check">
+                    <label>
+                      <input type="checkbox" id="af-default">
+                      Set as default delivery address
+                    </label>
+                  </div>
+                  <div class="field--full addr-form__actions">
+                    <button class="btn btn--primary" type="submit">Save address</button>
+                    <button class="btn btn--secondary" type="button" id="af-cancel">Cancel</button>
+                  </div>
+                </form>
+              </div>
+            </section>
           </div>
         </div>
       </main>
@@ -182,6 +252,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
   <script src="/js/store/chrome.js" defer></script>
   <script src="/js/store/session.js" defer></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
   <script src="/js/store/account.js" defer></script>
   <!-- ============================ FOOTER ============================ -->
   <footer class="store-footer">

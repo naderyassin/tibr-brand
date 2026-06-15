@@ -80,66 +80,72 @@
     return Number(product.en_price || product.ar_price || product.price || 0);
   }
 
+
+  // Group line-items by checkout_reference (fall back to row id for legacy single-item orders)
+  function groupOrders(rows) {
+    var keys = [], map = {};
+    rows.forEach(function (r) {
+      var k = r.checkout_reference || r.id;
+      if (!map[k]) { map[k] = []; keys.push(k); }
+      map[k].push(r);
+    });
+    return keys.map(function (k) { return map[k]; });
+  }
+
+  function statusSelect(groupKey, currentStatus) {
+    var options = ORDER.map(function (s) {
+      return "<option value='" + s + "'" + (s === currentStatus ? " selected" : "") + ">" + STATUS[s] + "</option>";
+    }).join("");
+    return "<select class='status-select' data-ref='" + escapeHtml(groupKey) + "' aria-label='Change order status'>" + options + "</select>";
+  }
+
   function renderStats() {
-    var total = _orders.length;
-    var pending = _orders.filter(function (order) { return order.status === "pending"; }).length;
-    var delivered = _orders.filter(function (order) { return order.status === "delivered"; }).length;
-    var revenue = _orders
-      .filter(function (order) { return order.status !== "cancelled"; })
-      .reduce(function (sum, order) { return sum + (order.order_total || 0); }, 0);
+    var groups = groupOrders(_orders);
+    var total     = groups.length;
+    var pending   = groups.filter(function (g) { return g[0].status === "pending";   }).length;
+    var delivered = groups.filter(function (g) { return g[0].status === "delivered"; }).length;
+    var revenue   = _orders
+      .filter(function (r) { return r.status !== "cancelled"; })
+      .reduce(function (sum, r) { return sum + (r.unit_price ? r.unit_price * (r.qty || 1) : 0); }, 0);
 
     var stat = function (val, gold, label) {
       return "<div class='stat'><p class='stat__value" + (gold ? " stat__value--gold" : "") + "'>" + val + "</p>" +
              "<p class='stat__label'>" + label + "</p></div>";
     };
-
     var stats = $("#admin-stats");
     if (!stats) return;
     stats.innerHTML =
-      stat(total, false, "Total orders") +
-      stat(pending, false, "Pending") +
-      stat(delivered, false, "Delivered") +
+      stat(total,           false, "Total orders") +
+      stat(pending,         false, "Pending")      +
+      stat(delivered,       false, "Delivered")    +
       stat(formatMoney(revenue), true, "Revenue");
   }
 
-  function statusSelect(order) {
-    var options = ORDER.map(function (statusKey) {
-      return "<option value='" + statusKey + "'" + (statusKey === order.status ? " selected" : "") + ">" +
-        STATUS[statusKey] + "</option>";
-    }).join("");
-
-    return "<select class='status-select' data-id='" + escapeHtml(order.id) + "' aria-label='Change order status'>" + options + "</select>";
-  }
-
   function renderOrders() {
-    var rows = _orders.filter(function (order) { return _filter === "all" || order.status === _filter; });
-    var tbody = $("#admin-rows");
+    var groups = groupOrders(_orders).filter(function (g) {
+      return _filter === "all" || g[0].status === _filter;
+    });
+    var tbody    = $("#admin-rows");
     var emptyWrap = $("#admin-empty");
-    var count = $("#admin-count");
+    var count    = $("#admin-count");
 
     if (_ordersLoadFailed) {
       if (tbody) tbody.innerHTML = "";
       if (tableWrap) tableWrap.style.display = "none";
       if (count) count.textContent = "Load failed";
-      if (emptyWrap) {
-        emptyWrap.innerHTML =
-          "<div class='rb-empty'><h3 class='rb-empty__title'>Failed to load orders</h3></div>";
-      }
+      if (emptyWrap) emptyWrap.innerHTML = "<div class='rb-empty'><h3 class='rb-empty__title'>Failed to load orders</h3></div>";
       return;
     }
 
-    if (count) count.textContent = rows.length + " orders";
+    if (count) count.textContent = groups.length + " order" + (groups.length !== 1 ? "s" : "");
 
-    if (!rows.length) {
+    if (!groups.length) {
       if (tbody) tbody.innerHTML = "";
       if (tableWrap) tableWrap.style.display = "none";
-      if (emptyWrap) {
-        emptyWrap.innerHTML =
-          "<div class='rb-empty'>" +
-          "<span class='rb-empty__icon'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.3' aria-hidden='true'><circle cx='11' cy='11' r='7'/><path d='M21 21l-4.3-4.3' stroke-linecap='round'/></svg></span>" +
-          "<h3 class='rb-empty__title'>No orders with this status</h3>" +
-          "</div>";
-      }
+      if (emptyWrap) emptyWrap.innerHTML =
+        "<div class='rb-empty'>" +
+        "<span class='rb-empty__icon'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.3' aria-hidden='true'><circle cx='11' cy='11' r='7'/><path d='M21 21l-4.3-4.3' stroke-linecap='round'/></svg></span>" +
+        "<h3 class='rb-empty__title'>No orders with this status</h3></div>";
       return;
     }
 
@@ -147,19 +153,22 @@
     if (emptyWrap) emptyWrap.innerHTML = "";
 
     if (tbody) {
-      tbody.innerHTML = rows.map(function (order) {
-        var product = order.products || {};
-        var itemName = product.en_name || "";
-        var qty = order.qty || 1;
-        var itemLabel = escapeHtml(itemName) + (qty > 1 ? " ×" + qty : "");
-        var total = order.order_total != null ? order.order_total : (order.unit_price ? order.unit_price * qty : 0);
+      tbody.innerHTML = groups.map(function (items) {
+        var first   = items[0];
+        var groupKey = first.checkout_reference || first.id;
+        var displayRef = first.checkout_reference || String(first.id).slice(0, 8).toUpperCase();
+        var total   = items.reduce(function (sum, r) { return sum + (r.unit_price ? r.unit_price * (r.qty || 1) : 0); }, 0);
+        // Items cell: first product + "and N more"
+        var p0 = items[0].products || {};
+        var itemsLabel = escapeHtml(p0.en_name || "");
+        if (items.length > 1) itemsLabel += " <span class='admin-more'>+&thinsp;" + (items.length - 1) + " more</span>";
         return "<tr>" +
-          "<td class='num'>" + escapeHtml(order.checkout_reference || String(order.id).slice(0, 8)) + "</td>" +
-          "<td>" + escapeHtml(order.customer_name || "") + "</td>" +
-          "<td>" + itemLabel + "</td>" +
+          "<td class='num'>" + escapeHtml(displayRef) + "</td>" +
+          "<td>" + escapeHtml(first.customer_name || "") + "</td>" +
+          "<td>" + itemsLabel + "</td>" +
           "<td class='num'>" + formatMoney(total) + "</td>" +
-          "<td>" + escapeHtml(fmtDate(order.created_at)) + "</td>" +
-          "<td>" + statusSelect(order) + "</td>" +
+          "<td>" + escapeHtml(fmtDate(first.created_at)) + "</td>" +
+          "<td>" + statusSelect(groupKey, first.status) + "</td>" +
           "</tr>";
       }).join("");
     }
@@ -308,27 +317,32 @@
     });
   });
 
-  // Per-row status change
+  // Per-group status change — patches every line item that shares the same checkout_reference
   var adminRows = $("#admin-rows");
   if (adminRows) {
     adminRows.addEventListener("change", function (event) {
       var select = event.target.closest(".status-select");
       if (!select) return;
-      var id = select.dataset.id;
+      var ref    = select.dataset.ref;
       var status = select.value;
 
-      fetch("/api/admin/orders/" + encodeURIComponent(id), {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + _token },
-        body: JSON.stringify({ status: status })
-      })
-        .then(function (response) { return response.ok ? response.json() : Promise.reject(); })
-        .then(function (body) {
-          var updated = body && body.data;
-          if (updated) {
-            var index = _orders.findIndex(function (order) { return order.id === id; });
-            if (index !== -1) _orders[index].status = updated.status;
-          }
+      // Find all line-item IDs belonging to this group
+      var ids = _orders
+        .filter(function (o) { return (o.checkout_reference || o.id) === ref; })
+        .map(function (o) { return o.id; });
+
+      Promise.all(ids.map(function (id) {
+        return fetch("/api/admin/orders/" + encodeURIComponent(id), {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json", "Authorization": "Bearer " + _token },
+          body: JSON.stringify({ status: status })
+        }).then(function (r) { return r.ok ? r.json() : Promise.reject(); });
+      }))
+        .then(function () {
+          // Update local cache
+          _orders.forEach(function (o) {
+            if ((o.checkout_reference || o.id) === ref) o.status = status;
+          });
           renderAll();
           RB.toast("Status updated");
         })

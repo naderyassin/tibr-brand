@@ -118,62 +118,35 @@
               <input class="input" id="co-phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="01XXXXXXXXX" required>
               <p class="field__error"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4m0 4h.01" stroke-linecap="round"/></svg>Enter a valid Egyptian mobile number (11 digits).</p>
             </div>
-          </div>
-        </div>
-
-        <!-- 02 Delivery address -->
-        <div class="co-card">
-          <h2 class="co-card__title"><span class="co-card__num">02</span>Delivery address</h2>
-          <div class="form-grid">
-            <div class="field">
-              <label class="field__label" for="co-gov">Governorate<span class="field__req">*</span></label>
-              <div class="select-field">
-                <select class="select" id="co-gov" name="governorate" required>
-                  <option value="">Select governorate</option>
-                  <option value="cairo">Cairo</option><option value="giza">Giza</option><option value="alexandria">Alexandria</option>
-                  <option value="qalyubia">Qalyubia</option><option value="dakahlia">Dakahlia</option><option value="sharqia">Sharqia</option>
-                  <option value="gharbia">Gharbia</option><option value="monufia">Monufia</option><option value="beheira">Beheira</option>
-                  <option value="kafr-el-sheikh">Kafr El Sheikh</option><option value="damietta">Damietta</option><option value="port-said">Port Said</option>
-                  <option value="ismailia">Ismailia</option><option value="suez">Suez</option><option value="faiyum">Faiyum</option>
-                  <option value="beni-suef">Beni Suef</option><option value="minya">Minya</option><option value="asyut">Asyut</option>
-                  <option value="sohag">Sohag</option><option value="qena">Qena</option><option value="luxor">Luxor</option>
-                  <option value="aswan">Aswan</option><option value="red-sea">Red Sea</option><option value="new-valley">New Valley</option>
-                  <option value="matrouh">Matrouh</option><option value="north-sinai">North Sinai</option><option value="south-sinai">South Sinai</option>
-                </select>
-                <svg class="select-field__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </div>
-              <p class="field__error"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4m0 4h.01" stroke-linecap="round"/></svg>Select your governorate.</p>
-            </div>
-            <div class="field">
-              <label class="field__label" for="co-city">City / area</label>
-              <input class="input" id="co-city" name="city" autocomplete="address-level2">
-            </div>
-            <div class="field field--full">
-              <label class="field__label" for="co-street">Street address<span class="field__req">*</span></label>
-              <textarea class="textarea" id="co-street" name="street" autocomplete="street-address" required></textarea>
-              <p class="field__error"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4m0 4h.01" stroke-linecap="round"/></svg>Enter your delivery address.</p>
+            <div class="field field--full" id="co-addr-field">
+              <span class="field__label">Delivery address<span class="field__req">*</span></span>
+              <div class="co-addr-picker" id="co-addr-picker" role="radiogroup" aria-label="Select delivery address"></div>
+              <p class="field__error"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4m0 4h.01" stroke-linecap="round"/></svg>Please select a delivery address.</p>
             </div>
           </div>
         </div>
 
-        <!-- 03 Payment -->
+        <!-- 02 Payment -->
         <div class="co-card">
-          <h2 class="co-card__title"><span class="co-card__num">03</span>Payment method</h2>
+          <h2 class="co-card__title"><span class="co-card__num">02</span>Payment method</h2>
           <div class="pay-options">
             <label class="pay-option">
               <input type="radio" name="payment" value="cash_on_delivery" checked>
-              <span><span class="pay-option__label">Cash on delivery</span>
-              <span class="pay-option__desc">Pay in cash when your order arrives.</span></span>
+              <span class="pay-option__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="13" rx="2"/><path d="M16 7V5a2 2 0 0 0-4 0v2M12 12v3M10 14h4"/></svg></span>
+              <span class="pay-option__label">Cash on delivery</span>
+              <span class="pay-option__desc">Pay on arrival</span>
             </label>
             <label class="pay-option">
               <input type="radio" name="payment" value="vodafone_cash">
-              <span><span class="pay-option__label">Vodafone Cash</span>
-              <span class="pay-option__desc">Transfer via your Vodafone Cash wallet.</span></span>
+              <span class="pay-option__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M9 7h6M9 11h6M9 15h4"/><circle cx="15" cy="17" r="1" fill="currentColor" stroke="none"/></svg></span>
+              <span class="pay-option__label">Vodafone Cash</span>
+              <span class="pay-option__desc">Mobile wallet</span>
             </label>
             <label class="pay-option">
               <input type="radio" name="payment" value="instapay">
-              <span><span class="pay-option__label">InstaPay</span>
-              <span class="pay-option__desc">Instant transfer via InstaPay.</span></span>
+              <span class="pay-option__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></span>
+              <span class="pay-option__label">InstaPay</span>
+              <span class="pay-option__desc">Instant transfer</span>
             </label>
           </div>
         </div>
