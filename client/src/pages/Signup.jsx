@@ -6,8 +6,10 @@ import { useToast } from "@/components/ui/Toast";
 
 export default function Signup() {
   const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const signUp = useAuth((s) => s.signUp);
@@ -17,13 +19,17 @@ export default function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
+    if (password !== confirm) {
+      setError("Passwords do not match.");
       return;
     }
     setLoading(true);
     try {
-      await signUp(email, password, { full_name: name });
+      await signUp(email, password, { full_name: name, phone });
       toast("Account created! Check your email to confirm.");
       navigate("/login");
     } catch (err) {
@@ -66,6 +72,23 @@ export default function Signup() {
           </div>
 
           <div className="field">
+            <label className="field__label" htmlFor="phone">
+              Phone number <span className="field__req" aria-hidden="true">*</span>
+            </label>
+            <input
+              id="phone"
+              className="input"
+              type="tel"
+              inputMode="numeric"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              autoComplete="tel"
+              placeholder="01XXXXXXXXX"
+              required
+            />
+          </div>
+
+          <div className="field">
             <label className="field__label" htmlFor="email">
               Email <span className="field__req" aria-hidden="true">*</span>
             </label>
@@ -80,7 +103,7 @@ export default function Signup() {
             />
           </div>
 
-          <div className={`field${error ? " is-invalid" : ""}`}>
+          <div className="field">
             <label className="field__label" htmlFor="password">
               Password <span className="field__req" aria-hidden="true">*</span>
             </label>
@@ -93,8 +116,23 @@ export default function Signup() {
               autoComplete="new-password"
               required
             />
+            <p className="field__hint">At least 8 characters.</p>
+          </div>
+
+          <div className={`field${error ? " is-invalid" : ""}`}>
+            <label className="field__label" htmlFor="confirm">
+              Confirm password <span className="field__req" aria-hidden="true">*</span>
+            </label>
+            <input
+              id="confirm"
+              className="input"
+              type="password"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              autoComplete="new-password"
+              required
+            />
             {error && <p className="field__error" role="alert">{error}</p>}
-            <p className="field__hint">At least 6 characters.</p>
           </div>
 
           <button
