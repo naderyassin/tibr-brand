@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/stores/auth";
-import { adminGetProducts, adminGetOrders, adminUpdateOrderStatus, adminDeleteProduct } from "@/lib/api";
+import { adminGetProducts, adminGetOrders, adminUpdateOrderStatus, adminDeleteProduct, getProfile } from "@/lib/api";
 
 const STATUSES = ["pending", "confirmed", "shipped", "delivered", "cancelled"];
 
@@ -34,6 +34,20 @@ export default function Admin() {
     if (!authLoading && !user) navigate("/login", { replace: true });
   }, [authLoading, user, navigate]);
 
+  // Verify admin role; non-admins are bounced to their account.
+  const { data: profileData, isLoading: profileLoading } = useQuery({
+    queryKey: ["profile", token],
+    queryFn: () => getProfile(token),
+    enabled: !!token,
+  });
+  const isAdmin = profileData?.data?.role === "admin";
+
+  useEffect(() => {
+    if (!profileLoading && profileData && !isAdmin) {
+      navigate("/account", { replace: true });
+    }
+  }, [profileLoading, profileData, isAdmin, navigate]);
+
   const { data: ordersData, isLoading: ordersLoading } = useQuery({
     queryKey: ["admin-orders", token],
     queryFn: () => adminGetOrders(token),
@@ -51,7 +65,7 @@ export default function Admin() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-products"] }),
   });
 
-  if (authLoading || !user) return null;
+  if (authLoading || !user || profileLoading || !isAdmin) return null;
 
   const orders = ordersData?.data ?? [];
   const products = productsData?.data ?? [];

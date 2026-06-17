@@ -1180,6 +1180,8 @@ p, li { max-width: 68ch; }     /* readable measure */
 .dash-nav__item[aria-current="true"] { background: var(--gold-ghost); color: var(--gold); }
 .dash-nav__item--danger { color: var(--muted); margin-block-start: var(--sp-2); }
 .dash-nav__item--danger:hover { color: var(--danger); background: var(--danger-fill); }
+.dash-nav__item--admin { color: var(--gold); text-decoration: none; }
+.dash-nav__item--admin:hover { color: var(--gold); background: var(--gold-ghost); }
 
 .dash-panel { display: none; }
 .dash-panel.is-active { display: block; }

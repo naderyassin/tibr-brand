@@ -68,11 +68,12 @@ export default function Account() {
   const { data: profileData } = useQuery({
     queryKey: ["profile", token],
     queryFn: () => getProfile(token),
-    enabled: !!token && tab === "profile",
+    enabled: !!token,
   });
 
   if (authLoading || !user) return null;
 
+  const isAdmin = profileData?.data?.role === "admin";
   const setTab = (id) => setParams({ tab: id });
 
   return (
@@ -94,6 +95,11 @@ export default function Account() {
               {t.label}
             </button>
           ))}
+          {isAdmin && (
+            <Link className="dash-nav__item dash-nav__item--admin" to="/admin">
+              Control panel
+            </Link>
+          )}
           <button
             className="dash-nav__item dash-nav__item--danger"
             type="button"
