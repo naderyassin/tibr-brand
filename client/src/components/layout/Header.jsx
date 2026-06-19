@@ -41,13 +41,18 @@ export default function Header({ onMenuOpen }) {
   const { lang, toggle } = useLang();
 
   useEffect(() => {
+    // Force English (LTR) layout over any cached Arabic state
+    if (lang === "ar") {
+      toggle();
+    }
     const onScroll = () => setScrolled(window.scrollY > 4);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [lang, toggle]);
 
   return (
     <header className={`store-header${scrolled ? " is-scrolled" : ""}`} id="store-header" dir="ltr">
+
       <div className="store-container store-header__inner">
         <Link className="store-wordmark" to="/" aria-label="Tibr">
           Tibr<span className="dot">.</span>
@@ -56,9 +61,10 @@ export default function Header({ onMenuOpen }) {
         <nav className="store-nav" aria-label="Categories">
           <ul className="store-nav__list">
             {[
-              { to: "/shop/perfumes", label: "Perfumes" },
-              { to: "/shop/clothing", label: "Clothing" },
-              { to: "/shop/sneakers", label: "Sneakers" },
+              { to: "/", label: "Home" },
+              { to: "/shop/perfumes", label: "Shop" },
+              { to: "/about", label: "About" },
+              { to: "/account", label: "Profile" },
             ].map(({ to, label }) => (
               <li key={to}>
                 <NavLink
@@ -78,30 +84,12 @@ export default function Header({ onMenuOpen }) {
         </nav>
 
         <div className="store-utils">
-          <button className="store-iconbtn store-util-extra" type="button" aria-label="Search">
-            <SearchIcon />
-          </button>
-          <Link className="store-iconbtn store-util-extra" to="/account?tab=wishlist" aria-label="Wishlist">
-            <HeartIcon />
-          </Link>
-          <Link className="store-iconbtn store-util-extra" to="/account" aria-label="Account">
-            <UserIcon />
-          </Link>
           <Link className="store-iconbtn" to="/cart" aria-label="Cart">
             <BagIcon />
             <span className={`store-cart-count${count > 0 ? " is-active" : ""}`} aria-hidden="true">
               {count}
             </span>
           </Link>
-          <button
-            className="store-iconbtn store-util-extra"
-            type="button"
-            aria-label={lang === "ar" ? "Switch to English" : "التبديل إلى العربية"}
-            onClick={toggle}
-            title={lang === "ar" ? "EN" : "AR"}
-          >
-            <GlobeIcon />
-          </button>
           <button
             className="store-burger"
             id="burger"
@@ -115,6 +103,7 @@ export default function Header({ onMenuOpen }) {
           </button>
         </div>
       </div>
+
     </header>
   );
 }

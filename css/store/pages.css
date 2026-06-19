@@ -235,6 +235,80 @@
   .pw-modal-backdrop.is-open .pw-modal__card { opacity: 1; transform: none; }
 }
 
+/* ============================ ADMIN PRODUCT SIDEBAR ============================ */
+.ap-preview-img {
+  aspect-ratio: 3/4; background: oklch(0.190 0.008 72);
+  border-radius: var(--r-md); border: 1px solid var(--line);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-3);
+  position: relative; overflow: hidden;
+  transition: background var(--dur-slow) var(--ease-out);
+}
+.ap-preview-img::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(var(--line) 1px, transparent 1px) center / 100% 40px,
+              linear-gradient(90deg, var(--line) 1px, transparent 1px) center / 40px 100%;
+  opacity: .18;
+}
+.ap-preview-img img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: center;
+}
+.ap-preview-icon {
+  width: 3.5rem; height: 3.5rem;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface); border: 1px solid var(--line-strong); border-radius: 50%;
+  box-shadow: 0 4px 16px rgba(0,0,0,.5), 0 0 0 4px oklch(0.190 0.008 72), 0 0 0 5px var(--line);
+  color: var(--gold); position: relative; z-index: 1;
+}
+.ap-preview-icon svg { width: 1.5rem; height: 1.5rem; }
+.ap-preview-hint {
+  font-size: var(--fs-xs); color: var(--muted-faint);
+  text-align: center; padding: 0 var(--sp-4);
+  position: relative; z-index: 1; line-height: 1.5;
+}
+.ap-img-picker {
+  padding-block-start: var(--sp-3); border-top: 1px solid var(--line);
+  display: flex; flex-direction: column; gap: var(--sp-2);
+}
+.ap-file-hidden { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.ap-browse-btn {
+  display: flex; align-items: center; justify-content: center; gap: var(--sp-2);
+  width: 100%; padding: .6rem var(--sp-3);
+  background: oklch(0.190 0.008 72); border: 1px dashed var(--gold-line); border-radius: var(--r-sm);
+  color: var(--gold); font-size: var(--fs-sm); font-weight: var(--fw-medium); font-family: var(--font-body);
+  cursor: pointer; transition: background var(--dur) var(--ease-out), border-color var(--dur) var(--ease-out);
+}
+.ap-browse-btn svg { width: 1rem; height: 1rem; flex-shrink: 0; }
+.ap-browse-btn:hover:not(:disabled) { background: var(--gold-ghost); border-color: var(--gold); }
+.ap-browse-btn:active { transform: scale(.98); }
+.ap-browse-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.ap-url-divider {
+  display: flex; align-items: center; gap: var(--sp-2);
+  font-size: var(--fs-xs); color: var(--muted-faint); margin-block: var(--sp-2);
+}
+.ap-url-divider::before, .ap-url-divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.ap-preview-meta { margin-block-start: var(--sp-4); display: flex; flex-direction: column; gap: var(--sp-2); }
+.ap-meta-row { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); }
+.ap-meta-key { font-size: var(--fs-xs); font-weight: var(--fw-semibold); letter-spacing: .07em; text-transform: uppercase; color: var(--muted-faint); }
+.ap-meta-val { font-size: var(--fs-sm); font-weight: var(--fw-medium); color: var(--ink-2); }
+.ap-desc-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); margin-block-end: var(--sp-2); }
+.ap-autogen-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: .3rem .65rem; font-size: var(--fs-xs); font-weight: var(--fw-semibold);
+  font-family: var(--font-body); letter-spacing: .04em;
+  background: var(--gold-ghost); border: 1px solid var(--gold-line); border-radius: var(--r-sm);
+  color: var(--gold); cursor: pointer; white-space: nowrap;
+  transition: background var(--dur) var(--ease-out), border-color var(--dur) var(--ease-out);
+}
+.ap-autogen-btn svg { width: .8rem; height: .8rem; flex-shrink: 0; }
+.ap-autogen-btn:hover { background: oklch(0.800 0.090 86 / .18); border-color: var(--gold); }
+.ap-file-info { display: flex; align-items: center; gap: var(--sp-2); padding: .35rem .6rem; margin-block-end: var(--sp-1); background: oklch(0.760 0.105 152 / .08); border: 1px solid oklch(0.760 0.105 152 / .25); border-radius: var(--r-sm); }
+.ap-file-name { font-size: var(--fs-xs); color: var(--ink-2); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ap-file-clear { background: none; border: none; color: var(--muted); cursor: pointer; font-size: .75rem; padding: 0 2px; transition: color var(--dur) var(--ease-out); flex-shrink: 0; }
+.ap-file-clear:hover { color: var(--danger); }
+.ap-subcat-chain { display: flex; gap: var(--sp-4); flex-wrap: wrap; align-items: flex-start; }
+.ap-subcat-level { display: flex; flex-direction: column; gap: var(--sp-1); min-width: 180px; flex: 1; max-width: 260px; }
+
 /* ============================ ADMIN ============================ */
 .admin-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: var(--sp-4); margin-block-end: var(--sp-6); }
 .stat {

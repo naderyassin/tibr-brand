@@ -11,7 +11,7 @@
      (hue ~75) so the warm product photography sits naturally.
      Contrast verified against --bg in the build (all body ≥4.5:1).
      =========================================================== */
-  --bg:           oklch(0.165 0.006 75);   /* page */
+  --bg:           #000000;   /* page */
   --bg-raised:    oklch(0.205 0.007 74);   /* raised bands, footer */
   --surface:      oklch(0.225 0.008 72);   /* panels, inputs */
   --surface-2:    oklch(0.265 0.009 72);   /* hover / elevated */

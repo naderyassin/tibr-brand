@@ -4,7 +4,7 @@ import { persist } from "zustand/middleware";
 export const useLang = create(
   persist(
     (set) => ({
-      lang: "ar",
+      lang: "en",
       toggle: () =>
         set((s) => {
           const next = s.lang === "ar" ? "en" : "ar";

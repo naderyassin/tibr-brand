@@ -19,8 +19,9 @@ export default function App() {
         <Route element={<AppShell />}>
           {/* Catalog */}
           <Route path="/shop/perfumes" element={<Perfumes />} />
-          <Route path="/shop/clothing" element={<Clothing />} />
-          <Route path="/shop/sneakers" element={<Sneakers />} />
+          {/* Clothing & Sneakers on hold — pages kept, redirect until ready */}
+          <Route path="/shop/clothing" element={<Navigate to="/shop/perfumes" replace />} />
+          <Route path="/shop/sneakers" element={<Navigate to="/shop/perfumes" replace />} />
 
           {/* Product detail */}
           <Route path="/product" element={<Product />} />

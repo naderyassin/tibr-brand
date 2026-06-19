@@ -14,7 +14,7 @@ export default function Footer() {
           <div className="store-footer__brand">
             <Link className="store-wordmark" to="/">Tibr<span className="dot">.</span></Link>
             <p className="store-footer__tagline">
-              Egyptian perfume, clothing, and footwear — joining the heritage of the past to the luxury of the present.
+              Egyptian perfume — joining the heritage of the past to the luxury of the present.
             </p>
           </div>
 
@@ -22,8 +22,6 @@ export default function Footer() {
             <h4>Shop</h4>
             <ul>
               <li><Link to="/shop/perfumes">Perfumes</Link></li>
-              <li><Link to="/shop/clothing">Clothing</Link></li>
-              <li><Link to="/shop/sneakers">Sneakers</Link></li>
               <li><Link to="/account?tab=wishlist">Wishlist</Link></li>
             </ul>
           </div>
