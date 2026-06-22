@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AppShell from "@/components/layout/AppShell";
+import Collection from "@/pages/shop/Collection";
 import Perfumes from "@/pages/shop/Perfumes";
 import Product from "@/pages/Product";
 import Cart from "@/pages/Cart";
@@ -16,6 +17,7 @@ export default function App() {
       <Routes>
         <Route element={<AppShell />}>
           {/* Catalog */}
+          <Route path="/collection" element={<Collection />} />
           <Route path="/shop/perfumes" element={<Perfumes />} />
 
           {/* Product detail */}
