@@ -1,5 +1,14 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import AppShell from "@/components/layout/AppShell";
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
 import Collection from "@/pages/shop/Collection";
 import Perfumes from "@/pages/shop/Perfumes";
 import Product from "@/pages/Product";
@@ -14,10 +23,11 @@ import AdminProduct from "@/pages/AdminProduct";
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route element={<AppShell />}>
           {/* Catalog */}
-          <Route path="/collection" element={<Collection />} />
+          <Route path="/" element={<Collection />} />
           <Route path="/shop/perfumes" element={<Perfumes />} />
 
           {/* Product detail */}

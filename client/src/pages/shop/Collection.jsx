@@ -1,8 +1,6 @@
-import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { getProducts } from "@/lib/api";
+import VideoScrubber from "@/components/ui/VideoScrubber";
 import "./Collection.css";
 
 /* Reveal preset — product-register restraint, ease-out only. */
@@ -15,15 +13,15 @@ const reveal = {
 
 const MARQUEE_CARDS = [
   {
-    act: "ACT I: THE PREMIERE",
-    title: "Obsidian Noir",
-    image: "/assets/images/frontier_intense.png",
+    act: "ESSENCE I: MIDNIGHT",
+    title: "Aurora Nocturne",
+    image: "/assets/images/obsidian_noir_wide.png",
     btnText: "DISCOVER"
   },
   {
-    act: "ACT II: GOLDEN HOUR",
-    title: "Amber Epilogue",
-    image: "/assets/images/frontier_perfume_4.png",
+    act: "ESSENCE II: DAWN",
+    title: "Aurélia",
+    image: "/assets/images/amber_epilogue_wide.png",
     btnText: "DISCOVER"
   }
 ];
@@ -32,10 +30,10 @@ const COLLECTIONS = [
   {
     key: "stories",
     kicker: "",
-    title: "The Stories",
-    blurb: "Behind every frame lies a narrative waiting to be told.",
+    title: "The Signatures",
+    blurb: "Behind every scent lies a narrative waiting to be discovered.",
     to: "#",
-    image: "/assets/images/frontier_stories.png",
+    video: "/assets/videos/frontier_stories.mp4",
     variant: "bento-large is-editorial",
   },
   {
@@ -47,11 +45,11 @@ const COLLECTIONS = [
     variant: "bento-half",
   },
   {
-    key: "collections_seats",
+    key: "collections_fragrances",
     kicker: "COLLECTIONS",
     title: "",
-    to: "#",
-    image: "/assets/images/frontier_collections.png",
+    to: "/shop/perfumes",
+    image: "/assets/images/perfume_collection.png",
     variant: "bento-half",
   },
 ];
@@ -59,65 +57,38 @@ const COLLECTIONS = [
 const TIMELINE = [
   {
     year: "1924",
-    title: "The First Exposure",
-    body: "Founded in the heart of the Golden Age, Frontier established its signature rich contrast that would define the era's dramatic storytelling.",
+    title: "The First Extraction",
+    body: "Founded in the heart of the Golden Age, TIBR established its signature rich olfactory contrast that would define modern high perfumery.",
     image: "/assets/images/frontier_1924.png",
     align: "right",
     chapter: "CHAPTER 01",
   },
   {
     year: "1997",
-    title: "Wide-Format Revolution",
-    body: "The introduction of anamorphic mastery. Frontier expanded the frame, embracing the 21:9 canvas as the true theater of human emotion.",
+    title: "The Pure Extract Revolution",
+    body: "The introduction of pure perfume mastery with our legendary Aurum extract. TIBR expanded its collection, embracing rare raw materials as the true theater of human emotion.",
     image: "/assets/images/frontier_1997.png",
     align: "left",
   },
 ];
 
-const FEATURED_FALLBACK = [
-  {
-    id: "aurum-absolu",
-    act: "SIGNATURE EXTRAIT",
-    en_name: "Aurum Absolu",
-    price: "450",
-    image: "/assets/images/frontier_perfume_4.png",
-    blurb: "A rich, crystalline composition of rare amber and midnight oud, housed in an obsidian-grade vessel.",
-  },
-  {
-    id: "silver-flare",
-    act: "LUMIÈRE COLLECTION",
-    en_name: "Silver Flare",
-    price: "320",
-    image: "/assets/images/frontier_perfume_5.png",
-    blurb: "Master the senses with our signature cold-pressed bergamot and silver-tinted aromatic finish.",
-  },
-];
-
 export default function Collection() {
-  const { data } = useQuery({ queryKey: ["products"], queryFn: getProducts });
-
-  const featured = useMemo(() => {
-    // For the exact Frontier Cinematic design, we want to hardcode the featured pieces
-    // to match the design, rather than pulling from the Tibr database.
-    return FEATURED_FALLBACK;
-  }, [data]);
 
   return (
     <div className="collection-page frontier-cinematic">
       {/* ── HERO ───────────────────────────────────────────── */}
       <header className="col-hero">
         <div className="col-hero__bg" aria-hidden="true">
-          <div
+          <VideoScrubber
+            src="/assets/videos/frontier_stories.mp4"
             className="col-hero__img"
-            style={{ backgroundImage: "url('/assets/images/frontier_hero.png')" }}
           />
           <div className="col-hero__overlay" />
         </div>
 
-        <div className="col-hero__inner">
-          <h1 className="col-hero__title">FRONTIER</h1>
-          <p className="col-hero__subtitle">THE ART OF COLOR</p>
-          <div className="col-hero__actions">
+        <div className="col-hero__inner pointer-events-none">
+          <h1 className="col-hero__title" style={{ fontSize: "clamp(2.5rem, 4vw, 5rem)" }}>Discover Your Perfect Fragrance</h1>
+          <div className="col-hero__actions pointer-events-auto">
             <a className="col-btn" href="#collections">
               BEGIN THE JOURNEY
             </a>
@@ -132,9 +103,9 @@ export default function Collection() {
         {/* ── MARQUEE: ADS ───────────────────────────── */}
         <section className="col-marquee-section">
           <div className="col-marquee__header">
-            <h2 className="col-marquee__title">The Art of Olfactory Cinema</h2>
+            <h2 className="col-marquee__title">The Essence of Elegance</h2>
             <p className="col-marquee__desc">
-              Inspired by the golden age of wide-format storytelling, the Lumière line translates the texture of film grain, the warmth of studio lights, and the mystery of the cutting room floor into sensory experiences. Each scent is a frame, frozen in time.
+              Inspired by the golden age of high perfumery, the TIBR collection translates the texture of rare woods, the warmth of pure amber, and the mystery of midnight spices into unforgettable sensory experiences. Each fragrance is a memory, captured in a bottle.
             </p>
           </div>
           <div className="col-marquee">
@@ -165,13 +136,23 @@ export default function Collection() {
                 {...reveal}
               >
                 <Link className="col-tile__link" to={c.to} aria-label={c.title || c.kicker}>
-                  {c.image && (
+                  {c.video ? (
+                    <video
+                      className="col-tile__video"
+                      src={c.video}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      aria-hidden="true"
+                    />
+                  ) : c.image ? (
                     <div
                       className="col-tile__img"
                       style={{ backgroundImage: `url('${c.image}')` }}
                       aria-hidden="true"
                     />
-                  )}
+                  ) : null}
                   <div className="col-tile__scrim" aria-hidden="true" />
                   <div className="col-tile__content">
                     {c.kicker && <span className="col-kicker">{c.kicker}</span>}
@@ -187,9 +168,9 @@ export default function Collection() {
         {/* ── THE TIMELINE ─────────────────────────── */}
         <section className="col-section col-house">
           <motion.div className="col-house__head" {...reveal}>
-            <h2 className="col-house__title">THE TIMELINE</h2>
+            <h2 className="col-house__title">OUR HERITAGE</h2>
             <p className="col-house__sub">
-              Tracing the evolution of the Frontier aesthetic across a century of innovation.
+              Tracing the evolution of the TIBR aesthetic across a century of olfactory innovation.
             </p>
           </motion.div>
 
@@ -208,12 +189,8 @@ export default function Collection() {
                     loading="lazy"
                     decoding="async"
                   />
-                  {t.chapter && (
-                    <div className="col-entry__chapter">{t.chapter}</div>
-                  )}
                 </div>
                 <div className="col-entry__text">
-                  <span className="col-entry__year">{t.year}</span>
                   <h3 className="col-entry__title">{t.title}</h3>
                   <p className="col-entry__body">{t.body}</p>
                 </div>
@@ -222,46 +199,7 @@ export default function Collection() {
           </div>
         </section>
 
-        {/* ── INSTRUMENTS ──────────────────────────────── */}
-        <section className="col-section col-featured">
-          <motion.div className="col-featured__head" {...reveal}>
-            <span className="col-kicker">AESTHETIC FOCUS</span>
-            <h2 className="col-featured__title">Cinematic Instruments</h2>
-          </motion.div>
 
-          <div className="col-featured__grid">
-            {featured.map((p) => (
-              <motion.article key={p.id} className="col-card" {...reveal}>
-                <Link className="col-card__media" to={`#`}>
-                  {p.image ? (
-                    <img
-                      className="col-card__img"
-                      src={p.image}
-                      alt={p.en_name}
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  ) : (
-                    <div className="col-card__img col-card__img--ph" />
-                  )}
-                </Link>
-                <div className="col-card__body">
-                  <div className="col-card__row">
-                    <div>
-                      <span className="col-kicker">{p.act}</span>
-                      <h3 className="col-card__name">{p.en_name}</h3>
-                    </div>
-                    <span className="col-card__price">${p.price}</span>
-                  </div>
-                  <p className="col-card__blurb">{p.blurb}</p>
-                  <Link className="col-btn col-btn--ghost" to={`#`}>
-                    DISCOVER
-                  </Link>
-                </div>
-              </motion.article>
-            ))}
-          </div>
-        </section>
       </main>
     </div>
   );

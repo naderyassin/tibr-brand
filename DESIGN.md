@@ -304,7 +304,7 @@ All four are desaturated enough to sit in the dim store room; bright enough to r
 - **Do** apply `text-wrap: balance` on h1–h3 and `text-wrap: pretty` on prose paragraphs. Tibr sells poetry; orphaned words undercut it.
 - **Do** include `@media (prefers-reduced-motion: reduce)` alternatives for every transition: store reveals snap to visible, toast uses opacity-only, button spinner stops.
 - **Do** give every interactive element a visible gold focus ring (2px solid `--gold`, offset 2px). On dark surfaces the browser default is invisible. The gold ring is accessibility; it is not decoration.
-- **Do** treat the store's three categories (perfumes, clothing, sneakers) with one layout grammar. The product photography differentiates the categories; the chrome does not.
+- **Do** keep one consistent layout grammar across the perfumes catalog. The product photography is the differentiator; the chrome stays uniform.
 
 ### Don't:
 

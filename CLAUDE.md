@@ -1,4 +1,4 @@
-# Robabikia — Project Context
+# TIBR — Project Context
 
 ## Design Context
 
@@ -12,7 +12,7 @@
 ### Store / app layer (everything else) — register: `product` — FULL REDESIGN
 - Ground-up **new premium design system**; all Egyptian-theme styling is removed and replaced here.
 - **Aesthetic:** dark boutique — charcoal/ink surfaces, raised graphite panels, spotlit cinematic product photography (Tom Ford / Byredo / Net-a-Porter dark mood).
-- **Accent:** a single refined, desaturated gold as the through-line (keeps the store reading as Robabikia). One accent only, used with restraint.
+- **Accent:** a single refined, desaturated gold as the through-line (keeps the store reading as TIBR). One accent only, used with restraint.
 - **Type:** fresh system distinct from the landing. Avoid reflex-reject families and Cormorant Garamond. Arabic-first.
 - **No modals for auth:** login, sign-up, forgot-password are dedicated full pages.
 - **Architecture decision:** move the store off the current hash SPA to **real multi-page** (separate routes/URLs, working back button, SEO). Changes `server.js` routing.
@@ -22,23 +22,14 @@ The dark-boutique store is a **React app** (`client/`), separate from the landin
 - **Stack:** Vite + React 19 + React Router 7 (`BrowserRouter`) + Zustand (cart/auth/lang stores in `client/src/stores/`) + TanStack Query + Framer Motion.
 - **CSS:** still the shared design system in `css/store/` — `client/src/styles/index.css` is just `@import "../../../css/store/store.css"`. Do not duplicate store styles in the client; edit `css/store/`.
 - **Structure** (`client/src/`): `App.jsx` (routes), `main.jsx` (providers), `components/layout/` (AppShell, Header, Footer, MobileDrawer), `components/catalog/ProductCard`, `components/ui/Toast`, `pages/` (Product, Cart, Checkout, Login, Signup, Account, Admin, AdminProduct + `pages/shop/` catalog), `lib/api.js` (fetch wrapper + typed endpoint helpers), `lib/supabase.js`.
-- **Routes** (React Router): `/shop/perfumes|clothing|sneakers`, `/product?id=`, `/cart`, `/checkout`, `/login`, `/signup`, `/account?tab=`, `/admin`, `/admin/product`, `/wishlist` (→ account tab).
+- **Routes** (React Router): `/shop/perfumes`, `/product?id=`, `/cart`, `/checkout`, `/login`, `/signup`, `/account?tab=`, `/admin`, `/admin/product`, `/wishlist` (→ account tab).
 - **Backend:** wired to the real `server.js`/Supabase API via `lib/api.js` (products, profile, addresses, orders, checkout, admin). Cart persists client-side via the Zustand store.
-- **Bilingual pattern:** the lang store (`client/src/stores/lang.js`) drives `<html lang/dir>`; components render AR/EN inline. The landing remains separate, using the global `translations.js` dict.
-- **Dev:** `npm run dev:all` (Express on :3000 + Vite on :5173, which proxies `/api` and `/assets` to Express). **Build:** `npm run client:build` → `dist/client/`; `server.js` serves that build for store routes (with `index:false` so `/` stays the vanilla landing). If `dist/client` is missing, store routes are unavailable until a build is run.
-- **Still to do:** clothing/sneakers category pages need real product photography.
-
-### Landing (index.html)
-Standalone landing page — no SPA routing, no 3D.
-- **Content:** `view-home` only (hero, brand story, how-to-order), footer.
-- **Nav:** Home (`#home`), Our Story (`#story`), Shop Now → `/shop/perfumes`. Language toggle kept.
-- **Scripts:** `js/core/translations.js`, `js/core/lang.js`, `js/landing/landing.js`, GSAP + ScrollTrigger (for scroll reveals).
-- **CSS:** `css/store/tokens.css` (design tokens), `css/landing/landing.css`, `css/layout/{hero,story,footer}.css`.
-- **3D removed:** Three.js, `3d-experience.js`, `router.js`, `scroll.js`, `gallery.js`, `intro.js` all deleted. All 3D CSS (`css/components/`) deleted.
+- **Bilingual pattern:** the lang store (`client/src/stores/lang.js`) drives `<html lang/dir>`; components render AR/EN inline.
+- **Dev:** `npm run dev:all` (Express on :3000 + Vite on :5173, which proxies `/api` and `/assets` to Express). **Build:** `npm run client:build` → `dist/client/`; `server.js` serves that build for store routes. If `dist/client` is missing, store routes are unavailable until a build is run.
 
 ### Shared
 - **Users:** Arabic-speaking Egyptian consumers (20–45), mobile-first. RTL (`dir="rtl"`, `lang="ar"`) default, EN toggle on both surfaces.
 - **Brand soul:** الأصالة والحنين والفخامة — Authenticity, Nostalgia, Luxury.
 - **Anti-references:** Western luxury minimalism (Didot/cream/Swiss); generic Arabic e-commerce (Noon/Jumia); warm-cream light store; glassmorphism-everywhere.
-- **Current stack:** `index.html` (vanilla landing, served at `/`) + React store SPA (`client/`, built to `dist/client/`), served by Express. Supabase backend.
-- **Live mode:** configured at `.impeccable/live/config.json`. **DESIGN.md:** not yet generated (run `/impeccable document` for the landing; the store system gets documented once it's built).
+- **Current stack:** React store SPA (`client/`, built to `dist/client/`), served by Express. `/` redirects to `/shop/perfumes`. Supabase backend.
+- **Live mode:** configured at `.impeccable/live/config.json`.

@@ -1,11 +1,8 @@
-# Robabikia — روبابيكيا
+# TIBR — تبر
 
-A luxury fragrance and lifestyle brand rooted in Egyptian nostalgia. Two surfaces, two registers.
+A luxury Egyptian fragrance brand. Perfumes-only store, dark-boutique design.
 
 ## Architecture
-
-### Landing (`/`) — vanilla, Egyptian-heritage
-Static landing page served directly from `index.html`. Arabic-first RTL, gold-on-near-black, Rakkas + Cinzel Decorative display type, GSAP scroll reveals.
 
 ### Store (`/shop/*`, `/product`, `/cart`, `/checkout`, `/account`, `/admin`) — React SPA
 Dark-boutique store built in React, served from `dist/client/` (Vite build). Charcoal/ink surfaces, cinematic product photography, single desaturated-gold accent.
@@ -17,14 +14,8 @@ Dark-boutique store built in React, served from `dist/client/` (Vite build). Cha
 ## Project Structure
 
 ```
-index.html              # Vanilla landing page
 css/
-  landing/              # Landing-only styles
-  layout/               # Hero, story, footer layouts
   store/                # Shared store design system (tokens, components)
-js/
-  core/                 # translations.js, lang.js
-  landing/              # landing.js (GSAP scroll reveals)
 client/                 # React SPA (store)
   src/
     App.jsx             # Routes
@@ -39,17 +30,15 @@ client/                 # React SPA (store)
     lib/
       api.js            # Fetch wrapper + typed endpoint helpers
       supabase.js       # Supabase client
-server.js               # Express — serves landing at /, proxies /api, serves dist/client for store routes
+server.js               # Express — redirects / to /shop/perfumes, proxies /api, serves dist/client for store routes
 ```
 
 ## Routes
 
 | Path | Page |
 |------|------|
-| `/` | Landing |
+| `/` | → redirects to `/shop/perfumes` |
 | `/shop/perfumes` | Perfumes catalog |
-| `/shop/clothing` | Clothing catalog |
-| `/shop/sneakers` | Sneakers catalog |
 | `/product?id=` | Product detail |
 | `/cart` | Cart |
 | `/checkout` | Checkout |
@@ -82,7 +71,7 @@ npm install
 npm run dev:all
 ```
 
-- Express API + landing: [http://localhost:3000](http://localhost:3000)
+- Express API + store (production): [http://localhost:3000](http://localhost:3000)
 - Vite dev server (store, with `/api` proxy): [http://localhost:5173](http://localhost:5173)
 
 ## Building the Store
@@ -98,4 +87,4 @@ Outputs to `dist/client/`. The Express server serves this build for all store ro
 - Bilingual (AR/EN): lang store drives `<html lang/dir>`; AR is the default.
 - Auth is dedicated full pages (no modals).
 - Cart persists client-side via Zustand.
-- WhatsApp contact link in `index.html` uses a placeholder number.
+- WhatsApp contact link in the store footer uses a placeholder number.

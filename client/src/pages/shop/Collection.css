@@ -36,25 +36,42 @@
 /* Shared buttons */
 .frontier-cinematic .col-btn {
   display: inline-block;
-  padding: 1.05rem 3rem;
+  padding: 0.8em 2.8em;
   font-family: var(--font-sans);
   font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--on-gold);
+  color: var(--gold);
   text-decoration: none;
-  background: var(--gold);
-  border: 1px solid var(--gold);
-  border-radius: 2px;
-  box-shadow: 0 0 30px -6px rgba(212, 175, 55, 0.35);
-  transition: background 0.3s ease-out, color 0.3s ease-out, transform 0.3s ease-out;
+  position: relative;
+  border-radius: 0.6em;
+  overflow: hidden;
+  transition: all 0.3s ease-out;
+  border: 2px solid var(--gold);
+  background: linear-gradient(to right, rgba(212, 175, 55, 0.1) 1%, transparent 40%, transparent 60% , rgba(212, 175, 55, 0.1) 100%);
+  box-shadow: inset 0 0 10px rgba(212, 175, 55, 0.4), 0 0 9px 3px rgba(212, 175, 55, 0.1);
 }
 .frontier-cinematic .col-btn:hover {
-  background: var(--gold-bright);
+  color: var(--gold-bright);
+  box-shadow: inset 0 0 10px rgba(212, 175, 55, 0.6), 0 0 9px 3px rgba(212, 175, 55, 0.2);
   transform: translateY(-2px);
 }
 .frontier-cinematic .col-btn:active { transform: translateY(0); }
+
+.frontier-cinematic .col-btn:before {
+  content: "";
+  position: absolute;
+  left: -4em;
+  width: 4em;
+  height: 100%;
+  top: 0;
+  transition: transform .4s ease-in-out;
+  background: linear-gradient(to right, transparent 1%, rgba(212, 175, 55, 0.1) 40%, rgba(212, 175, 55, 0.1) 60% , transparent 100%);
+}
+.frontier-cinematic .col-btn:hover:before {
+  transform: translateX(35em);
+}
 
 .frontier-cinematic .col-btn--ghost {
   width: fit-content;
@@ -109,7 +126,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 4rem;
+  margin-bottom: 12vh;
 }
 .frontier-cinematic .col-hero__subtitle {
   font-size: 0.9rem;
@@ -127,7 +144,7 @@
   line-height: 1.1;
   letter-spacing: -0.02em;
   color: #fff;
-  margin: 0 0 1rem;
+  margin: 0 0 4rem;
 }
 .frontier-cinematic .col-hero__cue {
   margin-top: 3rem;
@@ -193,8 +210,8 @@
   max-width: 500px;
 }
 .frontier-cinematic .col-marquee {
-  width: 75vw;
-  max-width: 1400px;
+  width: calc(100% - 4rem);
+  max-width: calc(78rem - 4rem);
   margin: 0 auto;
   overflow: hidden;
   white-space: nowrap;
@@ -214,15 +231,16 @@
   100% { transform: translateX(-50%); }
 }
 .frontier-cinematic .col-marquee__item {
-  width: 45vw;
-  max-width: 840px;
-  height: 600px;
+  width: calc(100vw - 4rem);
+  max-width: calc(78rem - 4rem);
+  height: 320px;
   flex-shrink: 0;
   border-radius: 16px;
   overflow: hidden;
   position: relative;
   box-shadow: 0 20px 40px rgba(0,0,0,0.4);
   border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: #050505;
 }
 .frontier-cinematic .col-marquee__img {
   position: absolute;
@@ -290,7 +308,8 @@
   text-decoration: none;
   color: inherit;
 }
-.frontier-cinematic .col-tile__img {
+.frontier-cinematic .col-tile__img,
+.frontier-cinematic .col-tile__video {
   position: absolute;
   inset: 0;
   background-size: cover;
@@ -298,7 +317,13 @@
   transition: transform 700ms ease-out;
   opacity: 0.8;
 }
-.frontier-cinematic .col-tile:hover .col-tile__img { transform: scale(1.05); opacity: 0.95; }
+.frontier-cinematic .col-tile__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.frontier-cinematic .col-tile:hover .col-tile__img,
+.frontier-cinematic .col-tile:hover .col-tile__video { transform: scale(1.05); opacity: 0.95; }
 .frontier-cinematic .col-tile__scrim {
   position: absolute;
   inset: 0;

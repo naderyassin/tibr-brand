@@ -912,23 +912,11 @@ if (clientDistExists) {
   );
 }
 
-const staticOpts = { extensions: ["html"], setHeaders: (res, filePath) => {
-  const ext = path.extname(filePath);
-  if (/\.(css|js|mjs)$/i.test(ext)) {
-    res.setHeader("Cache-Control", "no-cache");
-  } else if (/\.(png|jpg|jpeg|gif|ico|svg|webp|avif|glb)$/i.test(ext)) {
-    res.setHeader("Cache-Control", `public, max-age=${CACHE_DURATION}`);
-  } else if (/\.(woff2?|ttf|otf|eot)$/i.test(ext)) {
-    res.setHeader("Cache-Control", CACHE_IMMUTABLE);
-  }
-}};
-app.use(express.static(rootDir, staticOpts));
-
 app.get("*", (req, res, next) => {
   if (req.path.startsWith("/api/")) {
     return next();
   }
-  res.sendFile(path.join(rootDir, "index.html"));
+  res.redirect(301, "/shop/perfumes");
 });
 
 if (!process.env.SKIP_LISTEN) {
