@@ -1871,6 +1871,132 @@ p, li { max-width: 68ch; }     /* readable measure */
   .pw-modal-backdrop.is-open .pw-modal__card { opacity: 1; transform: none; }
 }
 
+/* ── Notes tag input ── */
+.notes-tag-wrap {
+  position: relative;
+  min-height: 2.85rem;
+  padding: 0.45rem 0.65rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  cursor: text;
+  transition: border-color var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out);
+}
+.notes-tag-wrap:focus-within {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-ghost);
+}
+.notes-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+}
+.notes-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.5rem;
+  background: var(--gold-ghost);
+  border: 1px solid var(--gold-line);
+  border-radius: var(--r-sm);
+  font-size: var(--fs-xs);
+  color: var(--gold);
+  white-space: nowrap;
+  line-height: 1.2;
+}
+.notes-tag__remove {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0 2px;
+  font-size: 0.85rem;
+  line-height: 1;
+  opacity: 0.6;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+.notes-tag__remove:hover {
+  opacity: 1;
+}
+.notes-tag__input {
+  flex: 1;
+  min-width: 140px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--ink);
+  font-size: var(--fs-sm);
+  font-family: var(--font-body);
+  padding: 0.2rem 0.3rem;
+}
+.notes-tag__input::placeholder {
+  color: var(--muted);
+}
+
+/* Premium spotlit dropdown container */
+.notes-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: var(--surface-2);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  max-height: 16rem;
+  overflow-y: auto;
+  z-index: var(--z-dropdown);
+  box-shadow: var(--shadow-3);
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+.notes-dropdown::-webkit-scrollbar {
+  width: 5px;
+}
+.notes-dropdown::-webkit-scrollbar-thumb {
+  background-color: var(--line);
+  border-radius: var(--r-xs);
+}
+
+/* Luxurious list items with clear spacing and hover feedback */
+.notes-dropdown__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+.notes-dropdown__item:last-child {
+  border-bottom: none;
+}
+.notes-dropdown__item:hover {
+  background: var(--surface-3);
+}
+.notes-dropdown__en {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--ink);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.notes-dropdown__item:hover .notes-dropdown__en {
+  color: var(--gold);
+}
+.notes-dropdown__ar {
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  margin-inline-start: var(--sp-4); /* Ensures solid gap between English and Arabic */
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.notes-dropdown__item:hover .notes-dropdown__ar {
+  color: var(--ink-2);
+}
+
 /* ============================ ADMIN ============================ */
 .admin-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: var(--sp-4); margin-block-end: var(--sp-6); }
 .stat {
