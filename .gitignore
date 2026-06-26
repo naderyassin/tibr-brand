@@ -9,3 +9,4 @@ dist/
 .claude/
 .impeccable/
 assets/models/bottle-texture.glb
+.vercel

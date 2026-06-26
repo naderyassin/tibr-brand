@@ -1,0 +1,8 @@
+{
+  "version": 2,
+  "buildCommand": "cd client && npm install && npm run build",
+  "installCommand": "npm install",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/api/index.js" }
+  ]
+}

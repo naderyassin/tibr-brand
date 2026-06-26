@@ -6,18 +6,18 @@ import CardFanCarousel from "../../components/ui/CardFanCarousel";
 import "./Perfumes.css";
 
 const FEATURED = [
-  { id: 'feat-1', en_name: 'TOM FORD', image: '/assets/images/fragrance_midnight_oud.png' },
-  { id: 'feat-2', en_name: 'DIOR', image: '/assets/images/fragrance_royal_amber.png' },
-  { id: 'feat-3', en_name: 'CHANEL', image: '/assets/images/fragrance_velvet_rose.png' },
-  { id: 'feat-4', en_name: 'YVES SAINT LAURENT', image: '/assets/images/fragrance_midnight_oud.png' },
-  { id: 'feat-5', en_name: 'CREED', image: '/assets/images/fragrance_royal_amber.png' },
-  { id: 'feat-6', en_name: 'GIORGIO ARMANI', image: '/assets/images/fragrance_velvet_rose.png' },
-  { id: 'feat-7', en_name: 'GUCCI', image: '/assets/images/fragrance_midnight_oud.png' },
-  { id: 'feat-8', en_name: 'VERSACE', image: '/assets/images/fragrance_royal_amber.png' },
-  { id: 'feat-9', en_name: 'LE LABO', image: '/assets/images/fragrance_velvet_rose.png' },
-  { id: 'feat-10', en_name: 'BYREDO', image: '/assets/images/fragrance_midnight_oud.png' },
-  { id: 'feat-11', en_name: 'GIVENCHY', image: '/assets/images/fragrance_royal_amber.png' },
-  { id: 'feat-12', en_name: 'BVLGARI', image: '/assets/images/fragrance_velvet_rose.png' },
+  { id: 'feat-1', en_name: 'TOM FORD', image: 'https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/images/fragrance_midnight_oud.png' },
+  { id: 'feat-2', en_name: 'DIOR', image: 'https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/images/fragrance_royal_amber.png' },
+  { id: 'feat-3', en_name: 'CHANEL', image: 'https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/images/fragrance_velvet_rose.png' },
+  { id: 'feat-4', en_name: 'YVES SAINT LAURENT', image: 'https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/images/fragrance_midnight_oud.png' },
+  { id: 'feat-5', en_name: 'CREED', image: 'https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/images/fragrance_royal_amber.png' },
+  { id: 'feat-6', en_name: 'GIORGIO ARMANI', image: 'https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/images/fragrance_velvet_rose.png' },
+  { id: 'feat-7', en_name: 'GUCCI', image: 'https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/images/fragrance_midnight_oud.png' },
+  { id: 'feat-8', en_name: 'VERSACE', image: 'https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/images/fragrance_royal_amber.png' },
+  { id: 'feat-9', en_name: 'LE LABO', image: 'https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/images/fragrance_velvet_rose.png' },
+  { id: 'feat-10', en_name: 'BYREDO', image: 'https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/images/fragrance_midnight_oud.png' },
+  { id: 'feat-11', en_name: 'GIVENCHY', image: 'https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/images/fragrance_royal_amber.png' },
+  { id: 'feat-12', en_name: 'BVLGARI', image: 'https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/images/fragrance_velvet_rose.png' },
 ];
 
 const CAROUSEL_CARDS = FEATURED.map((item) => ({
@@ -56,7 +56,7 @@ export default function Perfumes() {
         </div>
         <div className="perfume-hero-split__right">
           <img
-            src="/assets/images/perfume_hero_product_tibr.png?v=2"
+            src="https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/images/perfume_hero_product_tibr.png?v=2"
             alt="TIBR Luxury Perfume"
             className="perfume-hero-split__img"
           />

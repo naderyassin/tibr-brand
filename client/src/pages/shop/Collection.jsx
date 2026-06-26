@@ -15,13 +15,13 @@ const MARQUEE_CARDS = [
   {
     act: "ESSENCE I: MIDNIGHT",
     title: "Aurora Nocturne",
-    image: "/assets/images/obsidian_noir_wide.png",
+    image: "https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/images/obsidian_noir_wide.png",
     btnText: "DISCOVER"
   },
   {
     act: "ESSENCE II: DAWN",
     title: "Aurélia",
-    image: "/assets/images/amber_epilogue_wide.png",
+    image: "https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/images/amber_epilogue_wide.png",
     btnText: "DISCOVER"
   }
 ];
@@ -33,7 +33,7 @@ const COLLECTIONS = [
     title: "The Signatures",
     blurb: "Behind every scent lies a narrative waiting to be discovered.",
     to: "#",
-    video: "/assets/videos/frontier_stories.mp4",
+    video: "https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/videos/frontier_stories.mp4",
     variant: "bento-large is-editorial",
   },
   {
@@ -41,7 +41,7 @@ const COLLECTIONS = [
     kicker: "HERITAGE",
     title: "",
     to: "#",
-    image: "/assets/images/frontier_heritage.png",
+    image: "https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/images/frontier_heritage.png",
     variant: "bento-half",
   },
   {
@@ -49,7 +49,7 @@ const COLLECTIONS = [
     kicker: "COLLECTIONS",
     title: "",
     to: "/shop/perfumes",
-    image: "/assets/images/perfume_collection.png",
+    image: "https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/images/perfume_collection.png",
     variant: "bento-half",
   },
 ];
@@ -59,7 +59,7 @@ const TIMELINE = [
     year: "1924",
     title: "The First Extraction",
     body: "Founded in the heart of the Golden Age, TIBR established its signature rich olfactory contrast that would define modern high perfumery.",
-    image: "/assets/images/frontier_1924.png",
+    image: "https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/images/frontier_1924.png",
     align: "right",
     chapter: "CHAPTER 01",
   },
@@ -67,7 +67,7 @@ const TIMELINE = [
     year: "1997",
     title: "The Pure Extract Revolution",
     body: "The introduction of pure perfume mastery with our legendary Aurum extract. TIBR expanded its collection, embracing rare raw materials as the true theater of human emotion.",
-    image: "/assets/images/frontier_1997.png",
+    image: "https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/images/frontier_1997.png",
     align: "left",
   },
 ];
@@ -80,7 +80,7 @@ export default function Collection() {
       <header className="col-hero">
         <div className="col-hero__bg" aria-hidden="true">
           <VideoScrubber
-            src="/assets/videos/frontier_stories.mp4"
+            src="https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/videos/frontier_stories.mp4"
             className="col-hero__img"
           />
           <div className="col-hero__overlay" />

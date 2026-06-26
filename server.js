@@ -35,6 +35,15 @@ app.use(compression());
 const CACHE_DURATION = 365 * 24 * 60 * 60; // 1 year
 const CACHE_IMMUTABLE = `public, max-age=${CACHE_DURATION}, immutable`;
 
+// Serve uploaded product images and brand media from /assets
+app.use("/assets", express.static(path.join(rootDir, "assets"), {
+  setHeaders: (res, filePath) => {
+    if (/\.(png|jpg|jpeg|gif|ico|svg|webp|avif|mp4|webm)$/i.test(path.extname(filePath))) {
+      res.setHeader("Cache-Control", "public, max-age=86400");
+    }
+  }
+}));
+
 app.use(express.json());
 
 const normalizeSizes = (sizes) => {
@@ -841,31 +850,39 @@ app.delete("/api/admin/products/:id", requireUser, requireAdmin, async (req, res
   res.json({ success: true });
 });
 
-// Image upload — saves to /assets/images/products/ on disk
-const uploadStorage = multer.diskStorage({
-  destination: function (_req, _file, cb) {
-    const dir = path.join(rootDir, "assets", "images", "products");
-    fs.mkdirSync(dir, { recursive: true });
-    cb(null, dir);
-  },
-  filename: function (_req, file, cb) {
-    const ext = path.extname(file.originalname).toLowerCase() || ".jpg";
-    cb(null, "product-" + Date.now() + "-" + randomUUID().slice(0, 8) + ext);
-  }
-});
+// Image upload — stores in Supabase Storage (works on Vercel / any host)
+const STORAGE_BUCKET = "brand-assets";
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
 const upload = multer({
-  storage: uploadStorage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: function (_req, file, cb) {
     if (/^image\//.test(file.mimetype)) cb(null, true);
     else cb(new Error("Only image files are allowed"));
   }
 });
 
-app.post("/api/admin/upload", requireUser, requireAdmin, upload.single("file"), (req, res) => {
+app.post("/api/admin/upload", requireUser, requireAdmin, upload.single("file"), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: "No file received" });
-  const publicUrl = "/assets/images/products/" + req.file.filename;
-  res.json({ url: publicUrl });
+
+  const ext = path.extname(req.file.originalname).toLowerCase() || ".jpg";
+  const filename = "product-" + Date.now() + "-" + randomUUID().slice(0, 8) + ext;
+  const storagePath = "images/products/" + filename;
+
+  const serviceKey = SUPABASE_SERVICE_KEY || supabaseAnonKey;
+  const storageClient = createClient(supabaseUrl, serviceKey, {
+    auth: { autoRefreshToken: false, persistSession: false }
+  });
+
+  const { error } = await storageClient.storage
+    .from(STORAGE_BUCKET)
+    .upload(storagePath, req.file.buffer, { contentType: req.file.mimetype, upsert: false });
+
+  if (error) return res.status(500).json({ error: "Upload failed: " + error.message });
+
+  const { data } = storageClient.storage.from(STORAGE_BUCKET).getPublicUrl(storagePath);
+  res.json({ url: data.publicUrl });
 });
 
 // ── React client (production build) ──────────────────────────────────────────
