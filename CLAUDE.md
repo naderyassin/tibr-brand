@@ -7,7 +7,7 @@
 ### Landing page (`view-home`) — register: `brand`
 - Hero section (`ScrollSequence` scroll-scrubbed frame sequence in `Collection.jsx`) is locked — work there is **additive only**: animation and motion, no restyling.
 - Everything below the hero (Philosophy, Marquee, Collections, Heritage timeline) is open to redesign — as of the Framer Motion redesign, it keeps the gold-on-near-black Egyptian-heritage identity but layout/motion can evolve freely.
-- Identity: Rakkas (Arabic display) + Cinzel Decorative (English display) + Cormorant Garamond / Amiri (body), gold-on-near-black.
+- Identity: Playfair Display (English display) + Aref Ruqaa (Arabic display) + Jost / Tajawal (body), gold-on-near-black. (Site-wide font pairing as of the Framer Motion redesign — same pairing used on the store surface below.)
 
 ### Store / app layer (everything else) — register: `product` — FULL REDESIGN
 - Ground-up **new premium design system**; all Egyptian-theme styling is removed and replaced here.
@@ -31,5 +31,5 @@ The dark-boutique store is a **React app** (`client/`), separate from the landin
 - **Users:** Arabic-speaking Egyptian consumers (20–45), mobile-first. RTL (`dir="rtl"`, `lang="ar"`) default, EN toggle on both surfaces.
 - **Brand soul:** الأصالة والحنين والفخامة — Authenticity, Nostalgia, Luxury.
 - **Anti-references:** Western luxury minimalism (Didot/cream/Swiss); generic Arabic e-commerce (Noon/Jumia); warm-cream light store; glassmorphism-everywhere.
-- **Current stack:** React store SPA (`client/`, built to `dist/client/`), served by Express. `/` redirects to `/shop/perfumes`. Supabase backend.
+- **Current stack:** React store SPA (`client/`, built to `dist/client/`), served by Express. `/` serves the SPA home/hero page (`Collection.jsx`); unrecognized paths fall back to `/shop/perfumes`. Supabase backend.
 - **Live mode:** configured at `.impeccable/live/config.json`.

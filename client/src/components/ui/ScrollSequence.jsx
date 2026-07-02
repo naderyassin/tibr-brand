@@ -19,11 +19,19 @@ export default function ScrollSequence({
   frameSrc,               // (index0Based) => url
   scrollLength = 2600,    // px of scroll consumed by the scrub
   zoom = 1,               // <1 pulls the subject farther back (edges blend into bg)
+  onProgress,              // optional: (progress 0..1) => void, called every scrub tick
   className,
   children,
 }) {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
+  // Kept in a ref (not the effect's dep array) so callers can pass a fresh
+  // callback each render without tearing down and rebuilding the whole
+  // scroll-scrub setup — only the callback identity changes, cheaply.
+  const onProgressRef = useRef(onProgress);
+  useEffect(() => {
+    onProgressRef.current = onProgress;
+  }, [onProgress]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -123,9 +131,11 @@ export default function ScrollSequence({
             current = f;
             schedule();
           }
+          onProgressRef.current?.(state.frame / (frameCount - 1));
         },
       });
       schedule(); // paint the poster frame right away
+      onProgressRef.current?.(0);
     }
 
     return () => {

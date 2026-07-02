@@ -1,12 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ScrollSequence from "@/components/ui/ScrollSequence";
 import "./Collection.css";
-
-gsap.registerPlugin(ScrollTrigger);
 
 /* Hero image sequence — frames extracted from hero-section.mp4 at 30fps. */
 const HERO_FRAME_COUNT = 91;
@@ -164,48 +161,79 @@ export default function Collection() {
     offset: ["start 0.6", "end 0.4"],
   });
 
+  const reduceMotionRef = useRef(false);
   useEffect(() => {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
+    reduceMotionRef.current = reduceMotion;
     if (reduceMotion) {
       gsap.set(".col-hero-scene", { display: "none" });
       gsap.set(".scene-4", { display: "flex", opacity: 1, y: 0 });
-      return;
     }
+  }, []);
 
-    // Set initial states explicitly to avoid CSS layout shift or race conditions
-    gsap.set(".scene-1", { opacity: 1, y: 0 });
-    gsap.set(".scene-2, .scene-3, .scene-4", { opacity: 0, y: 35 });
+  // Driven directly from ScrollSequence's own scrub tick (see onHeroProgress
+  // below) instead of a second ScrollTrigger on the same pinned element —
+  // two ScrollTriggers sharing one pinned trigger element measure "top"
+  // inconsistently depending on creation/refresh order, which desyncs them.
+  const handleHeroProgress = useCallback((p) => {
+    if (reduceMotionRef.current) return;
 
-    // Create a GSAP timeline that scrub-syncs with the pinned scroll sequence
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: ".col-hero",
-        start: "top top",
-        end: "+=2600", // Matches the scrollLength of ScrollSequence
-        scrub: 0.5,
-      }
+    const clamp01 = (v) => Math.min(1, Math.max(0, v));
+    const range = (start, end) => clamp01((p - start) / (end - start));
+    // opacity/offset for a scene that fades in over [inStart,inEnd] then
+    // fades out over [outStart,outEnd] (ranges must not overlap)
+    const inOut = (inStart, inEnd, outStart, outEnd, distance = 35) => {
+      const inT = range(inStart, inEnd);
+      const outT = range(outStart, outEnd);
+      return { opacity: inT * (1 - outT), y: distance * (1 - inT) - distance * outT };
+    };
+
+    // Scene 1: Intro — simple fade + slide, starts visible
+    const s1Out = range(0.08, 0.14);
+    gsap.set(".scene-1", { opacity: 1 - s1Out, y: -35 * s1Out });
+
+    // Scene: Craftsmanship — words split and stagger in
+    const craft = inOut(0.14, 0.19, 0.24, 0.30);
+    gsap.set(".scene-craft", craft);
+    const words = document.querySelectorAll(".scene-craft .col-scene-word");
+    const wordStart = 0.14, wordGap = 0.015, wordDur = 0.02;
+    words.forEach((word, i) => {
+      const t = range(wordStart + i * wordGap, wordStart + i * wordGap + wordDur);
+      gsap.set(word, { opacity: t, y: 20 * (1 - t) });
     });
 
-    // ── ANIMATION SEQUENCE ──
-    // Scene 1: Intro (starts visible, fades out as you scroll)
-    tl.to(".scene-1", { opacity: 0, y: -35, duration: 2 }, "+=1.5")
+    // Scene 2: Heritage — blur-to-sharp focus pull
+    const s2In = range(0.32, 0.38);
+    const s2Out = range(0.44, 0.50);
+    gsap.set(".scene-2", {
+      opacity: s2In * (1 - s2Out),
+      y: 35 * (1 - s2In) - 35 * s2Out,
+      filter: `blur(${14 * (1 - s2In) + 14 * s2Out}px)`,
+    });
 
-    // Scene 2: Heritage (25% to 50%)
-    tl.to(".scene-2", { opacity: 1, y: 0, duration: 2 }, "+=1")
-      .to(".scene-2", { opacity: 0, y: -35, duration: 2 }, "+=1.5")
+    // Scene: Ingredients — scales up from small with a gold glow bloom
+    const ingIn = range(0.52, 0.58);
+    const ingOut = range(0.64, 0.68);
+    gsap.set(".scene-ingredients", {
+      opacity: ingIn * (1 - ingOut),
+      scale: 0.75 + 0.25 * ingIn - 0.15 * ingOut,
+    });
+    gsap.set(".scene-ingredients .col-scene-title", {
+      textShadow: `0 0 ${24 * ingIn}px rgba(212,175,55,${0.75 * ingIn})`,
+    });
 
-    // Scene 3: Profile (55% to 80%)
-    tl.to(".scene-3", { opacity: 1, y: 0, duration: 2 }, "+=1")
-      .to(".scene-3", { opacity: 0, y: -35, duration: 2 }, "+=1.5")
+    // Scene 3: Profile — horizontal wipe reveal via clip-path
+    const wipeT = range(0.70, 0.78);
+    const s3Out = range(0.84, 0.90);
+    gsap.set(".scene-3", {
+      clipPath: `inset(0% ${100 * (1 - wipeT)}% 0% 0%)`,
+      opacity: 1 - s3Out,
+      y: -35 * s3Out,
+    });
 
-    // Scene 4: Finale / CTA (85% to 100%)
-    tl.to(".scene-4", { opacity: 1, y: 0, duration: 2 }, "+=1");
-
-    return () => {
-      tl.scrollTrigger?.kill();
-      tl.kill();
-    };
+    // Scene 4: Finale / CTA — scale + fade arrival
+    const s4In = range(0.92, 1.0);
+    gsap.set(".scene-4", { opacity: s4In, y: 35 * (1 - s4In), scale: 0.94 + 0.06 * s4In });
   }, []);
 
   return (
@@ -214,8 +242,9 @@ export default function Collection() {
       <ScrollSequence
         frameCount={HERO_FRAME_COUNT}
         frameSrc={heroFrameSrc}
-        scrollLength={2600}
+        scrollLength={3900}
         zoom={0.85}
+        onProgress={handleHeroProgress}
         className="col-hero"
       >
         <div className="col-hero__overlay" aria-hidden="true" />
@@ -229,6 +258,18 @@ export default function Collection() {
             <p className="col-scene-desc">Discover Your Perfect Fragrance</p>
           </div>
 
+          {/* Scene: Craftsmanship — Top-Left, words stagger in */}
+          <div className="col-hero-scene scene-craft">
+            <span className="col-kicker">THE CRAFT</span>
+            <h2 className="col-scene-title">
+              {["Meticulous", "by", "Hand"].map((w, i) => (
+                <span className="col-scene-word" key={i}>{w}&nbsp;</span>
+              ))}
+            </h2>
+            <div className="col-scene-divider" />
+            <p className="col-scene-desc">Each flacon is shaped, sealed, and inspected by hand before it ever reaches you.</p>
+          </div>
+
           {/* Scene 2: Bottom-Right Editorial Detail */}
           <div className="col-hero-scene scene-2">
             <span className="col-kicker">THE HERITAGE</span>
@@ -237,7 +278,15 @@ export default function Collection() {
             <p className="col-scene-desc">Handcrafted extraits de parfum, inspired by the heritage of Egypt.</p>
           </div>
 
-          {/* Scene 3: Middle-Left Asymmetric Focus */}
+          {/* Scene: Ingredients — Bottom-Left, scale + glow bloom */}
+          <div className="col-hero-scene scene-ingredients">
+            <span className="col-kicker">THE INGREDIENTS</span>
+            <h2 className="col-scene-title">Rare Raw Materials</h2>
+            <div className="col-scene-divider" />
+            <p className="col-scene-desc">Aged woods, warm amber, and midnight spices sourced from across the world.</p>
+          </div>
+
+          {/* Scene 3: Middle-Left Asymmetric Focus, horizontal wipe reveal */}
           <div className="col-hero-scene scene-3">
             <span className="col-kicker">THE PROFILE</span>
             <h2 className="col-scene-title">Rare Olfactory Contrast</h2>

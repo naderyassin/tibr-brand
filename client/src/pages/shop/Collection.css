@@ -2,11 +2,11 @@
  * COLLECTION — cinematic showcase (Frontier Cinematic)
  * ------------------------------------------------------------- */
 
-@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;1,6..96,400&family=Hanken+Grotesk:wght@400;500;600&display=swap');
+/* Fonts loaded once, site-wide, via client/index.html. */
 
 .frontier-cinematic {
-  --font-serif: "Bodoni Moda", serif;
-  --font-sans: "Hanken Grotesk", sans-serif;
+  --font-serif: "Playfair Display", "Aref Ruqaa", serif;
+  --font-sans: "Jost", "Tajawal", sans-serif;
   --gold: #d4af37;
   --gold-line: rgba(212, 175, 55, 0.3);
   --gold-bright: #e5be45;
@@ -183,9 +183,21 @@
   align-items: flex-end;
 }
 
+.frontier-cinematic .scene-craft {
+  top: 20%;
+  left: 10%;
+}
+
+.frontier-cinematic .scene-ingredients {
+  bottom: 18%;
+  left: 10%;
+  transform-origin: left center;
+}
+
 .frontier-cinematic .scene-3 {
   top: 35%;
   left: 10%;
+  overflow: hidden;
 }
 
 .frontier-cinematic .scene-4 {
@@ -194,6 +206,11 @@
   text-align: left;
   align-items: flex-start;
   max-width: 500px;
+}
+
+/* Craftsmanship scene — per-word stagger reveal */
+.frontier-cinematic .col-scene-word {
+  display: inline-block;
 }
 
 .frontier-cinematic .col-scene-title {

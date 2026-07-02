@@ -892,8 +892,11 @@ app.post("/api/admin/upload", requireUser, requireAdmin, upload.single("file"), 
 const clientDist = path.join(rootDir, "dist", "client");
 const clientDistExists = fs.existsSync(path.join(clientDist, "index.html"));
 
-// Store routes — all handled by the React SPA
+// Store routes — all handled by the React SPA. "/" is the home/hero page
+// (Collection.jsx) and is included here so a fresh load lands on the hero
+// instead of falling through to the "/shop/perfumes" catch-all below.
 const STORE_ROUTES = [
+  '/',
   '/shop/perfumes',
   '/product', '/cart', '/checkout',
   '/login', '/signup',
@@ -901,9 +904,9 @@ const STORE_ROUTES = [
 ];
 
 if (clientDistExists) {
-  // Serve Vite build assets with long-lived cache.
-  // index:false so the build's index.html never auto-serves at "/" — the root
-  // must stay the locked vanilla Egyptian landing (served by the "*" fallback).
+  // Serve Vite build assets with long-lived cache. index:false so this
+  // static middleware doesn't auto-serve index.html at "/" itself — the
+  // explicit STORE_ROUTES handler below does that instead.
   app.use(express.static(clientDist, {
     index: false,
     setHeaders: (res, filePath) => {
