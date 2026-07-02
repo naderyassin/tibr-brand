@@ -79,16 +79,28 @@ export default function ScrollSequence({
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, cw, ch);
 
-      // Draw background frame at full opacity
-      if (img1) {
-        ctx.globalAlpha = 1.0;
-        drawImageCover(img1);
-      }
-
-      // Draw overlay frame with crossfade opacity
-      if (img2 && alpha > 0.01) {
-        ctx.globalAlpha = alpha;
-        drawImageCover(img2);
+      // Optimize: Bypass double drawing if the crossfade is virtually complete.
+      // If alpha is close to 0, only draw the first image.
+      // If alpha is close to 1, only draw the second image.
+      if (alpha <= 0.03 || !img2) {
+        if (img1) {
+          ctx.globalAlpha = 1.0;
+          drawImageCover(img1);
+        }
+      } else if (alpha >= 0.97) {
+        if (img2) {
+          ctx.globalAlpha = 1.0;
+          drawImageCover(img2);
+        }
+      } else {
+        if (img1) {
+          ctx.globalAlpha = 1.0;
+          drawImageCover(img1);
+        }
+        if (img2) {
+          ctx.globalAlpha = alpha;
+          drawImageCover(img2);
+        }
       }
 
       // Reset globalAlpha to default
@@ -111,12 +123,25 @@ export default function ScrollSequence({
       return null;
     };
 
+    let lastDrawnFloat = -1;
+
     const render = () => {
       raf = 0;
       
       const f1 = Math.floor(currentFloat);
       const f2 = Math.min(Math.ceil(currentFloat), frameCount - 1);
       const alpha = currentFloat - f1;
+
+      // Optimize: Skip drawing if the scroll movement is negligible (less than 1% of a frame)
+      // and we are still within the same integer frame steps.
+      const diff = Math.abs(currentFloat - lastDrawnFloat);
+      const lastF1 = Math.floor(lastDrawnFloat);
+      const lastF2 = Math.min(Math.ceil(lastDrawnFloat), frameCount - 1);
+      if (lastDrawnFloat !== -1 && diff < 0.01 && f1 === lastF1 && f2 === lastF2) {
+        return;
+      }
+
+      lastDrawnFloat = currentFloat;
 
       const img1 = resolve(f1);
       const img2 = f1 === f2 ? null : resolve(f2);
@@ -135,6 +160,10 @@ export default function ScrollSequence({
       img.decoding = "async";
       img.src = frameSrc(i);
       img.onload = () => {
+        // Trigger background decoding on loaded images
+        if (typeof img.decode === "function") {
+          img.decode().catch(() => {});
+        }
         // Repaint if this frame is the one currently on screen (or the poster).
         if (Math.abs(i - currentFloat) <= 1) schedule();
       };
