@@ -1,4 +1,29 @@
 /* Import the unified store design system */
 @import "../../../css/store/store.css";
 
+/* 
+ * TRANSLUCENT OVERLAY HEADER OVER HERO SECTIONS
+ * Overlays the header on pages with heroes (.collection-page and .perfume-page) 
+ * and makes it translucent with a premium blur filter.
+ */
+body:has(.collection-page) .store-header,
+body:has(.perfume-page) .store-header {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: 0;
+  background: transparent;
+  border-block-end-color: transparent;
+}
+
+body:has(.collection-page) .store-header.is-scrolled,
+body:has(.perfume-page) .store-header.is-scrolled {
+  position: fixed;
+  background: rgba(8, 8, 8, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-block-end-color: rgba(255, 255, 255, 0.08);
+}
+
+
 

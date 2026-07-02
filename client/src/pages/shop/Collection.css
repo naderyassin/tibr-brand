@@ -98,6 +98,16 @@
   overflow: hidden;
 }
 .frontier-cinematic .col-hero__bg { position: absolute; inset: 0; z-index: 0; }
+/* Scroll-driven frame-sequence canvas — fills the pinned viewport. */
+.frontier-cinematic .col-hero { background: #080808; }
+.frontier-cinematic .scroll-seq__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
 .frontier-cinematic .col-hero__img {
   width: 100%;
   height: 100%;
@@ -112,62 +122,221 @@
 .frontier-cinematic .col-hero__overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(8, 8, 8, 0.95) 0%,
-    rgba(8, 8, 8, 0.2) 45%,
-    rgba(8, 8, 8, 0.75) 100%
-  );
+  background: 
+    /* Horizontal blend: hides left/right image edges for zoom=0.85 */
+    linear-gradient(
+      to right,
+      #080808 0%,
+      #080808 7.5%,
+      rgba(8, 8, 8, 0) 15%,
+      rgba(8, 8, 8, 0) 85%,
+      #080808 92.5%,
+      #080808 100%
+    ),
+    /* Vertical blend: hides top/bottom image edges for zoom=0.85 */
+    linear-gradient(
+      to bottom,
+      #080808 0%,
+      #080808 7.5%,
+      rgba(8, 8, 8, 0) 15%,
+      rgba(8, 8, 8, 0) 85%,
+      #080808 92.5%,
+      #080808 100%
+    ),
+    /* Stylistic overlay: darkens top/bottom for typography readability and section transition */
+    linear-gradient(
+      to top,
+      rgba(8, 8, 8, 0.95) 0%,
+      rgba(8, 8, 8, 0.2) 45%,
+      rgba(8, 8, 8, 0.75) 100%
+    );
 }
-.frontier-cinematic .col-hero__inner {
-  position: relative;
-  z-index: 1;
-  padding: 0 2rem;
+.frontier-cinematic .col-hero__text-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.frontier-cinematic .col-hero-scene {
+  position: absolute;
+  opacity: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  margin-bottom: 12vh;
+  max-width: 500px;
+  text-align: left;
+  padding: 2rem;
+  box-sizing: border-box;
 }
-.frontier-cinematic .col-hero__subtitle {
-  font-size: 0.9rem;
+
+.frontier-cinematic .scene-1 {
+  top: 25%;
+  right: 10%;
+  text-align: right;
+  align-items: flex-end;
+}
+
+.frontier-cinematic .scene-2 {
+  bottom: 20%;
+  right: 10%;
+  text-align: right;
+  align-items: flex-end;
+}
+
+.frontier-cinematic .scene-3 {
+  top: 35%;
+  left: 10%;
+}
+
+.frontier-cinematic .scene-4 {
+  top: 35%;
+  left: 10%;
+  text-align: left;
+  align-items: flex-start;
+  max-width: 500px;
+}
+
+.frontier-cinematic .col-scene-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.2rem, 3.5vw, 4rem);
+  font-style: italic;
   font-weight: 500;
-  letter-spacing: 0.4em;
+  line-height: 1.2;
+  color: #fff;
+  margin: 0.5rem 0 0;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.frontier-cinematic .col-scene-title.is-large {
+  font-size: clamp(4rem, 6vw, 7.5rem);
+  letter-spacing: 0.12em;
+  font-style: normal;
   text-transform: uppercase;
-  color: var(--gold);
+  font-weight: 400;
+  color: #ffffff;
+  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+.frontier-cinematic .col-scene-divider {
+  width: 60px;
+  height: 1.5px;
+  background: var(--gold);
+  margin-block: 1.5rem;
+  opacity: 0.8;
+}
+
+.frontier-cinematic .scene-1 .col-scene-divider,
+.frontier-cinematic .scene-2 .col-scene-divider {
+  margin-inline-start: auto;
+}
+
+.frontier-cinematic .col-scene-desc {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(1.1rem, 1.5vw, 1.35rem);
+  color: #eaeaea;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 32ch;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.frontier-cinematic .scene-1 .col-scene-desc,
+.frontier-cinematic .scene-2 .col-scene-desc {
+  text-align: right;
+}
+
+.frontier-cinematic .scene-4 .col-scene-desc {
   margin-bottom: 2.5rem;
 }
-.frontier-cinematic .col-hero__title {
-  font-family: var(--font-serif);
-  font-size: clamp(3.5rem, 2rem + 6vw, 7rem);
-  font-style: italic;
-  font-weight: 600;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  color: #fff;
-  margin: 0 0 4rem;
+
+@media (max-width: 768px) {
+  .frontier-cinematic .col-hero-scene {
+    left: 5% !important;
+    right: 5% !important;
+    width: 90% !important;
+    max-width: none !important;
+    text-align: center !important;
+    align-items: center !important;
+    top: 30% !important;
+    bottom: auto !important;
+  }
+  .frontier-cinematic .scene-2 .col-scene-desc {
+    text-align: center !important;
+  }
+  .frontier-cinematic .col-scene-divider {
+    margin-inline: auto !important;
+  }
 }
-.frontier-cinematic .col-hero__cue {
-  margin-top: 3rem;
-  width: 1px;
-  height: 56px;
-  background: linear-gradient(to bottom, var(--gold-line), transparent);
+
+/* ── PHILOSOPHY (scroll-linked split) ──────────────────── */
+.frontier-cinematic .col-philosophy {
+  padding: 10rem 2rem 8rem;
+  background: var(--bg);
   position: relative;
+  z-index: 10;
+  margin-top: -2px; /* Bridge any sub-pixel rendering gaps */
+  max-width: 78rem;
+  margin-inline: auto;
 }
-.frontier-cinematic .col-hero__cue-dot {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 4px;
-  height: 4px;
-  margin-left: -2px;
-  border-radius: 9999px;
+
+.frontier-cinematic .col-philosophy__head {
+  text-align: center;
+  max-width: 40rem;
+  margin: 0 auto 5rem;
+}
+
+.frontier-cinematic .col-philosophy__title {
+  font-family: var(--font-serif);
+  font-size: clamp(3rem, 5vw, 4.5rem);
+  font-weight: 300;
+  line-height: 1.1;
+  color: #fff;
+  margin-top: 1rem;
+}
+
+.frontier-cinematic .col-philosophy__body {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 3.5rem;
+  align-items: start;
+}
+
+.frontier-cinematic .col-philosophy__line {
+  width: 1px;
+  height: 100%;
+  min-height: 8rem;
   background: var(--gold);
-  animation: col-cue 2.4s ease-out infinite;
+  opacity: 0.4;
+  transform-origin: top;
+  justify-self: center;
 }
-@keyframes col-cue {
-  0%   { transform: translateY(0); opacity: 1; }
-  70%  { transform: translateY(48px); opacity: 0; }
-  100% { transform: translateY(48px); opacity: 0; }
+
+.frontier-cinematic .col-philosophy__text {
+  font-family: var(--font-sans);
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: #eaeaea;
+  margin: 0;
+}
+
+.frontier-cinematic .col-philosophy__text.is-secondary {
+  color: #888;
+  font-size: 1rem;
+  align-self: end;
+}
+
+@media (max-width: 900px) {
+  .frontier-cinematic .col-philosophy__body {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .frontier-cinematic .col-philosophy__line {
+    width: 40px;
+    height: 1px;
+    transform-origin: left;
+    justify-self: start;
+  }
 }
 
 /* ── SECTION SHELL ─────────────────────────────────────── */
@@ -222,6 +391,10 @@
   gap: 2.5rem;
   padding-right: 2.5rem;
   animation: marquee 30s linear infinite;
+  animation-play-state: paused;
+}
+.frontier-cinematic .col-marquee__track.is-playing {
+  animation-play-state: running;
 }
 .frontier-cinematic .col-marquee:hover .col-marquee__track {
   animation-play-state: paused;
@@ -276,13 +449,26 @@
   margin: 0.5rem 0 2rem;
 }
 
-/* ── BENTO COLLECTIONS ─────────────────────────────────── */
-.frontier-cinematic .col-bento {
+/* ── COLLECTIONS (mouse-tilt cards) ────────────────────── */
+.frontier-cinematic .col-collections-wrap { padding-top: 3rem; }
+.frontier-cinematic .col-collections__head {
+  text-align: center;
+  max-width: 34rem;
+  margin: 0 auto 3.5rem;
+}
+.frontier-cinematic .col-collections__title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  font-weight: 400;
+  color: #fff;
+  margin: 0.5rem 0 0;
+}
+.frontier-cinematic .col-collections-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: 1.5rem;
 }
-.frontier-cinematic .col-tile {
+.frontier-cinematic .col-collection-card {
   position: relative;
   grid-column: span 6;
   min-height: 320px;
@@ -290,41 +476,41 @@
   border-radius: 2px;
   overflow: hidden;
   background-color: var(--surface);
+  transform-style: preserve-3d;
 }
-.frontier-cinematic .bento-large {
+.frontier-cinematic .col-collection-card:hover {
+  will-change: transform;
+}
+.frontier-cinematic .col-collection-card.is-large {
   grid-column: span 12;
   min-height: 450px;
 }
-.frontier-cinematic .bento-half {
+.frontier-cinematic .col-collection-card.is-half {
   grid-column: span 6;
   min-height: 350px;
 }
-.frontier-cinematic .col-tile.is-editorial {
+.frontier-cinematic .col-collection-card.is-editorial {
   background: var(--surface);
 }
-.frontier-cinematic .col-tile__link {
+.frontier-cinematic .col-collection-card__link {
   display: flex;
   height: 100%;
   text-decoration: none;
   color: inherit;
 }
-.frontier-cinematic .col-tile__img,
-.frontier-cinematic .col-tile__video {
+.frontier-cinematic .col-collection-card__media {
   position: absolute;
   inset: 0;
   background-size: cover;
   background-position: center;
   transition: transform 700ms ease-out;
   opacity: 0.8;
-}
-.frontier-cinematic .col-tile__video {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-.frontier-cinematic .col-tile:hover .col-tile__img,
-.frontier-cinematic .col-tile:hover .col-tile__video { transform: scale(1.05); opacity: 0.95; }
-.frontier-cinematic .col-tile__scrim {
+.frontier-cinematic .col-collection-card:hover .col-collection-card__media { transform: scale(1.05); opacity: 0.95; }
+.frontier-cinematic .col-collection-card__scrim {
   position: absolute;
   inset: 0;
   background: linear-gradient(
@@ -334,37 +520,37 @@
     transparent 100%
   );
 }
-.frontier-cinematic .col-tile.is-editorial .col-tile__scrim { background: rgba(0,0,0,0.3); }
-.frontier-cinematic .col-tile__content {
+.frontier-cinematic .col-collection-card.is-editorial .col-collection-card__scrim { background: rgba(0,0,0,0.3); }
+.frontier-cinematic .col-collection-card__content {
   position: relative;
   z-index: 1;
   margin-top: auto;
   align-self: flex-end;
   padding: 2.5rem;
 }
-.frontier-cinematic .col-tile.is-editorial .col-tile__content {
+.frontier-cinematic .col-collection-card.is-editorial .col-collection-card__content {
   margin: auto;
   text-align: center;
   align-self: center;
 }
-.frontier-cinematic .col-tile__title {
+.frontier-cinematic .col-collection-card__title {
   font-family: var(--font-serif);
   font-size: 2.5rem;
   font-weight: 400;
   color: #fff;
   margin: 0.5rem 0 0;
 }
-.frontier-cinematic .col-tile.is-editorial .col-tile__title {
+.frontier-cinematic .col-collection-card.is-editorial .col-collection-card__title {
   font-size: 3rem;
 }
-.frontier-cinematic .col-tile__blurb {
+.frontier-cinematic .col-collection-card__blurb {
   font-size: 1rem;
   color: var(--ink-2);
   line-height: 1.6;
   margin: 0.6rem 0 0;
   max-width: 32ch;
 }
-.frontier-cinematic .col-tile.is-editorial .col-tile__blurb { margin-inline: auto; font-style: italic; }
+.frontier-cinematic .col-collection-card.is-editorial .col-collection-card__blurb { margin-inline: auto; font-style: italic; }
 
 /* ── THE HOUSE / TIMELINE ──────────────────────────────── */
 .frontier-cinematic .col-house__head {
@@ -387,9 +573,30 @@
   line-height: 1.6;
 }
 .frontier-cinematic .col-house__entries {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 6rem;
+}
+/* Scroll-linked progress spine, centered behind the alternating entries */
+.frontier-cinematic .col-house__spine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  transform: translateX(-50%);
+  background: var(--line);
+}
+.frontier-cinematic .col-house__spine-fill {
+  width: 100%;
+  height: 100%;
+  background: var(--gold);
+  transform-origin: top;
+  opacity: 0.9;
+}
+@media (max-width: 860px) {
+  .frontier-cinematic .col-house__spine { display: none; }
 }
 .frontier-cinematic .col-entry {
   display: grid;
@@ -517,12 +724,11 @@
 
 /* ── RESPONSIVE ────────────────────────────────────────── */
 @media (max-width: 1024px) {
-  .frontier-cinematic .bento-large { grid-column: span 12; min-height: 400px; }
-  .frontier-cinematic .bento-half { grid-column: span 12; }
+  .frontier-cinematic .col-collection-card.is-large { grid-column: span 12; min-height: 400px; }
+  .frontier-cinematic .col-collection-card.is-half { grid-column: span 12; }
 }
 
 @media (max-width: 860px) {
-  .frontier-cinematic .col-tile.is-narrow { grid-column: span 12; }
   .frontier-cinematic .col-entry { grid-template-columns: 1fr; gap: 2rem; }
   .frontier-cinematic .col-entry.is-left .col-entry__media,
   .frontier-cinematic .col-entry.is-right .col-entry__media { order: 1; }
@@ -531,10 +737,19 @@
   .frontier-cinematic .col-featured__grid { grid-template-columns: 1fr; }
 }
 
+@media (max-width: 640px) {
+  .frontier-cinematic .col-marquee__header {
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .frontier-cinematic .col-marquee__desc { max-width: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .frontier-cinematic .col-hero__img { animation: none; transform: scale(1); }
   .frontier-cinematic .col-hero__cue-dot { animation: none; }
-  .frontier-cinematic .col-tile__img,
+  .frontier-cinematic .col-collection-card__media,
   .frontier-cinematic .col-entry__img,
   .frontier-cinematic .col-card__img { transition: none; }
+  .frontier-cinematic .col-collection-card { transform: none !important; }
 }

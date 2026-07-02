@@ -4,9 +4,9 @@
 
 **This project has TWO surfaces with TWO registers.** See PRODUCT.md for the full brief.
 
-### Landing page (`view-home`) — register: `brand` — KEEP AS-IS
-- The existing Egyptian-heritage design is locked. Work here is **additive only**: animation and motion.
-- Do not restyle, re-token, or re-theme the landing.
+### Landing page (`view-home`) — register: `brand`
+- Hero section (`ScrollSequence` scroll-scrubbed frame sequence in `Collection.jsx`) is locked — work there is **additive only**: animation and motion, no restyling.
+- Everything below the hero (Philosophy, Marquee, Collections, Heritage timeline) is open to redesign — as of the Framer Motion redesign, it keeps the gold-on-near-black Egyptian-heritage identity but layout/motion can evolve freely.
 - Identity: Rakkas (Arabic display) + Cinzel Decorative (English display) + Cormorant Garamond / Amiri (body), gold-on-near-black.
 
 ### Store / app layer (everything else) — register: `product` — FULL REDESIGN

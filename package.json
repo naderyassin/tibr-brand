@@ -28,7 +28,7 @@
   "author": "TIBR",
   "license": "ISC",
   "devDependencies": {
-    "concurrently": "^9.2.1",
+    "concurrently": "^9.2.3",
     "puppeteer-core": "^25.1.0"
   }
 }

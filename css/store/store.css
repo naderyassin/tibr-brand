@@ -12,13 +12,13 @@
      Contrast verified against --bg in the build (all body ≥4.5:1).
      =========================================================== */
   --bg:           #000000;   /* page */
-  --bg-raised:    oklch(0.205 0.007 74);   /* raised bands, footer */
-  --surface:      oklch(0.225 0.008 72);   /* panels, inputs */
-  --surface-2:    oklch(0.265 0.009 72);   /* hover / elevated */
-  --surface-3:    oklch(0.305 0.010 72);   /* pressed / active fill */
+  --bg-raised:    oklch(0.205 0.000 0);    /* raised bands, footer */
+  --surface:      oklch(0.225 0.000 0);    /* panels, inputs */
+  --surface-2:    oklch(0.265 0.000 0);    /* hover / elevated */
+  --surface-3:    oklch(0.305 0.000 0);    /* pressed / active fill */
 
-  --line:         oklch(0.34 0.010 72);    /* hairline borders */
-  --line-strong:  oklch(0.44 0.012 72);    /* emphasized dividers */
+  --line:         oklch(0.340 0.000 0);    /* hairline borders */
+  --line-strong:  oklch(0.440 0.000 0);    /* emphasized dividers */
 
   --ink:          oklch(0.952 0.008 82);   /* primary text (~16:1 on bg) */
   --ink-2:        oklch(0.808 0.012 80);   /* secondary text (~9:1) */
@@ -448,7 +448,7 @@ p, li { max-width: 68ch; }     /* readable measure */
 }
 .store-footer__brand .store-wordmark { font-size: 1.6rem; }
 .store-footer__tagline {
-  color: var(--muted);
+  color: #999999;
   font-size: var(--fs-sm);
   margin-block-start: var(--sp-3);
   max-width: 30ch;
@@ -458,28 +458,28 @@ p, li { max-width: 68ch; }     /* readable measure */
   font-size: var(--fs-sm);
   font-weight: var(--fw-semibold);
   letter-spacing: var(--tracking-wide);
-  color: var(--muted);
+  color: #b3b3b3;
   margin-block-end: var(--sp-4);
 }
 .store-footer__col li { margin-block-end: var(--sp-3); }
 .store-footer__col a {
-  color: var(--ink-2);
+  color: #999999;
   font-size: var(--fs-sm);
   transition: color var(--dur) var(--ease-out);
 }
-.store-footer__col a:hover { color: var(--gold); }
+.store-footer__col a:hover { color: #ffffff; }
 
 .store-footer__whatsapp {
   display: inline-flex;
   align-items: center;
   gap: var(--sp-2);
   margin-block-start: var(--sp-2);
-  color: var(--ink);
+  color: #b3b3b3;
   font-weight: var(--fw-medium);
 }
-.store-footer__whatsapp svg { inline-size: 1.15rem; block-size: 1.15rem; color: var(--gold); }
+.store-footer__whatsapp svg { inline-size: 1.15rem; block-size: 1.15rem; color: #b3b3b3; }
 .store-footer__note {
-  color: var(--muted);
+  color: #777777;
   font-size: var(--fs-sm);
   margin-block-start: var(--sp-4);
   line-height: var(--lh-snug);
@@ -492,7 +492,7 @@ p, li { max-width: 68ch; }     /* readable measure */
   flex-wrap: wrap;
   gap: var(--sp-3);
   justify-content: space-between;
-  color: var(--muted);
+  color: #777777;
   font-size: var(--fs-sm);
 }
 

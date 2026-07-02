@@ -5,6 +5,14 @@ import { useAuth } from "@/stores/auth";
 import App from "./App";
 import "@/styles/index.css";
 
+// Global reset of browser scroll restoration to prevent landing page displacement
+if (typeof window !== "undefined") {
+  if ("scrollRestoration" in window.history) {
+    window.history.scrollRestoration = "manual";
+  }
+  window.scrollTo(0, 0);
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

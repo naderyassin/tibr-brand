@@ -2,11 +2,21 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-route
 import { useEffect } from "react";
 import AppShell from "@/components/layout/AppShell";
 
-function ScrollToTop() {
+function StartAtHomeAndScroll() {
   const { pathname } = useLocation();
+
+  // Disable browser scroll restoration once, on initial mount
+  useEffect(() => {
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+  }, []);
+
+  // Scroll to top on every navigation change
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
+
   return null;
 }
 import Collection from "@/pages/shop/Collection";
@@ -23,7 +33,7 @@ import AdminProduct from "@/pages/AdminProduct";
 export default function App() {
   return (
     <BrowserRouter>
-      <ScrollToTop />
+      <StartAtHomeAndScroll />
       <Routes>
         <Route element={<AppShell />}>
           {/* Catalog */}
