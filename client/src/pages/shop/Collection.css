@@ -24,7 +24,7 @@
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-sans);
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Shared small caps label */
@@ -390,6 +390,21 @@
   max-width: var(--container);
   margin: 0 auto;
   padding: 6rem 2rem;
+}
+
+/* ── COMPOSITION (zoom parallax) ───────────────────────── */
+.frontier-cinematic .col-parallax__head {
+  text-align: center;
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: 6rem 2rem 0;
+}
+.frontier-cinematic .col-parallax__title {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  font-weight: 400;
+  color: #fff;
+  margin: 0.5rem 0 0;
 }
 
 /* ── SIGNATURE PILLARS ─────────────────────────────────── */

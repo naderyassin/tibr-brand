@@ -6,6 +6,7 @@ import gsap from "gsap";
 import ScrollSequence from "@/components/ui/ScrollSequence";
 import GlowCard from "@/components/ui/GlowCard";
 import { Hero } from "@/components/ui/animated-hero";
+import { ZoomParallax } from "@/components/ui/zoom-parallax";
 import "./Collection.css";
 
 /* Hero image sequence — frames extracted from hero.mp4 at 24fps. */
@@ -85,6 +86,16 @@ const COLLECTIONS = [
     image: "https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/images/perfume_collection.png",
     variant: "is-half",
   },
+];
+
+const PARALLAX_IMAGES = [
+  { src: "/assets/images/parallax/parallax_hero_bottle.png", alt: "TIBR luxury flacon, full profile" },
+  { src: "/assets/images/parallax/parallax_amber_pour.png", alt: "Golden amber elixir being poured" },
+  { src: "/assets/images/parallax/parallax_ingredients.png", alt: "Rare raw perfume ingredients" },
+  { src: "/assets/images/parallax/parallax_cap_detail.png", alt: "Machined metal cap, detail" },
+  { src: "/assets/images/parallax/parallax_golden_texture.png", alt: "Golden liquid refractions" },
+  { src: "/assets/images/parallax/parallax_scent_trail.png", alt: "Ethereal scent trail" },
+  { src: "/assets/images/parallax/parallax_crystal_bottle.png", alt: "Crystal-cut flacon, dramatic angle" },
 ];
 
 const TIMELINE = [
@@ -391,6 +402,15 @@ export default function Collection() {
               Our design language is rooted in industrial minimalism, stripping away the ornate to reveal the raw, powerful essence of modern perfumery.
             </motion.p>
           </div>
+        </section>
+
+        {/* ── COMPOSITION (zoom parallax) ──────────────────── */}
+        <section className="col-parallax">
+          <motion.div className="col-parallax__head" {...reveal}>
+            <span className="col-kicker">THE COMPOSITION</span>
+            <h2 className="col-parallax__title">Held. Poured. Sealed.</h2>
+          </motion.div>
+          <ZoomParallax images={PARALLAX_IMAGES} />
         </section>
 
         {/* ── SIGNATURE PILLARS ────────────────────────────── */}
