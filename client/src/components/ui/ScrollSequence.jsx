@@ -19,8 +19,8 @@ export default function ScrollSequence({
   frameSrc,               // (index0Based) => url
   scrollLength = 2600,    // px of scroll consumed by the scrub
   zoom = 1,               // <1 pulls the subject farther back (edges blend into bg)
-  scrub = 1.2,            // scrub momentum/smoothing (higher values add more inertia)
-  onProgress,              // optional: (progress 0..1) => void, called every scrub tick
+  smoothing = 0.09,       // playhead time-constant (s). Lower = tighter to scroll, higher = more filmic glide.
+  onProgress,              // optional: (progress 0..1) => void, called every rendered frame
   className,
   children,
 }) {
@@ -41,8 +41,15 @@ export default function ScrollSequence({
 
     const ctx = canvas.getContext("2d");
     const images = new Array(frameCount);
+    const maxFrame = frameCount - 1;
+    // Two playheads: `targetFloat` is where scroll says we should be (updated on
+    // every scroll event); `currentFloat` is where we're actually painting and
+    // eases toward the target every animation frame. That easing is what turns a
+    // discrete scroll into continuous, video-like motion.
+    let targetFloat = 0;
     let currentFloat = 0;
     let raf = 0;
+    let lastTime = 0;
     let disposed = false;
 
     // Cache container dimensions to avoid layout thrashing (getBoundingClientRect)
@@ -125,33 +132,58 @@ export default function ScrollSequence({
 
     let lastDrawnFloat = -1;
 
-    const render = () => {
-      raf = 0;
-      
-      const f1 = Math.floor(currentFloat);
-      const f2 = Math.min(Math.ceil(currentFloat), frameCount - 1);
-      const alpha = currentFloat - f1;
+    // Paint a single (possibly fractional) playhead position, crossfading the
+    // two bracketing frames by the fractional part.
+    const paint = (value) => {
+      const f1 = Math.floor(value);
+      const f2 = Math.min(Math.ceil(value), maxFrame);
+      const alpha = value - f1;
 
-      // Optimize: Skip drawing if the scroll movement is negligible (less than 1% of a frame)
-      // and we are still within the same integer frame steps.
-      const diff = Math.abs(currentFloat - lastDrawnFloat);
-      const lastF1 = Math.floor(lastDrawnFloat);
-      const lastF2 = Math.min(Math.ceil(lastDrawnFloat), frameCount - 1);
-      if (lastDrawnFloat !== -1 && diff < 0.01 && f1 === lastF1 && f2 === lastF2) {
+      // Skip a redundant repaint only when nothing has meaningfully changed.
+      if (
+        lastDrawnFloat !== -1 &&
+        Math.abs(value - lastDrawnFloat) < 0.0015 &&
+        f1 === Math.floor(lastDrawnFloat) &&
+        f2 === Math.min(Math.ceil(lastDrawnFloat), maxFrame)
+      ) {
         return;
       }
 
-      lastDrawnFloat = currentFloat;
-
+      lastDrawnFloat = value;
       const img1 = resolve(f1);
       const img2 = f1 === f2 ? null : resolve(f2);
-
       drawCoverCrossfade(img1, img2, alpha);
+      onProgressRef.current?.(maxFrame > 0 ? value / maxFrame : 0);
+    };
+
+    // Continuous easing loop: runs while the displayed playhead is catching up
+    // to the scroll target, then self-terminates so we don't burn frames idle.
+    // Frame-rate independent — the same glide feels identical at 60/120/144 Hz.
+    const SNAP = 0.0025; // frames; close enough to settle and stop the loop
+    const tick = (now) => {
+      raf = 0;
+      const dt = lastTime ? Math.min((now - lastTime) / 1000, 0.05) : 1 / 60;
+      lastTime = now;
+
+      const delta = targetFloat - currentFloat;
+      if (Math.abs(delta) <= SNAP) {
+        currentFloat = targetFloat;
+        paint(currentFloat);
+        return; // settled — idle until the next scroll nudge
+      }
+
+      // Exponential approach: fraction covered this frame depends on elapsed
+      // time, so a slow frame catches up more and the motion stays consistent.
+      const k = smoothing > 0 ? 1 - Math.exp(-dt / smoothing) : 1;
+      currentFloat += delta * k;
+      paint(currentFloat);
+      raf = requestAnimationFrame(tick);
     };
 
     const schedule = () => {
       if (raf || disposed) return;
-      raf = requestAnimationFrame(render);
+      lastTime = 0; // restart the dt clock so the first step isn't oversized
+      raf = requestAnimationFrame(tick);
     };
 
     // ── Preload ───────────────────────────────────────────
@@ -165,7 +197,12 @@ export default function ScrollSequence({
           img.decode().catch(() => {});
         }
         // Repaint if this frame is the one currently on screen (or the poster).
-        if (Math.abs(i - currentFloat) <= 1) schedule();
+        // Clear the skip-guard so a fallback frame gets swapped for the real one
+        // even though the playhead position hasn't moved.
+        if (Math.abs(i - currentFloat) <= 1) {
+          lastDrawnFloat = -1;
+          schedule();
+        }
       };
       images[i] = img;
     }
@@ -173,7 +210,7 @@ export default function ScrollSequence({
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     // ── Scroll wiring ─────────────────────────────────────
-    let tl;
+    let st;
     const onResize = () => {
       updateDimensions();
       schedule();
@@ -181,50 +218,48 @@ export default function ScrollSequence({
     window.addEventListener("resize", onResize);
 
     if (reduceMotion) {
-      // No pin / no scrub — just show a settled frame near the end.
-      currentFloat = frameCount - 1;
-      schedule();
+      // No pin / no motion — just show a settled frame near the end.
+      targetFloat = currentFloat = maxFrame;
+      lastDrawnFloat = -1;
+      paint(currentFloat);
     } else {
-      const state = { frame: 0 };
-      tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: container,
-          start: "top top",
-          end: `+=${scrollLength}`,
-          scrub: scrub,
-          pin: true,
-          pinSpacing: true,
-          invalidateOnRefresh: true,
-        },
-      });
-      tl.to(state, {
-        frame: frameCount - 1,
-        ease: "none",
-        onUpdate: () => {
-          currentFloat = state.frame;
+      // ScrollTrigger only pins the hero and reports raw progress. We do NOT use
+      // its `scrub` — the easing playhead above (`tick`) supplies all the
+      // smoothing, so the frame index tracks a single, continuous glide instead
+      // of GSAP's scrub inertia stacked on top of Lenis' smooth wheel.
+      st = ScrollTrigger.create({
+        trigger: container,
+        start: "top top",
+        end: `+=${scrollLength}`,
+        pin: true,
+        pinSpacing: true,
+        invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          targetFloat = self.progress * maxFrame;
           schedule();
-          onProgressRef.current?.(state.frame / (frameCount - 1));
+        },
+        onRefresh: (self) => {
+          updateDimensions();
+          targetFloat = self.progress * maxFrame;
+          schedule();
         },
       });
-      schedule(); // paint the poster frame right away
-      // Reflects wherever the page actually is on mount (GSAP snaps the
-      // scrub's initial playhead to current scroll position) rather than
-      // assuming 0 — a page that mounts already scrolled into the hero
-      // (bfcache, scroll restoration) must still get a correct first read.
-      onProgressRef.current?.(state.frame / (frameCount - 1));
+
+      // Start settled at wherever the page actually is on mount (bfcache /
+      // scroll restoration may land us mid-hero) so there's no intro glide jump.
+      targetFloat = currentFloat = st.progress * maxFrame;
+      lastDrawnFloat = -1;
+      paint(currentFloat);
     }
 
     return () => {
       disposed = true;
       window.removeEventListener("resize", onResize);
       if (raf) cancelAnimationFrame(raf);
-      if (tl) {
-        tl.scrollTrigger?.kill();
-        tl.kill();
-      }
+      if (st) st.kill();
       images.forEach((img) => { if (img) img.onload = null; });
     };
-  }, [frameCount, frameSrc, scrollLength, zoom]);
+  }, [frameCount, frameSrc, scrollLength, zoom, smoothing]);
 
   return (
     <div ref={containerRef} className={className}>

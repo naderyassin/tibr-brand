@@ -1,5 +1,19 @@
-/* Import the unified store design system */
+@import "tailwindcss";
 @import "../../../css/store/store.css";
+
+@theme {
+  --color-primary: var(--gold);
+  --color-primary-foreground: var(--on-gold);
+  --color-secondary: var(--surface-2);
+  --color-secondary-foreground: var(--ink);
+  --color-background: var(--bg);
+  --color-foreground: var(--ink);
+  --color-input: var(--line);
+  --color-ring: var(--gold);
+}
+
+@source "../components";
+@source "../pages";
 
 /* 
  * TRANSLUCENT OVERLAY HEADER OVER HERO SECTIONS

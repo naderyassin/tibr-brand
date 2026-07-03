@@ -1,14 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
+import { Sparkles, Compass, Fingerprint } from "lucide-react";
 import gsap from "gsap";
 import ScrollSequence from "@/components/ui/ScrollSequence";
+import GlowCard from "@/components/ui/GlowCard";
+import { Hero } from "@/components/ui/animated-hero";
 import "./Collection.css";
 
-/* Hero image sequence — frames extracted from hero-section.mp4 at 30fps. */
-const HERO_FRAME_COUNT = 91;
+/* Hero image sequence — frames extracted from hero.mp4 at 24fps. */
+const HERO_FRAME_COUNT = 122;
 const heroFrameSrc = (i) =>
-  `/assets/hero-frames/frame_${String(i + 1).padStart(4, "0")}.jpg`;
+  `/assets/hero-frames-2/frame_${String(i + 1).padStart(4, "0")}.jpg`;
 
 /* Reveal preset — product-register restraint, ease-out only. */
 const reveal = {
@@ -31,6 +34,29 @@ const MARQUEE_CARDS = [
     image: "https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/images/amber_epilogue_wide.png",
     btnText: "DISCOVER"
   }
+];
+
+/* Signature pillars — original / inspired / bespoke. Placeholder EN copy;
+   will be categorized properly once content strategy is finalized. */
+const SIGNATURE_PILLARS = [
+  {
+    icon: Sparkles,
+    title: "Original",
+    text: "No imitation, no shortcuts — every TIBR scent is composed from a blank canvas.",
+    image: "/assets/images/promise_original.png",
+  },
+  {
+    icon: Compass,
+    title: "Inspired",
+    text: "Rooted in a century of Egyptian perfumery, carried forward into the present.",
+    image: "/assets/images/promise_inspired.png",
+  },
+  {
+    icon: Fingerprint,
+    title: "Your Own Signature",
+    text: "A fragrance that becomes unmistakably yours the moment it meets skin.",
+    image: "/assets/images/promise_signature.png",
+  },
 ];
 
 const COLLECTIONS = [
@@ -176,13 +202,13 @@ export default function Collection() {
 
     // Set initial states for all scenes
     gsap.set(".col-hero-scene", { opacity: 0, y: 30, pointerEvents: "none" });
-    gsap.set(".scene-1", { opacity: 1, y: 0, pointerEvents: "none" });
+    gsap.set(".scene-1", { opacity: 1, y: 0, pointerEvents: "auto" });
 
     // Create the master timeline that maps 1-to-1 with scroll progress (0 to 1)
     const master = gsap.timeline({ paused: true });
 
     // Scene 1 Exit: fades out and translates up slightly (0.10 to 0.15)
-    master.to(".scene-1", { opacity: 0, y: -30, duration: 0.05, ease: "power2.in" }, 0.10);
+    master.to(".scene-1", { opacity: 0, y: -30, pointerEvents: "none", duration: 0.05, ease: "power2.in" }, 0.10);
 
     // Scene 2 (Craft) Entrance: fades/translates in (0.15 to 0.22)
     master.fromTo(".scene-craft",
@@ -273,10 +299,7 @@ export default function Collection() {
         <div className="col-hero__text-layer pointer-events-none">
           {/* Scene 1: Top-Right Initial Hook */}
           <div className="col-hero-scene scene-1">
-            <span className="col-kicker">EXTRAIT DE PARFUM</span>
-            <h2 className="col-scene-title is-large">TIBR</h2>
-            <div className="col-scene-divider" />
-            <p className="col-scene-desc">Discover Your Perfect Fragrance</p>
+            <Hero />
           </div>
 
           {/* Scene: Craftsmanship — Top-Left, words stagger in */}
@@ -342,12 +365,6 @@ export default function Collection() {
           </motion.div>
 
           <div className="col-philosophy__body">
-            <motion.div
-              className="col-philosophy__line"
-              style={{ scaleY: dividerScale }}
-              aria-hidden="true"
-            />
-
             <motion.p
               className="col-philosophy__text"
               initial={{ opacity: 0, x: -30 }}
@@ -358,6 +375,12 @@ export default function Collection() {
               Every TIBR flacon is meticulously engineered to reflect the gravity of the elixir within. We believe luxury is tactile—defined not just by the aroma, but by the physical weight of the glass, the magnetic snap of the cap, and the sharp, machined edges that command space on your vanity.
             </motion.p>
 
+            <motion.div
+              className="col-philosophy__line"
+              style={{ scaleY: dividerScale }}
+              aria-hidden="true"
+            />
+
             <motion.p
               className="col-philosophy__text is-secondary"
               initial={{ opacity: 0, x: 30 }}
@@ -367,6 +390,35 @@ export default function Collection() {
             >
               Our design language is rooted in industrial minimalism, stripping away the ornate to reveal the raw, powerful essence of modern perfumery.
             </motion.p>
+          </div>
+        </section>
+
+        {/* ── SIGNATURE PILLARS ────────────────────────────── */}
+        <section className="col-section col-signature">
+          <motion.div className="col-signature__head" {...reveal}>
+            <span className="col-kicker">THE TIBR PROMISE</span>
+            <h2 className="col-signature__title">Original. Inspired. Yours.</h2>
+          </motion.div>
+
+          <div className="col-signature__grid">
+            {SIGNATURE_PILLARS.map((p) => (
+              <motion.div key={p.title} {...reveal}>
+                <GlowCard glowColor="purple" customSize className="col-signature-card">
+                  <div className="col-signature-card__image-wrap">
+                    <img src={p.image} alt={p.title} className="col-signature-card__image" />
+                    <div className="col-signature-card__scrim" />
+                  </div>
+                  <div data-glow className="col-signature-card__border" />
+                  <div className="col-signature-card__content">
+                    <p.icon className="col-signature-card__icon" strokeWidth={1.25} aria-hidden="true" />
+                    <div className="col-signature-card__body">
+                      <h3 className="col-signature-card__title">{p.title}</h3>
+                      <p className="col-signature-card__text">{p.text}</p>
+                    </div>
+                  </div>
+                </GlowCard>
+              </motion.div>
+            ))}
           </div>
         </section>
 
