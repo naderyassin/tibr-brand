@@ -31,6 +31,10 @@ export default function GlowCard({
   const innerRef = useRef(null);
 
   useEffect(() => {
+    // Only track pointer on devices that support hover (desktop)
+    const mediaQuery = window.matchMedia("(hover: hover)");
+    if (!mediaQuery.matches) return;
+
     const syncPointer = (e) => {
       const { clientX: x, clientY: y } = e;
       if (cardRef.current) {
@@ -41,8 +45,27 @@ export default function GlowCard({
       }
     };
 
-    document.addEventListener("pointermove", syncPointer);
-    return () => document.removeEventListener("pointermove", syncPointer);
+    const handlePointerEnter = () => {
+      document.addEventListener("pointermove", syncPointer);
+    };
+
+    const handlePointerLeave = () => {
+      document.removeEventListener("pointermove", syncPointer);
+    };
+
+    const card = cardRef.current;
+    if (card) {
+      card.addEventListener("pointerenter", handlePointerEnter);
+      card.addEventListener("pointerleave", handlePointerLeave);
+    }
+
+    return () => {
+      if (card) {
+        card.removeEventListener("pointerenter", handlePointerEnter);
+        card.removeEventListener("pointerleave", handlePointerLeave);
+      }
+      document.removeEventListener("pointermove", syncPointer);
+    };
   }, []);
 
   const { base, spread } = GLOW_COLOR_MAP[glowColor] ?? GLOW_COLOR_MAP.gold;

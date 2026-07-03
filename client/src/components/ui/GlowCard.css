@@ -11,15 +11,24 @@
   gap: 1rem;
   padding: 1rem;
   border-radius: 1rem;
-  touch-action: none;
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
   box-shadow: 0 1rem 2rem -1rem black;
 }
 
 .glow-card--sm { width: 12rem; height: 16rem; }
 .glow-card--md { width: 16rem; height: 20rem; }
 .glow-card--lg { width: 20rem; height: 24rem; }
+
+[data-glow] {
+  --border-spot-opacity: 0;
+  --border-light-opacity: 0;
+  --bg-spot-opacity: 0;
+}
+
+[data-glow]:hover {
+  --border-spot-opacity: 1;
+  --border-light-opacity: 1;
+  --bg-spot-opacity: 0.15;
+}
 
 [data-glow]::before,
 [data-glow]::after {
@@ -36,6 +45,13 @@
   mask: linear-gradient(transparent, transparent), linear-gradient(white, white);
   mask-clip: padding-box, border-box;
   mask-composite: intersect;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+[data-glow]:hover::before,
+[data-glow]:hover::after {
+  opacity: 1;
 }
 
 [data-glow]::before {

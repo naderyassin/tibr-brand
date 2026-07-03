@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import { Sparkles, Compass, Fingerprint } from "lucide-react";
@@ -182,6 +182,53 @@ function TiltCard({ c }) {
   );
 }
 
+function GoldDust() {
+  const particles = useMemo(() => {
+    return Array.from({ length: 90 }).map((_, i) => ({
+      id: i,
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      size: Math.random() * 1.5 + 1, // 1px to 2.5px (fine dust)
+      x: [0, (Math.random() - 0.5) * 80],
+      y: [0, -Math.random() * 160 - 60], // Drifts higher
+      duration: Math.random() * 6 + 5, // 5s to 11s
+      delay: Math.random() * 5,
+      maxOpacity: Math.random() * 0.4 + 0.5, // 50% to 90% opacity
+    }));
+  }, []);
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+      {particles.map((p) => (
+        <motion.div
+          key={p.id}
+          className="absolute rounded-full"
+          style={{
+            left: p.left,
+            top: p.top,
+            width: p.size,
+            height: p.size,
+            backgroundColor: "#e5be45", // Bright gold
+            boxShadow: "0 0 3px #e5be45, 0 0 6px #C9A84C, 0 0 12px rgba(229, 190, 69, 0.6)", // Layered small neon glow
+          }}
+          animate={{
+            x: p.x,
+            y: p.y,
+            opacity: [0, p.maxOpacity, p.maxOpacity * 0.8, 0],
+            scale: [0.8, 1.4, 1.1, 0.4],
+          }}
+          transition={{
+            duration: p.duration,
+            repeat: Infinity,
+            delay: p.delay,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
 export default function Collection() {
   const [marqueePlaying, setMarqueePlaying] = useState(false);
   const philosophyRef = useRef(null);
@@ -301,7 +348,7 @@ export default function Collection() {
         frameCount={HERO_FRAME_COUNT}
         frameSrc={heroFrameSrc}
         scrollLength={3900}
-        zoom={0.85}
+        zoom={1}
         onProgress={handleHeroProgress}
         className="col-hero"
       >
@@ -310,6 +357,7 @@ export default function Collection() {
         <div className="col-hero__text-layer pointer-events-none">
           {/* Scene 1: Top-Right Initial Hook */}
           <div className="col-hero-scene scene-1">
+            <GoldDust />
             <Hero />
           </div>
 
