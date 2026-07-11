@@ -293,9 +293,11 @@
   z-index: var(--z-backdrop);
 }
 .discount-modal {
-  position: fixed; inset-block-start: 50%; inset-inline-start: 50%;
-  transform: translate(-50%, -50%);
+  position: fixed;
+  inset: 0;
+  margin: auto;
   width: min(34rem, calc(100vw - 2rem));
+  height: fit-content;
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
   background: var(--surface);

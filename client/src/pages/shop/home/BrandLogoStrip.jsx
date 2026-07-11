@@ -4,12 +4,12 @@ import { Link } from "react-router-dom";
 // now; drop a `logo` (image path) into any entry below to swap in a real
 // logo with no other code changes.
 const BRANDS = [
-  { name: "Giorgio Armani", logo: "/brands/armani.png" },
+  { name: "Giorgio Armani", logo: "/brands/armani.png", large: true },
   { name: "BOSS", logo: "/brands/boss.png" },
   { name: "Burberry", logo: "/brands/burberry.png" },
-  { name: "Dior", logo: "/brands/dior.png" },
-  { name: "Gucci", logo: "/brands/gucci.png" },
-  { name: "Tom Ford", logo: "/brands/tomford.png" },
+  { name: "Dior", logo: "/brands/dior.png", large: true },
+  { name: "Gucci", logo: "/brands/gucci.png", large: true },
+  { name: "Tom Ford", logo: "/brands/tomford.png", large: true },
 ];
 
 export default function BrandLogoStrip() {
@@ -24,7 +24,11 @@ export default function BrandLogoStrip() {
             className="brand-strip__card"
           >
             {b.logo ? (
-              <img src={b.logo} alt={b.name} className="brand-strip__logo" />
+              <img
+                src={b.logo}
+                alt={b.name}
+                className={`brand-strip__logo${b.large ? " brand-strip__logo--lg" : ""}`}
+              />
             ) : (
               <span className="brand-strip__wordmark">{b.name}</span>
             )}

@@ -45,8 +45,9 @@ export default function CategoryTiles() {
                 />
               </div>
               <div className="o2morny-category-footer">
-                <span className="o2morny-category-title">{c.label.split(" —")[0]}</span>
-                <span className="o2morny-category-arrow">&gt;</span>
+                <span className="o2morny-category-title">
+                  {c.label.split(" —")[0].replace(" Fragrances", "")}
+                </span>
               </div>
             </Link>
           );

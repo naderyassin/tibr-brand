@@ -22,6 +22,9 @@
  */
 body:has(.collection-page) .store-header,
 body:has(.perfume-page) .store-header {
+  position: fixed;
+  inset-inline: 0;
+  inset-block-start: 0;
   background: transparent;
   border-block-end-color: transparent;
 }
@@ -34,9 +37,42 @@ body:has(.perfume-page) .store-header.is-scrolled {
   border-block-end-color: rgba(255, 255, 255, 0.08);
 }
 
+/* Hero backdrop is near-black; header text needs the light/gold pairing
+   from the landing palette instead of the store's dark-on-light ink. */
+body:has(.collection-page) .store-header .store-wordmark,
+body:has(.perfume-page) .store-header .store-wordmark,
+body:has(.collection-page) .store-header .store-nav__link,
+body:has(.perfume-page) .store-header .store-nav__link,
+body:has(.collection-page) .store-header .store-iconbtn,
+body:has(.perfume-page) .store-header .store-iconbtn,
+body:has(.collection-page) .store-header .store-burger,
+body:has(.perfume-page) .store-header .store-burger {
+  color: #f5f0e6;
+}
+body:has(.collection-page) .store-header .store-wordmark:hover,
+body:has(.perfume-page) .store-header .store-wordmark:hover,
+body:has(.collection-page) .store-header .store-wordmark .dot,
+body:has(.perfume-page) .store-header .store-wordmark .dot,
+body:has(.collection-page) .store-header .store-nav__link:hover,
+body:has(.perfume-page) .store-header .store-nav__link:hover,
+body:has(.collection-page) .store-header .store-nav__link[aria-current="page"],
+body:has(.perfume-page) .store-header .store-nav__link[aria-current="page"],
+body:has(.collection-page) .store-header .store-iconbtn:hover,
+body:has(.perfume-page) .store-header .store-iconbtn:hover,
+body:has(.collection-page) .store-header .store-iconbtn[aria-pressed="true"],
+body:has(.perfume-page) .store-header .store-iconbtn[aria-pressed="true"] {
+  color: var(--gold, #d4af37);
+}
+
+/* Footer's top margin reveals the page's default white background between
+   the landing's black content and the (also black) footer — close the gap. */
+body:has(.collection-page) .store-footer {
+  margin-block-start: 0;
+}
+
 /* Compensate for the fixed header height so page content starts below it */
 body {
-  padding-top: 4.75rem;
+  padding-top: 0;
 }
 
 /* Hero pages need 0 top-padding because the hero fills the full viewport */

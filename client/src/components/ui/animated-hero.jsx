@@ -25,11 +25,6 @@ function Hero() {
     <div className="w-full flex justify-center px-4 sm:px-6">
       <div className="container flex justify-center min-w-0">
         <div className="flex gap-8 py-20 lg:py-40 items-center justify-center flex-col text-center min-w-0 w-full">
-          <div>
-            <Button variant="secondary" size="sm" className="gap-4">
-              Read Our Story <MoveRight className="w-4 h-4" />
-            </Button>
-          </div>
           <div className="flex gap-4 flex-col items-center min-w-0 w-full">
             <h1 className="text-4xl sm:text-5xl md:text-7xl max-w-3xl tracking-tighter text-center font-regular">
               <span className="text-spektr-cyan-50">TIBR is</span>
