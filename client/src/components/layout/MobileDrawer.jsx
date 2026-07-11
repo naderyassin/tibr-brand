@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { SHOP_NAV } from "@/lib/shopNav";
 
 const CloseIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
@@ -14,7 +15,7 @@ const WhatsAppIcon = () => (
 );
 
 const NAV_LINKS = [
-  { to: "/shop/perfumes", label: "Perfumes" },
+  ...SHOP_NAV.map((tab) => ({ to: tab.path, label: tab.label.split(" —")[0] })),
   { to: "/account?tab=wishlist", label: "Wishlist" },
   { to: "/account", label: "Account" },
 ];

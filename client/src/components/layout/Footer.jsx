@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { SHOP_NAV } from "@/lib/shopNav";
 
 const WhatsAppIcon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -21,7 +22,9 @@ export default function Footer() {
           <div className="store-footer__col">
             <h4>Shop</h4>
             <ul>
-              <li><Link to="/shop/perfumes">Perfumes</Link></li>
+              {SHOP_NAV.map((tab) => (
+                <li key={tab.key}><Link to={tab.path}>{tab.label.split(" —")[0]}</Link></li>
+              ))}
               <li><Link to="/account?tab=wishlist">Wishlist</Link></li>
             </ul>
           </div>

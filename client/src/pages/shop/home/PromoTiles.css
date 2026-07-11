@@ -1,0 +1,149 @@
+.promo-tiles-container {
+  max-width: var(--container, 1200px);
+  margin: 0 auto;
+  padding: var(--sp-8) 0;
+  text-align: center;
+}
+
+.promo-tiles-header {
+  margin-bottom: var(--sp-7);
+}
+
+.promo-tiles-header h2 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 1.5rem + 2vw, 2.5rem);
+  font-weight: var(--fw-semibold);
+  color: var(--ink);
+  margin-bottom: var(--sp-2);
+}
+
+.promo-tiles-header p {
+  font-size: var(--fs-base);
+  color: var(--muted);
+  font-weight: var(--fw-normal);
+}
+
+.promo-tiles-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-6);
+}
+
+/* Responsive adjustments */
+@media (max-width: 64rem) {
+  .promo-tiles-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 36rem) {
+  .promo-tiles-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.promo-tile-card {
+  background: var(--surface);
+  border-radius: var(--r-lg, 16px);
+  padding: var(--sp-3);
+  box-shadow: var(--shadow-1);
+  border: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  transition: 
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.promo-tile-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--gold);
+  box-shadow: 
+    0 20px 35px -10px rgba(0, 0, 0, 0.08),
+    0 4px 12px -2px rgba(212, 175, 55, 0.15);
+}
+
+.promo-tile-box {
+  height: 280px;
+  border-radius: var(--r-md, 12px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #ffffff;
+  margin-bottom: var(--sp-5);
+}
+
+.promo-tile-save {
+  font-family: var(--font-sans);
+  font-size: 1.6rem;
+  font-weight: var(--fw-bold, 700);
+  letter-spacing: 2px;
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  margin-bottom: -5px;
+}
+
+.promo-tile-pct {
+  font-family: var(--font-display);
+  font-size: 4.5rem;
+  font-weight: var(--fw-bold, 800);
+  line-height: 1;
+  text-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+  letter-spacing: -1px;
+}
+
+/* Gradients matching the image exactly */
+.promo-tile-box.black {
+  background: linear-gradient(180deg, #2b2b2b 0%, #050505 100%);
+}
+
+.promo-tile-box.slate {
+  background: linear-gradient(180deg, #5c6875 0%, #293440 100%);
+}
+
+.promo-tile-box.gray {
+  background: linear-gradient(180deg, #9ca6b3 0%, #5b6877 100%);
+}
+
+.promo-tile-box.light-gray {
+  background: linear-gradient(180deg, #d3d8db 0%, #909ba8 100%);
+}
+
+.promo-tile-footer {
+  padding: 0 var(--sp-2) var(--sp-3);
+  text-align: left;
+}
+
+.promo-tile-title {
+  font-family: var(--font-display);
+  font-size: var(--fs-base);
+  font-weight: var(--fw-semibold);
+  margin-bottom: var(--sp-4);
+  color: var(--ink);
+}
+
+.promo-tile-btn {
+  display: block;
+  width: 100%;
+  background: var(--ink);
+  color: var(--bg);
+  border: none;
+  border-radius: var(--r-full, 999px);
+  padding: var(--sp-3) 0;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+
+.promo-tile-btn:hover {
+  background: var(--gold);
+  color: var(--on-gold);
+  transform: scale(1.02);
+}
+
+.promo-tile-btn:active {
+  transform: scale(0.98);
+}

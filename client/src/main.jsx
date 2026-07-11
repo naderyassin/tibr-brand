@@ -46,6 +46,13 @@ function Root() {
     // Notify GSAP ScrollTrigger of updates
     lenis.on("scroll", ScrollTrigger.update);
 
+    // Expose accurate Lenis scroll position globally so AppShell's
+    // hide-on-scroll logic gets the real value (not the native scrollY
+    // which can lag behind Lenis's virtual scroll position).
+    lenis.on("scroll", ({ scroll }) => {
+      window.__lenisScrollY = scroll;
+    });
+
     // Sync Lenis with GSAP's requestAnimationFrame ticker
     const updateRaf = (time) => {
       lenis.raf(time * 1000);

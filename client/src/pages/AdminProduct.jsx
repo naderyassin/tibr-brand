@@ -4,41 +4,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/stores/auth";
 import { adminGetProducts, adminCreateProduct, adminUpdateProduct } from "@/lib/api";
 import { useToast } from "@/components/ui/Toast";
-
-const OLFACTORY_UNIVERSES = {
-  aldehyde:       { label: "Aldehyde — ألدهيدي" },
-  ambery:         { label: "Ambery — عنبري" },
-  aquatic:        { label: "Aquatic — مائي" },
-  aromatic:       { label: "Aromatic — عطري" },
-  chypre:         { label: "Chypre — شيبر" },
-  citrus:         { label: "Citrus — حمضي" },
-  floral:         { label: "Floral — زهري" },
-  fougere:        { label: "Fougere — فوجيري" },
-  fresh:          { label: "Fresh — طازج" },
-  fruity:         { label: "Fruity — فاكهي" },
-  gourmand:       { label: "Gourmand — حلواني" },
-  green:          { label: "Green — أخضر" },
-  leathery:       { label: "Leathery — جلدي" },
-  marine:         { label: "Marine — بحري" },
-  musky:          { label: "Musky — مسكي" },
-  new_freshness:  { label: "New Freshness — نضارة جديدة" },
-  oriental:       { label: "Oriental — شرقي" },
-  powdery:        { label: "Powdery — بودري" },
-  smoky:          { label: "Smoky — دخاني" },
-  spicy:          { label: "Spicy — توابلي" },
-  vanilla:        { label: "Vanilla — فانيليا" },
-  woody:          { label: "Woody — خشبي" },
-};
-
-const TAXONOMY = {
-  perfumes: { children: {
-    men:    { label: "Men — رجالي",     children: OLFACTORY_UNIVERSES },
-    women:  { label: "Women — نسائي",   children: OLFACTORY_UNIVERSES },
-    unisex: { label: "Unisex — للجنسين", children: OLFACTORY_UNIVERSES },
-  }},
-};
-
-const LEVEL_LABELS = ["Gender", "Olfactory Universe — الكون العطري", "Style"];
+import { FRAGRANCE_SUBS, SAMPLE_SUBS, LISTING_TYPES } from "@/lib/shopNav";
 
 const NOTES_CATALOG = {
   citrus: [
@@ -778,83 +744,13 @@ const NOTES_CATALOG = {
   ],
 };
 
-const ID_PAD = { perfumes: 1 };
-const CATEGORIES = ["perfumes"];
-const HAS_COLOR = new Set();
-
-function generateNextId(category, products) {
-  const pad = ID_PAD[category] || 1;
-  const catProducts = products.filter((p) => p.category === category);
+function generateNextId(products) {
   let maxNum = 0;
-  catProducts.forEach((p) => {
+  products.forEach((p) => {
     const num = parseInt(p.id, 10);
     if (!isNaN(num) && num > maxNum) maxNum = num;
   });
-  return String(maxNum + 1).padStart(pad, "0");
-}
-
-function getEffectivePath(category, path) {
-  const root = TAXONOMY[category];
-  if (!root?.children) return [];
-  const result = [];
-  let current = root;
-  for (let i = 0; i < 3; i++) {
-    if (!current?.children) break;
-    const entries = Object.entries(current.children);
-    if (!entries.length) break;
-    const selected = path[i] || entries[0][0];
-    result.push(selected);
-    current = current.children[selected];
-  }
-  return result;
-}
-
-function SubcatChain({ category, path, onChange }) {
-  const root = TAXONOMY[category];
-  if (!root?.children || !Object.keys(root.children).length) return null;
-
-  function renderLevel(children, depth) {
-    const entries = Object.entries(children);
-    if (!entries.length) return null;
-    const selected = path[depth] || entries[0][0];
-    const selectedNode = children[selected];
-    return (
-      <>
-        <div className="ap-subcat-level">
-          <label className="field__label" htmlFor={`subcat-${depth}`}>
-            {LEVEL_LABELS[depth] || "Detail"} <span className="field__req">*</span>
-          </label>
-          <div className="select-field">
-            <select
-              id={`subcat-${depth}`}
-              className="select"
-              value={selected}
-              onChange={(e) => {
-                const newPath = path.slice(0, depth);
-                newPath[depth] = e.target.value;
-                onChange(newPath);
-              }}
-            >
-              {entries.map(([key, val]) => (
-                <option key={key} value={key}>{val.label}</option>
-              ))}
-            </select>
-            <svg className="select-field__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-          </div>
-        </div>
-        {selectedNode?.children && Object.keys(selectedNode.children).length > 0 &&
-          renderLevel(selectedNode.children, depth + 1)}
-      </>
-    );
-  }
-
-  return (
-    <div className="field field--full">
-      <div className="ap-subcat-chain">
-        {renderLevel(root.children, 0)}
-      </div>
-    </div>
-  );
+  return String(maxNum + 1);
 }
 
 function NotesTagInput({ id, label, value, onChange, universe, placeholder, hint }) {
@@ -966,11 +862,13 @@ function NotesTagInput({ id, label, value, onChange, universe, placeholder, hint
 
 const EMPTY_FORM = {
   id: "",
-  category: "perfumes",
+  brand: "",
+  listing_type: "",
+  fragrance_category: "",
+  sample_type: "",
   name: "",
   price: "",
   quantity: "",
-  color: "",
   sizes: "",
   gender: "",
   top_notes: "",
@@ -978,26 +876,26 @@ const EMPTY_FORM = {
   base_notes: "",
   desc: "",
   image: "",
+  is_bestseller: false,
+  is_spotlight: false,
+  season: "",
+  perfume_classification: "",
+  is_egyptian_brand: false,
 };
 
 export default function AdminProduct() {
   const [params] = useSearchParams();
   const editId = params.get("id");
-  const { user, token, loading: authLoading } = useAuth();
+  const { token } = useAuth();
   const navigate = useNavigate();
   const toast = useToast();
   const fileInputRef = useRef(null);
 
   const [form, setForm] = useState(EMPTY_FORM);
   const [imgPreview, setImgPreview] = useState("");
-  const [subcatPath, setSubcatPath] = useState([]);
   const [fileInfo, setFileInfo] = useState(null);
   const [descLang, setDescLang] = useState("ar");
   const [uploading, setUploading] = useState(false);
-
-  useEffect(() => {
-    if (!authLoading && !user) navigate("/login", { replace: true });
-  }, [authLoading, user, navigate]);
 
   const { data: allProducts } = useQuery({
     queryKey: ["admin-products", token],
@@ -1008,7 +906,7 @@ export default function AdminProduct() {
   // Auto-generate ID in create mode when products load
   useEffect(() => {
     if (!editId && allProducts?.data) {
-      setForm((f) => ({ ...f, id: generateNextId(f.category, allProducts.data) }));
+      setForm((f) => ({ ...f, id: generateNextId(allProducts.data) }));
     }
   }, [allProducts, editId]);
 
@@ -1019,11 +917,13 @@ export default function AdminProduct() {
       if (p) {
         setForm({
           id: p.id,
-          category: p.category || "perfumes",
+          brand: p.brand || "",
+          listing_type: p.listing_type || "",
+          fragrance_category: p.fragrance_category || "",
+          sample_type: p.sample_type || "",
           name: p.en_name || p.ar_name || "",
           price: p.en_price ?? p.ar_price ?? "",
           quantity: p.quantity ?? "",
-          color: p.en_color || p.ar_color || "",
           sizes: Array.isArray(p.sizes) ? p.sizes.join(", ") : (p.sizes || ""),
           gender: "",
           top_notes: "",
@@ -1031,21 +931,19 @@ export default function AdminProduct() {
           base_notes: "",
           desc: p.en_desc || p.ar_desc || "",
           image: p.image || "",
+          is_bestseller: !!p.is_bestseller,
+          is_spotlight: !!p.is_spotlight,
+          season: p.season || "",
+          perfume_classification: p.perfume_classification || "",
+          is_egyptian_brand: !!p.is_egyptian_brand,
         });
         setImgPreview(p.image || "");
-        setSubcatPath([p.sub_category, p.sub_category_2, p.sub_category_3].filter(Boolean));
       }
     }
   }, [editId, allProducts]);
 
-  function onCategoryChange(cat) {
-    if (editId) return;
-    const nextId = allProducts?.data ? generateNextId(cat, allProducts.data) : "";
-    setForm((f) => ({ ...f, category: cat, id: nextId }));
-    setSubcatPath([]);
-  }
-
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
+  const setChecked = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.checked }));
 
   // Image file upload
   const handleFileChange = async (e) => {
@@ -1307,27 +1205,45 @@ export default function AdminProduct() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const effectivePath = getEffectivePath(form.category, subcatPath);
+    if (!form.brand.trim()) {
+      toast("Brand is required.");
+      return;
+    }
+    if (!LISTING_TYPES[form.listing_type]) {
+      toast("Select a listing type (Fragrances, Sample & Travel Size, or Bundle).");
+      return;
+    }
+    if ((form.listing_type === "fragrance" || form.listing_type === "bundle") && !form.fragrance_category) {
+      toast("Select a fragrance category.");
+      return;
+    }
+    if (form.listing_type === "sample" && !form.sample_type) {
+      toast("Select a sample type.");
+      return;
+    }
     const price = Number(form.price);
     const body = {
       id: form.id,
-      category: form.category,
+      brand: form.brand.trim(),
+      listing_type: form.listing_type,
+      fragrance_category: form.listing_type === "sample" ? null : form.fragrance_category,
+      sample_type: form.listing_type === "sample" ? form.sample_type : null,
       ar_name: form.name,
       en_name: form.name,
       ar_price: price,
       en_price: price,
       quantity: Number(form.quantity) || 0,
-      ar_color: form.color || null,
-      en_color: form.color || null,
       sizes: form.sizes.split(",").map((s) => s.trim()).filter(Boolean),
       ar_desc: form.desc,
       en_desc: form.desc,
       image: form.image,
-      sub_category: effectivePath[0] || "",
-      sub_category_2: effectivePath[1] || "",
-      sub_category_3: effectivePath[2] || "",
       review_avg: 0,
       review_count: 0,
+      is_bestseller: form.is_bestseller,
+      is_spotlight: form.is_spotlight,
+      season: form.season || null,
+      perfume_classification: form.perfume_classification || null,
+      is_egyptian_brand: form.is_egyptian_brand,
     };
     if (editId) {
       updateProduct({ id: editId, body });
@@ -1336,13 +1252,10 @@ export default function AdminProduct() {
     }
   };
 
-  if (authLoading || !user) return null;
-
   const isPending = creating || updating;
-  const showColor = HAS_COLOR.has(form.category);
 
   return (
-    <div className="store-container">
+    <div className="admin-content">
       <div className="admin-panel">
         <div className="admin-panel__head">
           <div>
@@ -1367,24 +1280,6 @@ export default function AdminProduct() {
               </p>
               <div className="admin-form-grid">
                 <div className="field">
-                  <label className="field__label" htmlFor="p-cat">
-                    Category <span className="field__req">*</span>
-                  </label>
-                  <div className="select-field">
-                    <select
-                      id="p-cat"
-                      className="select"
-                      value={form.category}
-                      onChange={(e) => onCategoryChange(e.target.value)}
-                      disabled={!!editId}
-                    >
-                      {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-                    </select>
-                    <svg className="select-field__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-                  </div>
-                </div>
-
-                <div className="field">
                   <label className="field__label" htmlFor="p-id">Product ID</label>
                   <input
                     id="p-id"
@@ -1394,10 +1289,10 @@ export default function AdminProduct() {
                     style={{ opacity: 0.6 }}
                     title="Auto-assigned by the system"
                   />
-                  <p className="field__hint">Auto-assigned based on category</p>
+                  <p className="field__hint">Auto-assigned</p>
                 </div>
 
-                <div className="field field--full">
+                <div className="field">
                   <label className="field__label" htmlFor="p-name">
                     Name <span className="field__req">*</span>
                   </label>
@@ -1410,22 +1305,83 @@ export default function AdminProduct() {
                   />
                 </div>
 
-                <SubcatChain
-                  category={form.category}
-                  path={subcatPath}
-                  onChange={setSubcatPath}
-                />
+                <div className="field field--full">
+                  <label className="field__label" htmlFor="p-brand">
+                    Brand <span className="field__req">*</span>
+                  </label>
+                  <input
+                    id="p-brand"
+                    className="input"
+                    value={form.brand}
+                    onChange={set("brand")}
+                    placeholder="Chanel, Dior, TIBR…"
+                    required
+                  />
+                  <p className="field__hint">Powers the Shop by Brand directory and the brand line on product cards</p>
+                </div>
 
-                {showColor && (
-                  <div className="field field--full">
-                    <label className="field__label" htmlFor="p-color">Color</label>
-                    <input
-                      id="p-color"
-                      className="input"
-                      value={form.color}
-                      onChange={set("color")}
-                      placeholder="Black, Red, Navy…"
-                    />
+                <div className="field">
+                  <label className="field__label" htmlFor="p-listing-type">
+                    Listing Type <span className="field__req">*</span>
+                  </label>
+                  <div className="select-field">
+                    <select
+                      id="p-listing-type"
+                      className="select"
+                      value={form.listing_type}
+                      onChange={(e) => setForm((f) => ({ ...f, listing_type: e.target.value, fragrance_category: "", sample_type: "" }))}
+                    >
+                      <option value="" disabled>Select a listing type…</option>
+                      {Object.entries(LISTING_TYPES).map(([value, { label }]) => (
+                        <option key={value} value={value}>{label}</option>
+                      ))}
+                    </select>
+                    <svg className="select-field__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                  </div>
+                  <p className="field__hint">Which shop tab this product appears under</p>
+                </div>
+
+                {(form.listing_type === "fragrance" || form.listing_type === "bundle") && (
+                  <div className="field">
+                    <label className="field__label" htmlFor="p-fragrance-category">
+                      Fragrance Category <span className="field__req">*</span>
+                    </label>
+                    <div className="select-field">
+                      <select
+                        id="p-fragrance-category"
+                        className="select"
+                        value={form.fragrance_category}
+                        onChange={set("fragrance_category")}
+                      >
+                        <option value="" disabled>Select a category…</option>
+                        {FRAGRANCE_SUBS.map((s) => (
+                          <option key={s.slug} value={s.slug}>{s.label}</option>
+                        ))}
+                      </select>
+                      <svg className="select-field__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                    </div>
+                  </div>
+                )}
+
+                {form.listing_type === "sample" && (
+                  <div className="field">
+                    <label className="field__label" htmlFor="p-sample-type">
+                      Sample Type <span className="field__req">*</span>
+                    </label>
+                    <div className="select-field">
+                      <select
+                        id="p-sample-type"
+                        className="select"
+                        value={form.sample_type}
+                        onChange={set("sample_type")}
+                      >
+                        <option value="" disabled>Select a type…</option>
+                        {SAMPLE_SUBS.map((s) => (
+                          <option key={s.slug} value={s.slug}>{s.label}</option>
+                        ))}
+                      </select>
+                      <svg className="select-field__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                    </div>
                   </div>
                 )}
 
@@ -1450,7 +1406,6 @@ export default function AdminProduct() {
                 <NotesTagInput
                   id="p-top"
                   label="Top notes / النوتات الأولى"
-                  universe={subcatPath[1]}
                   value={form.top_notes}
                   onChange={(v) => setForm(f => ({ ...f, top_notes: v }))}
                   placeholder="ابحث أو اكتب نوتة…"
@@ -1459,7 +1414,6 @@ export default function AdminProduct() {
                 <NotesTagInput
                   id="p-mid"
                   label="Heart notes / النوتات الوسطى"
-                  universe={subcatPath[1]}
                   value={form.mid_notes}
                   onChange={(v) => setForm(f => ({ ...f, mid_notes: v }))}
                   placeholder="ابحث أو اكتب نوتة…"
@@ -1467,7 +1421,6 @@ export default function AdminProduct() {
                 <NotesTagInput
                   id="p-base"
                   label="Base notes / النوتات الأساسية"
-                  universe={subcatPath[1]}
                   value={form.base_notes}
                   onChange={(v) => setForm(f => ({ ...f, base_notes: v }))}
                   placeholder="ابحث أو اكتب نوتة…"
@@ -1487,10 +1440,60 @@ export default function AdminProduct() {
               </div>
             </div>
 
+            {/* Merchandising & Curation */}
+            <div className="co-card">
+              <p className="co-card__title">
+                <span className="co-card__num">2</span> Merchandising &amp; Curation
+              </p>
+              <div className="admin-form-grid">
+                <label className="field field--checkbox">
+                  <input type="checkbox" checked={form.is_bestseller} onChange={setChecked("is_bestseller")} />
+                  <span>Best Seller</span>
+                </label>
+
+                <label className="field field--checkbox">
+                  <input type="checkbox" checked={form.is_egyptian_brand} onChange={setChecked("is_egyptian_brand")} />
+                  <span>Egyptian Brand</span>
+                </label>
+
+                <label className="field field--checkbox">
+                  <input type="checkbox" checked={form.is_spotlight} onChange={setChecked("is_spotlight")} />
+                  <span>Spotlight</span>
+                </label>
+
+                <div className="field">
+                  <label className="field__label" htmlFor="p-season">Season</label>
+                  <div className="select-field">
+                    <select id="p-season" className="select" value={form.season} onChange={set("season")}>
+                      <option value="">None</option>
+                      <option value="spring">Spring</option>
+                      <option value="summer">Summer</option>
+                      <option value="fall">Fall</option>
+                      <option value="winter">Winter</option>
+                    </select>
+                    <svg className="select-field__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                  </div>
+                  <p className="field__hint">Only shown when Spotlight is checked</p>
+                </div>
+
+                <div className="field">
+                  <label className="field__label" htmlFor="p-classification">Perfume Classification</label>
+                  <div className="select-field">
+                    <select id="p-classification" className="select" value={form.perfume_classification} onChange={set("perfume_classification")}>
+                      <option value="">None</option>
+                      <option value="niche">Niche</option>
+                      <option value="design">Design</option>
+                    </select>
+                    <svg className="select-field__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Pricing & Stock */}
             <div className="co-card">
               <p className="co-card__title">
-                <span className="co-card__num">2</span> Pricing &amp; Stock
+                <span className="co-card__num">3</span> Pricing &amp; Stock
               </p>
               <div className="admin-form-grid">
                 <div className="field">
@@ -1526,7 +1529,7 @@ export default function AdminProduct() {
             {/* Description */}
             <div className="co-card">
               <p className="co-card__title">
-                <span className="co-card__num">3</span> Description
+                <span className="co-card__num">4</span> Description
               </p>
               <div className="field">
                 <div className="ap-desc-bar">
@@ -1647,8 +1650,8 @@ export default function AdminProduct() {
 
               <div className="ap-preview-meta">
                 <div className="ap-meta-row">
-                  <span className="ap-meta-key">Category</span>
-                  <span className="ap-meta-val" style={{ textTransform: "capitalize" }}>{form.category}</span>
+                  <span className="ap-meta-key">Listing Type</span>
+                  <span className="ap-meta-val">{LISTING_TYPES[form.listing_type]?.label || "—"}</span>
                 </div>
                 <div className="ap-meta-row">
                   <span className="ap-meta-key">Status</span>

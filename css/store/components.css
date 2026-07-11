@@ -75,6 +75,17 @@
 .field__req { color: var(--gold); margin-inline-start: 2px; }
 .field__hint { font-size: var(--fs-xs); color: var(--muted); }
 
+.field--checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--sp-3);
+  cursor: pointer;
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+}
+.field--checkbox input { accent-color: var(--gold); inline-size: 1.05rem; block-size: 1.05rem; flex: none; }
+.field--checkbox:hover { color: var(--ink); }
+
 .input, .textarea, .select {
   inline-size: 100%;
   background: var(--surface);

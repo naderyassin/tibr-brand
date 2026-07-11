@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useCart } from "@/stores/cart";
 import { useAuth } from "@/stores/auth";
-import { checkout as apiCheckout } from "@/lib/api";
+import { checkout as apiCheckout, validateDiscount, getAutomaticDiscount } from "@/lib/api";
 
 const PAYMENT_METHODS = [
   {
@@ -57,10 +57,66 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(null);
 
+  const [discountInput, setDiscountInput] = useState("");
+  const [discount, setDiscount] = useState(null); // typed code — { id, code, discount_class, total_amount, free_shipping, ... }
+  const [discountError, setDiscountError] = useState(null);
+  const [applyingDiscount, setApplyingDiscount] = useState(false);
+  const [autoDiscount, setAutoDiscount] = useState(null); // best-matching automatic discount — same shape, title instead of code
+
   const subtotal = items.reduce(
     (sum, i) => sum + (i.product.price ?? i.product.ar_price ?? 0) * i.qty,
     0
   );
+  const effectiveDiscount = discount || autoDiscount;
+  const discountAmount = effectiveDiscount?.total_amount ?? 0;
+  const total = Math.max(0, subtotal - discountAmount);
+
+  const cartItems = items.map((i) => ({ productId: i.product.id, qty: i.qty }));
+  const cartItemsKey = JSON.stringify(cartItems);
+
+  // Preview the best-matching automatic discount whenever the cart changes,
+  // as long as the shopper hasn't typed a code — checkout re-derives the
+  // same thing server-side, so this is purely a preview, never trusted.
+  useEffect(() => {
+    if (!token || items.length === 0 || discount) {
+      setAutoDiscount(null);
+      return;
+    }
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      try {
+        const res = await getAutomaticDiscount(cartItems, token);
+        if (!cancelled) setAutoDiscount(res.data || null);
+      } catch {
+        if (!cancelled) setAutoDiscount(null);
+      }
+    }, 400);
+    return () => { cancelled = true; clearTimeout(timer); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, discount, cartItemsKey]);
+
+  const handleApplyDiscount = async () => {
+    const code = discountInput.trim();
+    if (!code) return;
+    if (!token) { navigate("/login"); return; }
+    setDiscountError(null);
+    setApplyingDiscount(true);
+    try {
+      const res = await validateDiscount(code, cartItems, token);
+      setDiscount(res.data);
+    } catch (err) {
+      setDiscount(null);
+      setDiscountError(err.message || "This discount code isn't valid.");
+    } finally {
+      setApplyingDiscount(false);
+    }
+  };
+
+  const handleRemoveDiscount = () => {
+    setDiscount(null);
+    setDiscountInput("");
+    setDiscountError(null);
+  };
 
   if (items.length === 0 && !success) {
     return (
@@ -93,6 +149,12 @@ export default function Checkout() {
           <p style={{ color: "var(--muted)" }}>
             Total: <strong style={{ color: "var(--gold)" }}>{success.total_amount} EGP</strong>
           </p>
+          {success.discount && (
+            <p style={{ color: "var(--muted)", fontSize: "var(--fs-sm)" }}>
+              Discount <strong style={{ color: "var(--gold)" }}>{success.discount.code || success.discount.title}</strong> applied
+              {success.discount.free_shipping ? " (free shipping)" : ` (−${success.discount.amount} EGP)`}
+            </p>
+          )}
           <div style={{ display: "flex", gap: "var(--sp-3)", flexWrap: "wrap", justifyContent: "center" }}>
             <Link className="btn btn--primary" to="/account?tab=orders">View my orders</Link>
             <Link className="btn btn--secondary" to="/shop/perfumes">Keep shopping</Link>
@@ -121,6 +183,7 @@ export default function Checkout() {
         {
           items: items.map((i) => ({ productId: i.product.id, size: i.size, qty: i.qty })),
           ...form,
+          discount_code: discount?.code || undefined,
         },
         token
       );
@@ -274,17 +337,78 @@ export default function Checkout() {
             })}
           </div>
           <div className="summary__divider" />
+
+          <div className="summary__discount">
+            {discount ? (
+              <div className="summary__discount-applied">
+                <span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                    <path d="M5 12.5l4.5 4.5L19 7.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  {discount.code}
+                </span>
+                <button type="button" className="summary__discount-remove" onClick={handleRemoveDiscount}>
+                  Remove
+                </button>
+              </div>
+            ) : (
+              <>
+                {autoDiscount && (
+                  <div className="summary__discount-applied">
+                    <span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                        <path d="M5 12.5l4.5 4.5L19 7.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      {autoDiscount.title}
+                    </span>
+                  </div>
+                )}
+                <div className="summary__discount-form">
+                  <input
+                    className="input"
+                    type="text"
+                    placeholder="Discount code"
+                    value={discountInput}
+                    onChange={(e) => { setDiscountInput(e.target.value); setDiscountError(null); }}
+                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleApplyDiscount(); } }}
+                  />
+                  <button
+                    type="button"
+                    className={`btn btn--secondary${applyingDiscount ? " is-loading" : ""}`}
+                    onClick={handleApplyDiscount}
+                    disabled={applyingDiscount || !discountInput.trim()}
+                  >
+                    {applyingDiscount ? "" : "Apply"}
+                  </button>
+                </div>
+              </>
+            )}
+            {discountError && (
+              <p role="alert" style={{ color: "var(--danger)", fontSize: "var(--fs-xs)", marginBlockStart: "var(--sp-1)" }}>
+                {discountError}
+              </p>
+            )}
+          </div>
+
           <div className="summary__row">
             <span>Subtotal</span>
             <span className="val">{subtotal} EGP</span>
           </div>
+          {effectiveDiscount && (
+            <div className="summary__row">
+              <span>Discount ({discount ? discount.code : autoDiscount.title})</span>
+              <span className="val" style={{ color: "var(--success)" }}>
+                {effectiveDiscount.free_shipping ? "Free shipping" : `−${discountAmount} EGP`}
+              </span>
+            </div>
+          )}
           <div className="summary__row">
             <span>Shipping</span>
             <span className="val summary__free">Free</span>
           </div>
           <div className="summary__row summary__row--total">
             <span>Total</span>
-            <span className="val">{subtotal} EGP</span>
+            <span className="val">{total} EGP</span>
           </div>
           <p className="summary__note">Cash on delivery · Free shipping across Egypt</p>
         </aside>

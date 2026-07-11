@@ -13,6 +13,13 @@ const MenuIcon = () => (
   </svg>
 );
 
+const NAVIGATION = [
+  { label: "Home", to: "/" },
+  { label: "Shop", to: "/shop" },
+  { label: "About", to: "/about" },
+  { label: "Profile", to: "/account" },
+];
+
 export default function Header({ onMenuOpen }) {
   const [scrolled, setScrolled] = useState(false);
   const items = useCart((s) => s.items);
@@ -33,22 +40,30 @@ export default function Header({ onMenuOpen }) {
 
         <nav className="store-nav" aria-label="Categories">
           <ul className="store-nav__list">
-            {[
-              { to: "/", label: "Home" },
-              { to: "/shop/perfumes", label: "Shop" },
-              { to: "/about", label: "About" },
-              { to: "/account", label: "Profile" },
-            ].map(({ to, label }) => (
-              <li key={to}>
+            {NAVIGATION.map((item) => (
+              <li key={item.label} className="store-nav__item group">
                 <NavLink
                   className={({ isActive }) => `store-nav__link${isActive ? "" : ""}`}
-                  to={to}
+                  to={item.to}
                   aria-current={({ isActive }) => (isActive ? "page" : undefined)}
                 >
                   {({ isActive }) => (
-                    <span aria-current={isActive ? "page" : undefined}>{label}</span>
+                    <span aria-current={isActive ? "page" : undefined}>{item.label}</span>
                   )}
                 </NavLink>
+                {item.subItems && (
+                  <div className="store-nav__dropdown">
+                    <ul className="store-nav__dropdown-list">
+                      {item.subItems.map((subItem) => (
+                        <li key={subItem.label}>
+                          <Link className="store-nav__dropdown-link" to={subItem.to}>
+                            {subItem.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </li>
             ))}
           </ul>

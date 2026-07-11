@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, useMemo } from "react";
+import { useCallback, useEffect, useRef, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import { Sparkles, Compass, Fingerprint } from "lucide-react";
@@ -21,21 +21,6 @@ const reveal = {
   viewport: { once: true, margin: "-80px" },
   transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
 };
-
-const MARQUEE_CARDS = [
-  {
-    act: "ESSENCE I: MIDNIGHT",
-    title: "Aurora Nocturne",
-    image: "https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/images/obsidian_noir_wide.png",
-    btnText: "DISCOVER"
-  },
-  {
-    act: "ESSENCE II: DAWN",
-    title: "Aurélia",
-    image: "https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/images/amber_epilogue_wide.png",
-    btnText: "DISCOVER"
-  }
-];
 
 /* Signature pillars — original / inspired / bespoke. Placeholder EN copy;
    will be categorized properly once content strategy is finalized. */
@@ -69,22 +54,6 @@ const COLLECTIONS = [
     to: "#",
     video: "https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/videos/frontier_stories.mp4",
     variant: "is-large is-editorial",
-  },
-  {
-    key: "heritage",
-    kicker: "HERITAGE",
-    title: "",
-    to: "#",
-    image: "https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/images/frontier_heritage.png",
-    variant: "is-half",
-  },
-  {
-    key: "collections_fragrances",
-    kicker: "COLLECTIONS",
-    title: "",
-    to: "/shop/perfumes",
-    image: "https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/images/perfume_collection.png",
-    variant: "is-half",
   },
 ];
 
@@ -230,7 +199,6 @@ function GoldDust() {
 }
 
 export default function Collection() {
-  const [marqueePlaying, setMarqueePlaying] = useState(false);
   const philosophyRef = useRef(null);
   const timelineRef = useRef(null);
 
@@ -488,65 +456,6 @@ export default function Collection() {
               </motion.div>
             ))}
           </div>
-        </section>
-
-        {/* ── MARQUEE: ADS ───────────────────────────── */}
-        <section className="col-marquee-section">
-          <motion.div
-            className="col-marquee__header"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={{
-              hidden: {},
-              visible: { transition: { staggerChildren: 0.15 } },
-            }}
-          >
-            <motion.h2
-              className="col-marquee__title"
-              variants={{
-                hidden: { opacity: 0, y: 20 },
-                visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
-              }}
-            >
-              The Essence of Elegance
-            </motion.h2>
-            <motion.p
-              className="col-marquee__desc"
-              variants={{
-                hidden: { opacity: 0, y: 20 },
-                visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
-              }}
-            >
-              Inspired by the golden age of high perfumery, the TIBR collection translates the texture of rare woods, the warmth of pure amber, and the mystery of midnight spices into unforgettable sensory experiences. Each fragrance is a memory, captured in a bottle.
-            </motion.p>
-          </motion.div>
-
-          <motion.div
-            className="col-marquee"
-            onViewportEnter={() => setMarqueePlaying(true)}
-            viewport={{ once: true, margin: "-100px" }}
-          >
-            <div className={`col-marquee__track ${marqueePlaying ? "is-playing" : ""}`}>
-              {/* Duplicate array ONCE for a seamless 50% loop */}
-              {[...MARQUEE_CARDS, ...MARQUEE_CARDS].map((card, i) => (
-                <motion.div
-                  key={i}
-                  className="col-marquee__item"
-                  whileHover={{ y: -10 }}
-                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  <div className="col-marquee__img" style={{ backgroundImage: `url('${card.image}')` }} />
-                  <div className="col-marquee__scrim" />
-                  <div className="col-marquee__content">
-                    <span className="col-kicker">{card.act}</span>
-                    <h3 className="col-marquee__card-title">{card.title}</h3>
-                    <Link to="#" className="col-btn col-btn--ghost">{card.btnText}</Link>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
         </section>
 
         {/* ── COLLECTIONS ───────────────────────────── */}
