@@ -26,7 +26,7 @@ export default function Product() {
   const navigate = useNavigate();
   const addItem = useCart((s) => s.addItem);
   const toast = useToast();
-  const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedVariantId, setSelectedVariantId] = useState(null);
   const [activeImgIndex, setActiveImgIndex] = useState(0);
 
   const { data: productData, isLoading, isError } = useQuery({
@@ -75,20 +75,27 @@ export default function Product() {
   const p = productData.data;
   const name = p.en_name || p.ar_name;
   const desc = p.en_desc || p.ar_desc;
-  const price = p.price ?? p.ar_price ?? p.en_price ?? 0;
-  const sizes = Array.isArray(p.sizes) ? p.sizes : [];
-  const catPath = `/shop/${p.category || "perfumes"}`;
-  const catLabel = p.category ? p.category.charAt(0).toUpperCase() + p.category.slice(1) : "Perfumes";
 
-  const images = (() => {
-    if (!p.image) return [];
-    try { return JSON.parse(p.image); }
-    catch { return [p.image]; }
-  })();
+  // Sizes are VARIANTS: each has its own price and stock, so choosing a size
+  // changes the price on the page and can be sold out on its own.
+  const variants = p.variants ?? [];
+  const activeVariant =
+    variants.find((v) => v.id === selectedVariantId)
+    || variants.find((v) => v.is_default)
+    || variants[0]
+    || null;
+
+  const price = activeVariant ? Number(activeVariant.price) : (p.price ?? 0);
+  const compareAt = activeVariant?.compare_at_price ?? null;
+  const soldOut = activeVariant ? activeVariant.quantity < 1 : false;
+
+  const catLabel = p.brands?.name_en || "TIBR";
+
+  const images = p.images?.length ? p.images : (p.image ? [p.image] : []);
 
   const handleAddToCart = () => {
-    addItem(p, sizes.length > 0 ? selectedSize : null);
-    toast(`<strong>${name}</strong> added to cart`);
+    addItem(p, activeVariant);
+    toast(`<strong>${name}</strong>${activeVariant ? ` (${activeVariant.size_label})` : ""} added to cart`);
   };
 
   const containerVariants = {
@@ -139,23 +146,33 @@ export default function Product() {
           <motion.div variants={itemVariants}>
             <p className="pdp__collection">{catLabel}</p>
             <h1 className="pdp__title">{name}</h1>
-            <p className="pdp__price">{price} EGP</p>
+            <p className="pdp__price">
+              {price} EGP
+              {compareAt && Number(compareAt) > price && (
+                <span className="pdp__price-was"> {compareAt} EGP</span>
+              )}
+            </p>
           </motion.div>
 
-          {sizes.length > 0 && (
+          {variants.length > 0 && (
             <motion.div variants={itemVariants}>
               <p className="pdp__field-label">Size</p>
               <div className="size-options">
-                {sizes.map((sz) => (
-                  <label key={sz} className="size-chip">
+                {variants.map((v) => (
+                  <label
+                    key={v.id}
+                    className={`size-chip${v.quantity < 1 ? " is-sold-out" : ""}`}
+                    title={v.quantity < 1 ? "Sold out" : `${v.price} EGP`}
+                  >
                     <input
                       type="radio"
                       name="size"
-                      value={sz}
-                      checked={selectedSize === sz}
-                      onChange={() => setSelectedSize(sz)}
+                      value={v.id}
+                      checked={activeVariant?.id === v.id}
+                      disabled={v.quantity < 1}
+                      onChange={() => setSelectedVariantId(v.id)}
                     />
-                    {sz}
+                    {v.size_label}
                   </label>
                 ))}
               </div>
@@ -167,9 +184,9 @@ export default function Product() {
               className="btn btn--primary btn--lg pdp__add-cart"
               type="button"
               onClick={handleAddToCart}
-              disabled={sizes.length > 0 && !selectedSize}
+              disabled={!activeVariant || soldOut}
             >
-              Add to cart
+              {soldOut ? "Sold out" : "Add to cart"}
             </button>
             <div className="pdp__trust">
               <span className="pdp__trust-item"><TruckIcon /> Cash on delivery across Egypt</span>

@@ -35,7 +35,7 @@ export default function AdminOrders() {
         o.customer_name?.toLowerCase().includes(q) ||
         o.customer_phone?.includes(q) ||
         o.id?.toLowerCase().includes(q) ||
-        o.products?.en_name?.toLowerCase().includes(q)
+        o.order_items?.some((i) => i.name_snapshot?.toLowerCase().includes(q))
       );
     });
 
@@ -191,11 +191,20 @@ export default function AdminOrders() {
                       </div>
                     </td>
                     <td>
+                      {/* An order has LINES now — summarise them rather than
+                          showing the one product the row used to be. */}
                       <div className="order-cell">
-                        <span className="order-cell__primary">{o.products?.en_name || "—"}</span>
-                        {(o.size || o.qty) && (
+                        <span className="order-cell__primary">
+                          {o.order_items?.length
+                            ? o.order_items.map((i) => i.name_snapshot).join(", ")
+                            : "—"}
+                        </span>
+                        {o.order_items?.length > 0 && (
                           <span className="order-cell__secondary">
-                            {[o.size && `Size ${o.size}`, o.qty && `Qty ${o.qty}`].filter(Boolean).join(" · ")}
+                            {o.order_items
+                              .map((i) => [i.size_snapshot, i.qty > 1 ? `×${i.qty}` : null].filter(Boolean).join(" "))
+                              .filter(Boolean)
+                              .join(" · ")}
                           </span>
                         )}
                       </div>
@@ -204,7 +213,7 @@ export default function AdminOrders() {
                       <StatusBadge orderId={o.id} current={o.status} token={token} />
                     </td>
                     <td className="num order-total-cell">
-                      {o.order_total ? `${Number(o.order_total).toLocaleString()} EGP` : "—"}
+                      {o.total ? `${Number(o.total).toLocaleString()} EGP` : "—"}
                     </td>
                     <td className="order-date-cell">
                       {new Date(o.created_at).toLocaleDateString("en-GB", {

@@ -116,10 +116,17 @@ export default function AdminCustomer() {
                         <td><span className="order-id">{o.id?.slice(0, 8)}</span></td>
                         <td>
                           <div className="order-cell">
-                            <span className="order-cell__primary">{o.products?.en_name || "—"}</span>
-                            {(o.size || o.qty) && (
+                            <span className="order-cell__primary">
+                              {o.order_items?.length
+                                ? o.order_items.map((i) => i.name_snapshot).join(", ")
+                                : "—"}
+                            </span>
+                            {o.order_items?.length > 0 && (
                               <span className="order-cell__secondary">
-                                {[o.size && `Size ${o.size}`, o.qty && `Qty ${o.qty}`].filter(Boolean).join(" · ")}
+                                {o.order_items
+                                  .map((i) => [i.size_snapshot, i.qty > 1 ? `×${i.qty}` : null].filter(Boolean).join(" "))
+                                  .filter(Boolean)
+                                  .join(" · ")}
                               </span>
                             )}
                           </div>
@@ -128,7 +135,7 @@ export default function AdminCustomer() {
                           <StatusBadge orderId={o.id} current={o.status} token={token} />
                         </td>
                         <td className="num order-total-cell">
-                          {o.order_total ? `${Number(o.order_total).toLocaleString()} EGP` : "—"}
+                          {o.total ? `${Number(o.total).toLocaleString()} EGP` : "—"}
                         </td>
                         <td className="order-date-cell">{fmtDate(o.created_at)}</td>
                       </tr>

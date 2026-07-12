@@ -98,22 +98,17 @@ function StatusPill({ status }) {
   );
 }
 
-function groupOrders(rows) {
-  const map = new Map();
-  for (const row of rows) {
-    const key = row.checkout_reference || row.id;
-    if (!map.has(key)) {
-      map.set(key, {
-        key, items: [],
-        ref: row.checkout_reference,
-        created_at: row.created_at,
-        status: row.status,
-        order_total: row.order_total,
-      });
-    }
-    map.get(key).items.push(row);
-  }
-  return [...map.values()];
+// An order IS a row now, with its lines attached. The old client-side grouping
+// by checkout_reference existed only because `orders` stored one row per line.
+function groupOrders(orders) {
+  return (orders || []).map((o) => ({
+    key: o.id,
+    ref: o.checkout_reference || o.id,
+    created_at: o.created_at,
+    status: o.status,
+    order_total: o.total,
+    items: o.order_items || [],
+  }));
 }
 
 function OrderCard({ group }) {
@@ -133,12 +128,12 @@ function OrderCard({ group }) {
       >
         <div className="order-card__thumbs">
           {group.items.slice(0, 3).map((item, i) =>
-            item.products?.image ? (
+            item.image_snapshot ? (
               <img
                 key={item.id}
                 className="order-card__thumb"
-                src={item.products.image}
-                alt={item.products?.en_name || ""}
+                src={item.image_snapshot}
+                alt={item.name_snapshot || ""}
                 style={{ zIndex: 3 - i }}
               />
             ) : (
@@ -177,24 +172,28 @@ function OrderCard({ group }) {
 
       {open && (
         <div className="order-card__body">
+          {/* Snapshots, not live product data — an order is a historical record.
+              Renaming or repricing a product must not rewrite what was bought. */}
           {group.items.map((item) => {
-            const name = item.products?.en_name || item.products?.ar_name || "Product";
-            const price = item.unit_price ?? item.products?.en_price ?? "";
+            const name = item.name_snapshot || "Product";
+            const price = item.unit_price;
             return (
               <div key={item.id} className="order-line">
-                {item.products?.image ? (
-                  <img className="order-line__img" src={item.products.image} alt={name} />
+                {item.image_snapshot ? (
+                  <img className="order-line__img" src={item.image_snapshot} alt={name} />
                 ) : (
                   <div className="order-line__img order-line__img--empty" />
                 )}
                 <div className="order-line__info">
                   <span className="order-line__name">{name}</span>
                   <div className="order-line__tags">
-                    {item.size && <span className="order-line__tag">{item.size}</span>}
+                    {item.size_snapshot && <span className="order-line__tag">{item.size_snapshot}</span>}
                     {item.qty > 1 && <span className="order-line__tag">×{item.qty}</span>}
                   </div>
                 </div>
-                {price && <span className="order-line__price">{price} EGP</span>}
+                {price != null && (
+                  <span className="order-line__price">{Number(price).toLocaleString()} EGP</span>
+                )}
               </div>
             );
           })}

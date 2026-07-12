@@ -627,69 +627,106 @@ const pickBestDiscount = async (candidates, cart, ctx) => {
   return bestResult;
 };
 
-const isLegacyOrdersSchemaError = (error) => {
-  const message = String(error?.message || "").toLowerCase();
-  const details = String(error?.details || "").toLowerCase();
-  const hint = String(error?.hint || "").toLowerCase();
-  const combined = `${message} ${details} ${hint}`;
+// An order is a row + its lines. Each line points at the VARIANT bought, and
+// carries snapshots — an order is a historical record, so renaming or repricing
+// a product must never rewrite what the customer bought.
+const ORDER_SELECT =
+  "*, order_items(*, product_variants(id, size_label, sku), products(id, slug, en_name, ar_name, image))";
 
-  return (
-    error?.code === "42703" ||
-    error?.code === "PGRST204" ||
-    /qty|payment_method|checkout_reference|unit_price|order_total/.test(combined)
-  );
-};
+/**
+ * Turn cart lines into priced order_items rows.
+ *
+ * PRICE COMES FROM THE VARIANT, never from the client and never from
+ * products.ar_price. The old checkout charged every size the product's single
+ * price, so picking 100ml paid the 50ml price. Accepts `variantId`, and falls
+ * back to resolving productId (+ optional size) to a variant so an older client
+ * or a stale cart still checks out correctly.
+ */
+const buildOrderLines = async (items) => {
+  const variantIds = items.map((i) => i.variantId).filter(Boolean);
+  const productIds = items.filter((i) => !i.variantId).map((i) => i.productId).filter(Boolean);
 
-const toLegacyOrderRow = (row) => ({
-  user_id: row.user_id,
-  product_id: row.product_id,
-  size: row.size,
-  status: row.status,
-  customer_name: row.customer_name,
-  customer_phone: row.customer_phone,
-  customer_address: row.customer_address
-});
+  const [{ data: byId }, { data: byProduct }] = await Promise.all([
+    variantIds.length
+      ? supabase.from("product_variants")
+          .select("*, products(id, en_name, ar_name, image)").in("id", variantIds)
+      : Promise.resolve({ data: [] }),
+    productIds.length
+      ? supabase.from("product_variants")
+          .select("*, products(id, en_name, ar_name, image)").in("product_id", productIds)
+      : Promise.resolve({ data: [] })
+  ]);
 
-const insertOrdersCompat = async (client, rows) => {
-  let response = await client.from("orders").insert(rows).select();
-
-  if (response.error && isLegacyOrdersSchemaError(response.error)) {
-    response = await client
-      .from("orders")
-      .insert(rows.map(toLegacyOrderRow))
-      .select();
+  const variantById = new Map((byId || []).map((v) => [v.id, v]));
+  const variantsByProduct = new Map();
+  for (const v of byProduct || []) {
+    if (!variantsByProduct.has(v.product_id)) variantsByProduct.set(v.product_id, []);
+    variantsByProduct.get(v.product_id).push(v);
   }
 
-  return response;
-};
+  const lines = [];
+  for (const item of items) {
+    let variant = item.variantId ? variantById.get(item.variantId) : null;
 
-const selectOrdersCompat = async (client, userId) => {
-  let response = await client
-    .from("orders")
-    .select("id, status, size, qty, payment_method, checkout_reference, unit_price, order_total, customer_name, customer_address, created_at, product_id, products(id, ar_name, en_name, ar_price, en_price, image)")
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false });
-
-  if (response.error && isLegacyOrdersSchemaError(response.error)) {
-    response = await client
-      .from("orders")
-      .select("id, status, size, customer_name, customer_address, created_at, product_id, products(id, ar_name, en_name, ar_price, en_price, image)")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false });
-
-    if (!response.error && Array.isArray(response.data)) {
-      response.data = response.data.map((order) => ({
-        ...order,
-        qty: 1,
-        payment_method: "cash_on_delivery",
-        checkout_reference: null,
-        unit_price: null,
-        order_total: null
-      }));
+    if (!variant && item.productId) {
+      const candidates = variantsByProduct.get(item.productId) || [];
+      variant =
+        (item.size && candidates.find((v) => v.size_label === item.size)) ||
+        candidates.find((v) => v.is_default) ||
+        candidates[0];
     }
+
+    if (!variant) {
+      return { error: `No purchasable size found for ${item.variantId || item.productId}.` };
+    }
+
+    const qty = Number(item.qty) > 0 ? Math.floor(Number(item.qty)) : 1;
+    if (variant.quantity < qty) {
+      const name = variant.products?.en_name || "This item";
+      return {
+        error: variant.quantity === 0
+          ? `${name} (${variant.size_label}) is out of stock.`
+          : `Only ${variant.quantity} left of ${name} (${variant.size_label}).`
+      };
+    }
+
+    lines.push({
+      variant_id: variant.id,
+      product_id: variant.product_id,
+      qty,
+      unit_price: Number(variant.price),
+      name_snapshot: variant.products?.en_name || variant.products?.ar_name || "Product",
+      size_snapshot: variant.size_label,
+      image_snapshot: variant.products?.image || null
+    });
   }
 
-  return response;
+  return { lines };
+};
+
+/**
+ * Write the order and its lines.
+ *
+ * Not atomic (supabase-js has no transactions), so if the lines fail we delete
+ * the order we just made — an order with no lines is worse than no order, and
+ * it would break every "every order has ≥1 line" assumption downstream.
+ */
+const saveOrder = async (client, { order, lines }) => {
+  const { data: created, error: orderError } = await client
+    .from("orders").insert(order).select().single();
+  if (orderError) return { error: orderError };
+
+  const { error: linesError } = await client
+    .from("order_items")
+    .insert(lines.map((l) => ({ ...l, order_id: created.id })));
+
+  if (linesError) {
+    await client.from("orders").delete().eq("id", created.id);
+    return { error: linesError };
+  }
+
+  const { data: full } = await client.from("orders").select(ORDER_SELECT).eq("id", created.id).single();
+  return { data: full || created };
 };
 
 const getAccessToken = (req) => {
@@ -965,34 +1002,40 @@ app.post("/api/orders", requireUser, async (req, res) => {
     return res.status(400).json({ error: "Selected product does not exist." });
   }
 
-  const quantity = Number(qty) > 0 ? Number(qty) : 1;
   const safePaymentMethod = PAYMENT_METHODS.has(paymentMethod)
     ? paymentMethod
     : "cash_on_delivery";
 
-  const unitPrice = parsePrice(product.ar_price || product.en_price);
-  const orderTotal = unitPrice * quantity;
+  // One-line order — same path as checkout, so pricing comes from the variant.
+  const { lines, error: lineError } = await buildOrderLines([
+    { variantId: req.body?.variant_id, productId, size, qty }
+  ]);
+  if (lineError) return res.status(400).json({ error: lineError });
 
-  const { data, error } = await insertOrdersCompat(userClient, [{
+  const subtotal = lines.reduce((sum, l) => sum + l.unit_price * l.qty, 0);
+
+  const { data, error } = await saveOrder(userClient, {
+    order: {
       user_id: req.user.id,
-      product_id: productId,
-      size: size || null,
-      qty: quantity,
       status: "pending",
       payment_method: safePaymentMethod,
       checkout_reference: randomUUID(),
-      unit_price: unitPrice,
-      order_total: orderTotal,
+      subtotal,
+      shipping: 0,
+      discount_amount: 0,
+      total: subtotal,
       customer_name: customerName,
       customer_phone: customerPhone,
       customer_address: customerAddress || null
-    }]);
+    },
+    lines
+  });
 
   if (error) {
     return res.status(500).json({ error: "Failed to create order." });
   }
 
-  res.status(201).json({ data: Array.isArray(data) ? data[0] : data });
+  res.status(201).json({ data });
 });
 
 app.post("/api/checkout", requireUser, async (req, res) => {
@@ -1019,40 +1062,23 @@ app.post("/api/checkout", requireUser, async (req, res) => {
   const safePaymentMethod = PAYMENT_METHODS.has(paymentMethod)
     ? paymentMethod
     : "cash_on_delivery";
-  const productIds = [...new Set(items.map((item) => item.productId).filter(Boolean))];
 
-  const { data: products, error: productsError } = await supabase
-    .from("products")
-    .select("id, ar_price, en_price")
-    .in("id", productIds);
+  // Price and stock come from the VARIANT — never the client, never
+  // products.ar_price (which charged every size the default size's price).
+  const { lines, error: lineError } = await buildOrderLines(items);
+  if (lineError) return res.status(400).json({ error: lineError });
 
-  if (productsError) {
-    return res.status(500).json({ error: "Failed to load selected products." });
-  }
-
-  const productsMap = new Map((products || []).map((product) => [product.id, product]));
   const checkoutReference = randomUUID();
   const orderRows = [];
 
-  for (const item of items) {
-    const product = productsMap.get(item.productId);
-    if (!product) {
-      return res.status(400).json({ error: `Product not found: ${item.productId}` });
-    }
-
-    const quantity = Number(item.qty) > 0 ? Number(item.qty) : 1;
-    const unitPrice = parsePrice(product.ar_price || product.en_price);
-
-    orderRows.push({
-      user_id: req.user.id,
-      product_id: item.productId,
-      size: item.size || null,
-      qty: quantity,
-      status: "pending",
-      payment_method: safePaymentMethod,
-      checkout_reference: checkoutReference,
-      unit_price: unitPrice,
-      order_total: unitPrice * quantity,
+  {
+    // Shape the lines for the discount engine, which still reasons per-line.
+    for (const line of lines) orderRows.push({
+      product_id: line.product_id,
+      variant_id: line.variant_id,
+      qty: line.qty,
+      unit_price: line.unit_price,
+      order_total: line.unit_price * line.qty,
       customer_name: customerName,
       customer_phone: customerPhone,
       customer_address: customerAddress
@@ -1110,10 +1136,46 @@ app.post("/api/checkout", requireUser, async (req, res) => {
     });
   }
 
-  const { data, error } = await insertOrdersCompat(userClient, orderRows);
+  // The discount engine spread its adjustment across the per-line rows; roll
+  // that back up to the single order, which is where the money now lives.
+  const subtotal = lines.reduce((sum, l) => sum + l.unit_price * l.qty, 0);
+  const discountAmount = orderRows.reduce((sum, r) => sum + (r.discount_amount || 0), 0);
+  const total = Math.max(0, subtotal - discountAmount);
+
+  const { data, error } = await saveOrder(userClient, {
+    order: {
+      user_id: req.user.id,
+      status: "pending",
+      payment_method: safePaymentMethod,
+      checkout_reference: checkoutReference,
+      subtotal,
+      shipping: 0,
+      discount_amount: discountAmount,
+      discount_code: appliedDiscount?.method === "code" ? appliedDiscount.code : null,
+      total,
+      customer_name: customerName,
+      customer_phone: customerPhone,
+      customer_address: customerAddress
+    },
+    lines
+  });
 
   if (error) {
     return res.status(500).json({ error: error.message || "Failed to complete checkout." });
+  }
+
+  // Decrement stock per VARIANT. Best-effort and non-transactional: an oversell
+  // under concurrent checkouts is possible and is a known gap — the honest fix
+  // is a Postgres function that checks and decrements atomically.
+  for (const line of lines) {
+    const { data: v } = await supabase
+      .from("product_variants").select("quantity").eq("id", line.variant_id).single();
+    if (v) {
+      await createServiceClient()
+        .from("product_variants")
+        .update({ quantity: Math.max(0, v.quantity - line.qty) })
+        .eq("id", line.variant_id);
+    }
   }
 
   if (appliedDiscount) {
@@ -1131,31 +1193,23 @@ app.post("/api/checkout", requireUser, async (req, res) => {
     }
   }
 
-  const totalAmount = orderRows.reduce((sum, row) => sum + (row.order_total || 0), 0);
-  const itemCount = orderRows.reduce((sum, row) => sum + (row.qty || 0), 0);
-
   res.status(201).json({
     data: {
+      order_id: data.id,
       checkout_reference: checkoutReference,
       payment_method: safePaymentMethod,
-      total_amount: totalAmount,
-      item_count: itemCount,
+      subtotal,
+      total_amount: total,
+      item_count: lines.reduce((sum, l) => sum + l.qty, 0),
       discount: appliedDiscount
         ? {
             code: appliedDiscount.code,
             title: appliedDiscount.title,
-            amount: orderRows.reduce((s, r) => s + (r.discount_amount || 0), 0),
+            amount: discountAmount,
             free_shipping: appliedDiscount.free_shipping
           }
         : null,
-      orders: (data || []).map((order, index) => ({
-        ...order,
-        qty: order.qty ?? orderRows[index]?.qty ?? 1,
-        payment_method: order.payment_method ?? safePaymentMethod,
-        checkout_reference: order.checkout_reference ?? checkoutReference,
-        unit_price: order.unit_price ?? orderRows[index]?.unit_price ?? null,
-        order_total: order.order_total ?? orderRows[index]?.order_total ?? null
-      }))
+      order: data
     }
   });
 });
@@ -1163,65 +1217,40 @@ app.post("/api/checkout", requireUser, async (req, res) => {
 app.get("/api/orders", requireUser, async (req, res) => {
   const userClient = createAuthedClient(req.accessToken);
 
-  const { data, error } = await selectOrdersCompat(userClient, req.user.id);
+  const { data, error } = await userClient
+    .from("orders")
+    .select(ORDER_SELECT)
+    .eq("user_id", req.user.id)
+    .order("created_at", { ascending: false });
 
   if (error) {
     return res.status(500).json({ error: "Failed to load orders." });
   }
 
-  res.json({ data });
+  res.json({ data: data || [] });
 });
 
 app.get("/api/admin/orders", requireUser, requireAdmin, async (req, res) => {
   const userClient = createAuthedClient(req.accessToken);
-  let { data, error } = await userClient
+  const { data, error } = await userClient
     .from("orders")
-    .select("id, status, size, qty, payment_method, checkout_reference, unit_price, order_total, customer_name, customer_phone, customer_address, created_at, user_id, product_id, products(id, ar_name, en_name, ar_price, en_price, image)")
+    .select(ORDER_SELECT)
     .order("created_at", { ascending: false });
-
-  if (error && isLegacyOrdersSchemaError(error)) {
-    ({ data, error } = await userClient
-      .from("orders")
-      .select("id, status, size, customer_name, customer_phone, customer_address, created_at, user_id, product_id, products(id, ar_name, en_name, ar_price, en_price, image)")
-      .order("created_at", { ascending: false }));
-
-    if (!error && Array.isArray(data)) {
-      data = data.map((order) => ({
-        ...order,
-        qty: 1,
-        payment_method: "cash_on_delivery",
-        checkout_reference: null,
-        unit_price: null,
-        order_total: null
-      }));
-    }
-  }
 
   if (error) {
     return res.status(500).json({ error: "Failed to load admin orders." });
   }
 
-  res.json({ data });
+  res.json({ data: data || [] });
 });
 
 app.get("/api/admin/customers", requireUser, requireAdmin, async (req, res) => {
   const userClient = createAuthedClient(req.accessToken);
 
-  let { data, error } = await userClient
+  const { data, error } = await userClient
     .from("orders")
-    .select("id, status, order_total, customer_name, customer_phone, customer_address, created_at, user_id")
+    .select("id, status, total, subtotal, customer_name, customer_phone, customer_address, created_at, user_id")
     .order("created_at", { ascending: false });
-
-  if (error && isLegacyOrdersSchemaError(error)) {
-    ({ data, error } = await userClient
-      .from("orders")
-      .select("id, status, customer_name, customer_phone, customer_address, created_at, user_id")
-      .order("created_at", { ascending: false }));
-
-    if (!error && Array.isArray(data)) {
-      data = data.map((order) => ({ ...order, order_total: null }));
-    }
-  }
 
   if (error) {
     return res.status(500).json({ error: "Failed to load customers." });
@@ -1250,7 +1279,7 @@ app.get("/api/admin/customers", requireUser, requireAdmin, async (req, res) => {
       map.set(key, c);
     }
     c.order_count += 1;
-    if (o.order_total != null) c.total_spent += Number(o.order_total) || 0;
+    if (o.total != null) c.total_spent += Number(o.total) || 0;
     if (o.created_at < c.first_order_at) c.first_order_at = o.created_at;
     if (o.created_at > c.last_order_at) c.last_order_at = o.created_at;
     // Fill in any details missing from the newest order using older ones.
@@ -1270,27 +1299,10 @@ app.get("/api/admin/customers/:id", requireUser, requireAdmin, async (req, res) 
   const userClient = createAuthedClient(req.accessToken);
   const key = req.params.id;
 
-  const selectFull = "id, status, size, qty, payment_method, checkout_reference, unit_price, order_total, customer_name, customer_phone, customer_address, created_at, user_id, product_id, products(id, ar_name, en_name, ar_price, en_price, image)";
-  const selectLegacy = "id, status, size, customer_name, customer_phone, customer_address, created_at, user_id, product_id, products(id, ar_name, en_name, ar_price, en_price, image)";
-
-  let { data, error } = await userClient
+  const { data, error } = await userClient
     .from("orders")
-    .select(selectFull)
+    .select(ORDER_SELECT)
     .order("created_at", { ascending: false });
-
-  if (error && isLegacyOrdersSchemaError(error)) {
-    ({ data, error } = await userClient
-      .from("orders")
-      .select(selectLegacy)
-      .order("created_at", { ascending: false }));
-
-    if (!error && Array.isArray(data)) {
-      data = data.map((o) => ({
-        ...o, qty: 1, payment_method: "cash_on_delivery",
-        checkout_reference: null, unit_price: null, order_total: null,
-      }));
-    }
-  }
 
   if (error) {
     return res.status(500).json({ error: "Failed to load customer." });
@@ -1657,32 +1669,8 @@ app.patch("/api/admin/orders/:id", requireUser, requireAdmin, async (req, res) =
     .from("orders")
     .update({ status: nextStatus })
     .eq("id", req.params.id)
-    .select("id, status, size, qty, payment_method, checkout_reference, unit_price, order_total, customer_name, customer_phone, customer_address, created_at, user_id, product_id")
+    .select(ORDER_SELECT)
     .single();
-
-  if (error && isLegacyOrdersSchemaError(error)) {
-    const legacyResponse = await userClient
-      .from("orders")
-      .update({ status: nextStatus })
-      .eq("id", req.params.id)
-      .select("id, status, size, customer_name, customer_phone, customer_address, created_at, user_id, product_id")
-      .single();
-
-    if (legacyResponse.error) {
-      return res.status(500).json({ error: "Failed to update order status." });
-    }
-
-    return res.json({
-      data: {
-        ...legacyResponse.data,
-        qty: 1,
-        payment_method: "cash_on_delivery",
-        checkout_reference: null,
-        unit_price: null,
-        order_total: null
-      }
-    });
-  }
 
   if (error) {
     return res.status(500).json({ error: "Failed to update order status." });

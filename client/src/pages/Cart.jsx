@@ -30,7 +30,7 @@ export default function Cart() {
   const navigate = useNavigate();
 
   const subtotal = items.reduce(
-    (sum, i) => sum + (i.product.price ?? i.product.ar_price ?? 0) * i.qty,
+    (sum, i) => sum + (i.price ?? i.product.price ?? 0) * i.qty,
     0
   );
 
@@ -66,7 +66,7 @@ export default function Cart() {
           <AnimatePresence initial={false}>
             {items.map((item) => {
               const name = item.product.en_name || item.product.ar_name;
-              const price = item.product.price ?? item.product.ar_price ?? 0;
+              const price = item.price ?? item.product.price ?? 0;
 
               return (
                 <motion.div
@@ -130,7 +130,7 @@ export default function Cart() {
           <div className="summary__items">
             {items.map((item) => {
               const name = item.product.en_name || item.product.ar_name;
-              const price = item.product.price ?? item.product.ar_price ?? 0;
+              const price = item.price ?? item.product.price ?? 0;
               return (
                 <div key={item.key} className="summary__item">
                   {item.product.image ? (

@@ -1,14 +1,27 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+// A cart line is a VARIANT, not a product: 50ml and 100ml are different prices,
+// different stock, different SKUs, and must be separate lines. The server prices
+// the order from variant_id — the client never gets to say what something costs.
+const pickVariant = (product, variant) =>
+  variant
+  || product.variants?.find((v) => v.is_default)
+  || product.variants?.[0]
+  || null;
+
 export const useCart = create(
   persist(
     (set) => ({
       items: [],
 
-      addItem: (product, size = null, qty = 1) =>
+      addItem: (product, variant = null, qty = 1) =>
         set((s) => {
-          const key = `${product.id}__${size ?? ""}`;
+          const v = pickVariant(product, variant);
+          // Key on the variant when there is one; fall back to the product so a
+          // legacy persisted cart still behaves.
+          const key = v ? `v:${v.id}` : `p:${product.id}`;
+
           const existing = s.items.find((i) => i.key === key);
           if (existing) {
             return {
@@ -17,7 +30,20 @@ export const useCart = create(
               ),
             };
           }
-          return { items: [...s.items, { key, product, size, qty }] };
+
+          return {
+            items: [
+              ...s.items,
+              {
+                key,
+                product,
+                variantId: v?.id ?? null,
+                size: v?.size_label ?? null,
+                price: v ? Number(v.price) : (product.price ?? 0),
+                qty,
+              },
+            ],
+          };
         }),
 
       removeItem: (key) =>
@@ -33,6 +59,20 @@ export const useCart = create(
 
       clear: () => set({ items: [] }),
     }),
-    { name: "rb-cart" }
+    {
+      name: "rb-cart",
+      version: 2,
+      // v1 carried { product, size } and no price/variantId; the server can
+      // still resolve those (productId + size -> variant), so keep them rather
+      // than emptying someone's cart on deploy.
+      migrate: (state) => ({
+        ...state,
+        items: (state?.items ?? []).map((i) => ({
+          ...i,
+          variantId: i.variantId ?? null,
+          price: i.price ?? i.product?.price ?? 0,
+        })),
+      }),
+    }
   )
 );

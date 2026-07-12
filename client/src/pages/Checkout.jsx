@@ -64,7 +64,7 @@ export default function Checkout() {
   const [autoDiscount, setAutoDiscount] = useState(null); // best-matching automatic discount — same shape, title instead of code
 
   const subtotal = items.reduce(
-    (sum, i) => sum + (i.product.price ?? i.product.ar_price ?? 0) * i.qty,
+    (sum, i) => sum + (i.price ?? i.product.price ?? 0) * i.qty,
     0
   );
   const effectiveDiscount = discount || autoDiscount;
@@ -181,7 +181,7 @@ export default function Checkout() {
     try {
       const res = await apiCheckout(
         {
-          items: items.map((i) => ({ productId: i.product.id, size: i.size, qty: i.qty })),
+          items: items.map((i) => ({ variantId: i.variantId, productId: i.product.id, size: i.size, qty: i.qty })),
           ...form,
           discount_code: discount?.code || undefined,
         },
@@ -317,7 +317,7 @@ export default function Checkout() {
           <div className="summary__items">
             {items.map((item) => {
               const name = item.product.en_name || item.product.ar_name;
-              const price = item.product.price ?? item.product.ar_price ?? 0;
+              const price = item.price ?? item.product.price ?? 0;
               return (
                 <div key={item.key} className="summary__item">
                   {item.product.image ? (
