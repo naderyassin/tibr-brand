@@ -66,6 +66,16 @@ export const adminUpdateProduct = (id, body, token) =>
 export const adminDeleteProduct = (id, token) =>
   api.delete(`/api/admin/products/${id}`, token);
 
+// Catalog entities the product form picks from. Both are creatable inline so a
+// new house — or an original a new Inspired product needs to reference — can be
+// added without leaving the page.
+export const adminGetBrands = (token) => api.get("/api/admin/brands", token);
+export const adminCreateBrand = (body, token) =>
+  api.post("/api/admin/brands", body, token);
+export const adminGetOriginals = (token) => api.get("/api/admin/originals", token);
+export const adminCreateOriginal = (body, token) =>
+  api.post("/api/admin/originals", body, token);
+
 export const adminGetDiscounts = (token) => api.get("/api/admin/discounts", token);
 export const adminGetDiscount = (id, token) => api.get(`/api/admin/discounts/${id}`, token);
 export const adminCreateDiscount = (body, token) =>
