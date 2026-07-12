@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useCart } from "@/stores/cart";
 import { useToast } from "@/components/ui/Toast";
 import { getShippingDiscountThreshold } from "@/lib/api";
+import { FAMILIES, label } from "@/lib/taxonomy";
 import "./ProductCardNew.css";
 
 const HeartIcon = () => (
@@ -29,10 +30,15 @@ export default function ProductCard({ product, index = 0, showInspiredTag = fals
   const toast = useToast();
 
   const name = product.en_name || product.ar_name;
-  const price = product.price ?? product.ar_price ?? product.en_price ?? 0;
 
-  // Calculate discount if old price exists (mock logic for demo if no old price)
-  const discount = product.old_price ? Math.round(((product.old_price - price) / product.old_price) * 100) : 20;
+  // Price, size and the "was" price all come from the DEFAULT VARIANT now —
+  // they're per-size, not per-product. The legacy columns remain the fallback
+  // until step 5 of docs/DATA-MODEL.md drops them.
+  const defaultVariant =
+    product.variants?.find((v) => v.is_default) || product.variants?.[0] || null;
+  const price = product.price ?? defaultVariant?.price ?? product.ar_price ?? 0;
+  const oldPrice = defaultVariant?.compare_at_price ?? product.old_price ?? null;
+  const discount = oldPrice ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
 
   // Shared cache key — one network request no matter how many cards render.
   // Reflects whatever automatic "free shipping" discount is live in admin
@@ -86,17 +92,21 @@ export default function ProductCard({ product, index = 0, showInspiredTag = fals
       <div className="product-new__body">
         <Link className="product-new__name" to={`/product?id=${product.id}`}>{name}</Link>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.25rem' }}>
-          <span className="product-new__size">{product.size || "100ml"}</span>
+          <span className="product-new__size">{defaultVariant?.size_label || product.sizes?.[0] || "—"}</span>
           <span style={{ width: '4px', height: '4px', backgroundColor: '#d1d1d6', borderRadius: '50%' }}></span>
-          <span className="product-new__brand">{product.brand || "Luxury Brand"}</span>
+          <span className="product-new__brand">{product.brands?.name_en || "TIBR"}</span>
         </div>
-        <p className="product-new__scent">Scent: {product.fragrance_category || "Oriental"}</p>
+        {product.families?.length > 0 && (
+          <p className="product-new__scent">
+            Scent: {product.families.map((f) => label(FAMILIES, f)).join(", ")}
+          </p>
+        )}
         
         <div className="product-new__price-row">
           <span className="product-new__price">EGP {price}</span>
-          {product.old_price && (
+          {oldPrice && discount > 0 && (
             <>
-              <span className="product-new__old-price">EGP {product.old_price}</span>
+              <span className="product-new__old-price">EGP {oldPrice}</span>
               <span className="product-new__discount-badge">%{discount}</span>
             </>
           )}

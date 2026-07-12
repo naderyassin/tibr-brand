@@ -34,10 +34,10 @@ export default function ShopNav() {
             const isOpen = openKey === tab.key;
             return (
               <li key={tab.key} className={`shop-subnav__item${isOpen ? " is-open" : ""}`}>
-                {tab.subs ? (
+                {tab.groups ? (
                   <button
                     type="button"
-                    className={`shop-subnav__link${location.pathname.startsWith(tab.path) ? " is-active" : ""}`}
+                    className={`shop-subnav__link${location.pathname.startsWith(tab.path.split("?")[0]) ? " is-active" : ""}`}
                     aria-expanded={isOpen}
                     aria-haspopup="true"
                     onClick={() => setOpenKey(isOpen ? null : tab.key)}
@@ -56,21 +56,29 @@ export default function ShopNav() {
                   </NavLink>
                 )}
 
-                {tab.subs && (
+                {/* Each dropdown entry is a filter link, not a route of its own. */}
+                {tab.groups && (
                   <div className="shop-subnav__dropdown">
-                    <ul className="shop-subnav__dropdown-list">
-                      {tab.subs.map((s) => (
-                        <li key={s.slug}>
-                          <NavLink
-                            to={`${tab.path}/${s.slug}`}
-                            className="shop-subnav__dropdown-link"
-                            onClick={() => setOpenKey(null)}
-                          >
-                            {s.label}
-                          </NavLink>
-                        </li>
+                    <div className="shop-subnav__dropdown-cols">
+                      {tab.groups.map((group) => (
+                        <div className="shop-subnav__col" key={group.title}>
+                          <p className="shop-subnav__col-title">{group.title}</p>
+                          <ul className="shop-subnav__dropdown-list">
+                            {group.items.map((s) => (
+                              <li key={s.path}>
+                                <NavLink
+                                  to={s.path}
+                                  className="shop-subnav__dropdown-link"
+                                  onClick={() => setOpenKey(null)}
+                                >
+                                  {s.label}
+                                </NavLink>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   </div>
                 )}
               </li>

@@ -3538,3 +3538,145 @@ p, li { max-width: 68ch; }     /* readable measure */
   overflow: hidden;
   min-height: 67px;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALOG DATA MODEL — admin product form + storefront filter facets.
+   NOTE: css/store/{admin,catalog,components,pages}.css are NOT imported by
+   anything; store.css is the only stylesheet the client loads. New rules go
+   here. (client/src/styles/index.css imports this file and nothing else.)
+   ═════════════════════════════════════════════════════════════════════════ */
+
+/* ── Admin: taxonomy chips ───────────────────────────────────────────────── */
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 12px; border-radius: 999px;
+  border: 1px solid var(--line, rgba(0,0,0,.12));
+  background: transparent; color: var(--ink-2, #6b6b70);
+  font-size: 13px; cursor: pointer;
+  transition: border-color .15s, color .15s, background .15s;
+}
+.chip:hover { border-color: var(--gold, #c8a35a); color: var(--ink-1, #1c1c1e); }
+.chip.is-on {
+  border-color: var(--gold, #c8a35a);
+  background: color-mix(in srgb, var(--gold, #c8a35a) 12%, transparent);
+  color: #8a6d2f;
+}
+.chip__ar { opacity: .6; font-size: 12px; }
+
+/* ── Admin: variants grid (per-size price + stock) ───────────────────────── */
+.variants { display: grid; gap: 6px; margin-bottom: 12px; }
+.variants__head,
+.variants__row {
+  display: grid;
+  grid-template-columns: 1.1fr .6fr 1fr .9fr .9fr .7fr 64px 36px;
+  gap: 8px; align-items: center;
+}
+.variants__head {
+  font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--ink-3, #8e8e93); padding: 0 2px 2px;
+}
+.variants__row .input { padding: 8px 10px; font-size: 14px; }
+.variants__default { display: flex; justify-content: center; }
+.variants__default input { accent-color: var(--gold, #c8a35a); }
+.variants__remove {
+  width: 32px; height: 32px; border-radius: 8px;
+  border: 1px solid var(--line, rgba(0,0,0,.12));
+  background: transparent; color: var(--ink-3, #8e8e93);
+  cursor: pointer; font-size: 16px; line-height: 1;
+}
+.variants__remove:hover:not(:disabled) { border-color: #e0685f; color: #e0685f; }
+.variants__remove:disabled { opacity: .3; cursor: not-allowed; }
+
+@media (max-width: 900px) {
+  .variants__head { display: none; }
+  .variants__row {
+    grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px;
+    border: 1px solid var(--line, rgba(0,0,0,.12)); border-radius: 10px;
+  }
+}
+
+/* ── Admin: inline entity creator (new brand / new original) ─────────────── */
+.field__link {
+  align-self: flex-start; margin-top: 6px; padding: 0;
+  background: none; border: 0; cursor: pointer;
+  color: var(--gold, #c8a35a); font-size: 12px;
+}
+.field__link:hover { text-decoration: underline; }
+.inline-create {
+  grid-column: 1 / -1; padding: 14px; border-radius: 10px;
+  border: 1px dashed var(--gold, #c8a35a);
+  background: color-mix(in srgb, var(--gold, #c8a35a) 5%, transparent);
+}
+.inline-create__title { margin: 0 0 10px; font-size: 13px; color: #8a6d2f; }
+.inline-create__grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px; margin-bottom: 10px;
+}
+.inline-create__actions { display: flex; gap: 8px; }
+.btn--sm { padding: 7px 14px; font-size: 13px; }
+.admin-product-meta__status,
+.admin-product-meta__sizes { color: var(--ink-3, #8e8e93); font-size: 12px; }
+
+/* ── Storefront: filter sidebar. Every facet is a link into the same page. ── */
+.collection__body {
+  display: grid; grid-template-columns: 232px 1fr; gap: 40px; align-items: start;
+}
+.filters { position: sticky; top: 96px; }
+.filters__head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  padding-bottom: 12px; margin-bottom: 16px;
+  border-bottom: 1px solid var(--line, rgba(0,0,0,.12));
+}
+.filters__title {
+  margin: 0; font-size: 13px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--ink-2, #6b6b70);
+}
+.filters__clear {
+  background: none; border: 0; cursor: pointer; padding: 0;
+  font-size: 12px; color: var(--gold, #c8a35a);
+}
+.filters__clear:hover { text-decoration: underline; }
+.filters__group { margin-bottom: 24px; }
+.filters__group-title {
+  margin: 0 0 8px; font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ink-3, #8e8e93);
+}
+.filters__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.filters__option {
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 7px 10px; border-radius: 8px;
+  background: none; border: 1px solid transparent;
+  color: var(--ink-2, #6b6b70); font-size: 13px; text-align: start; cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.filters__option:hover { background: rgba(0,0,0,.04); color: var(--ink-1, #1c1c1e); }
+.filters__option.is-on {
+  border-color: var(--gold, #c8a35a); color: #8a6d2f;
+  background: color-mix(in srgb, var(--gold, #c8a35a) 10%, transparent);
+}
+.filters__count { font-size: 11px; opacity: .55; font-variant-numeric: tabular-nums; }
+.collection__count { margin: 0 0 16px; font-size: 13px; color: var(--ink-3, #8e8e93); }
+
+@media (max-width: 860px) {
+  .collection__body { grid-template-columns: 1fr; gap: 24px; }
+  .filters { position: static; }
+  .filters__list {
+    grid-auto-flow: column; grid-auto-columns: max-content;
+    overflow-x: auto; gap: 8px; padding-bottom: 4px;
+  }
+  .filters__option { border: 1px solid var(--line, rgba(0,0,0,.12)); white-space: nowrap; }
+}
+
+/* ── Storefront: multi-column nav dropdown (tab menus are filter groups) ─── */
+.shop-subnav__dropdown-cols {
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(150px, max-content);
+  gap: 28px; padding: 4px 2px;
+}
+.shop-subnav__col-title {
+  margin: 0 0 8px; font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ink-3, #8e8e93); white-space: nowrap;
+}
+@media (max-width: 860px) {
+  .shop-subnav__dropdown-cols { grid-auto-flow: row; gap: 16px; }
+}

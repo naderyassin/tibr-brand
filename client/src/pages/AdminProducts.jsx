@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/stores/auth";
 import { adminGetProducts, adminDeleteProduct } from "@/lib/api";
-import { LISTING_TYPES } from "@/lib/shopNav";
+import { LINES, AUDIENCES, label } from "@/lib/taxonomy";
 
 export default function AdminProducts() {
   const { token } = useAuth();
@@ -63,12 +63,30 @@ export default function AdminProducts() {
                       </div>
                     </td>
                     <td>
-                      {p.listing_type
-                        ? `${LISTING_TYPES[p.listing_type]?.label.split(" —")[0] || p.listing_type}${p.brand ? ` · ${p.brand}` : ""}`
-                        : "—"}
+                      {[p.brands?.name_en, p.line && label(LINES, p.line), p.audience && label(AUDIENCES, p.audience)]
+                        .filter(Boolean).join(" · ") || "—"}
+                      {p.status !== "active" && (
+                        <span className="admin-product-meta__status"> · {p.status}</span>
+                      )}
                     </td>
-                    <td className="num">{p.en_price} EGP</td>
-                    <td className="num">{p.quantity}</td>
+                    {/* Price and stock are per-VARIANT now: show the range and the total. */}
+                    <td className="num">
+                      {p.variants?.length
+                        ? (() => {
+                            const prices = p.variants.map((v) => Number(v.price));
+                            const lo = Math.min(...prices), hi = Math.max(...prices);
+                            return lo === hi ? `${lo} EGP` : `${lo}–${hi} EGP`;
+                          })()
+                        : `${p.en_price ?? 0} EGP`}
+                    </td>
+                    <td className="num">
+                      {p.variants?.length
+                        ? p.variants.reduce((sum, v) => sum + (v.quantity || 0), 0)
+                        : p.quantity}
+                      {p.variants?.length > 1 && (
+                        <span className="admin-product-meta__sizes"> ({p.variants.length} sizes)</span>
+                      )}
+                    </td>
                     <td>
                       <div className="product-actions">
                         <Link

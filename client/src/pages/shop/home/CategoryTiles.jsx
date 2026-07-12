@@ -2,56 +2,54 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getProducts } from "@/lib/api";
-import { FRAGRANCE_SUBS } from "@/lib/shopNav";
 import "./CategoryTiles.css";
 
-export default function CategoryTiles() {
-  const { data } = useQuery({
-    queryKey: ["products", "all"],
-    queryFn: () => getProducts(),
-  });
+// Each tile is a saved filter query, not a route of its own — same contract as
+// the nav (docs/DATA-MODEL.md §5).
+const TILES = [
+  { key: "men",       label: "Men",        ar: "رجالي",   to: "/shop/perfumes?audience=men",   match: (p) => p.audience === "men" },
+  { key: "women",     label: "Women",      ar: "نسائي",   to: "/shop/perfumes?audience=women", match: (p) => p.audience === "women" },
+  { key: "unisex",    label: "Unisex",     ar: "للجنسين", to: "/shop/perfumes?audience=unisex", match: (p) => p.audience === "unisex" },
+  { key: "inspired",  label: "Inspired",   ar: "مستوحى",  to: "/shop/inspired",                match: (p) => p.line === "inspired" },
+  { key: "arabian",   label: "Arabian",    ar: "خليجي",   to: "/shop/arabian",                 match: (p) => p.classification === "arabian" },
+  { key: "candles",   label: "Candles",    ar: "شموع",    to: "/shop/candles",                 match: (p) => p.product_type === "candle" },
+];
 
-  const imageByCategory = useMemo(() => {
+export default function CategoryTiles() {
+  const { data } = useQuery({ queryKey: ["products", {}, "newest"], queryFn: () => getProducts() });
+  const products = data?.data ?? [];
+
+  // Borrow a real product shot per tile; fall back to the static art.
+  const imageFor = useMemo(() => {
     const map = {};
-    (data?.data ?? []).forEach((p) => {
-      if (p.fragrance_category && p.image && !map[p.fragrance_category]) {
-        map[p.fragrance_category] = p.image;
-      }
-    });
+    for (const tile of TILES) {
+      const hit = products.find((p) => tile.match(p) && (p.images?.[0] || p.image));
+      if (hit) map[tile.key] = hit.images?.[0] || hit.image;
+    }
     return map;
-  }, [data]);
+  }, [products]);
 
   return (
     <section className="shop-home-section" aria-label="Shop by category">
       <h2 className="shop-home-section__title">Shop by Category</h2>
       <div className="o2morny-category-grid">
-        {FRAGRANCE_SUBS.map((c) => {
-          // Fallback to local image in /categories/ if API doesn't provide one
-          const image = imageByCategory[c.slug] || `/categories/${c.slug}.png`;
-          
-          return (
-            <Link
-              key={c.slug}
-              to={`/shop/fragrances/${c.slug}`}
-              className="o2morny-category-card"
-            >
-              <div className="o2morny-category-image">
-                <img src={image} alt={c.label.split(" —")[0]} 
-                  onError={(e) => {
-                    // Fallback if local image doesn't exist either
-                    e.target.style.display = 'none';
-                    e.target.parentElement.style.background = 'var(--surface-2)';
-                  }} 
-                />
-              </div>
-              <div className="o2morny-category-footer">
-                <span className="o2morny-category-title">
-                  {c.label.split(" —")[0].replace(" Fragrances", "")}
-                </span>
-              </div>
-            </Link>
-          );
-        })}
+        {TILES.map((tile) => (
+          <Link key={tile.key} to={tile.to} className="o2morny-category-card">
+            <div className="o2morny-category-image">
+              <img
+                src={imageFor[tile.key] || `/categories/${tile.key}.png`}
+                alt={tile.label}
+                onError={(e) => {
+                  e.target.style.display = "none";
+                  e.target.parentElement.style.background = "var(--surface-2)";
+                }}
+              />
+            </div>
+            <div className="o2morny-category-footer">
+              <span className="o2morny-category-title">{tile.label}</span>
+            </div>
+          </Link>
+        ))}
       </div>
     </section>
   );

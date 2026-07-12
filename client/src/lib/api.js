@@ -20,8 +20,22 @@ export const api = {
 };
 
 // Products
-export const getProducts = (category) =>
-  api.get(`/api/products${category ? `?category=${category}` : ""}`);
+// Facet counts for the filter sidebar — which values actually have stock behind
+// them, so we never render a filter that leads nowhere.
+export const getFacets = () => api.get("/api/facets");
+
+/**
+ * The one product query. Pass any subset of the taxonomy facets:
+ *   getProducts({ audience: "men", family: "oud", sort: "price-asc" })
+ *   getProducts({ inspired_by: "dior" })   // our versions of Dior originals
+ * Empty values are dropped, so callers can spread filter state in directly.
+ */
+export const getProducts = (filters = {}) => {
+  const qs = new URLSearchParams(
+    Object.entries(filters).filter(([, v]) => v != null && v !== "")
+  ).toString();
+  return api.get(`/api/products${qs ? `?${qs}` : ""}`);
+};
 export const getProduct = (id) => api.get(`/api/products/${id}`);
 export const getProductReviews = (id) => api.get(`/api/products/${id}/reviews`);
 export const postReview = (id, body, token) =>
