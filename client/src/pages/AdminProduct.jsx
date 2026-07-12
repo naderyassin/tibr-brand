@@ -170,11 +170,15 @@ function VariantsEditor({ variants, onChange }) {
           <div className="variants__row" key={i}>
             <input className="input" placeholder="50ml" value={v.size_label}
               onChange={(e) => {
-                const label = e.target.value;
-                patch(i, "size_label", label);
-                // auto-fill ml from the label, but never fight a manual edit
-                const ml = label.replace(/[^0-9.]/g, "");
-                if (ml && !v.size_ml) patch(i, "size_ml", ml);
+                const size_label = e.target.value;
+                // Auto-fill ml from the label, but never fight a manual edit.
+                // Both fields move in ONE onChange — two sequential patch() calls
+                // would each read the same stale `variants` and the second would
+                // clobber the first.
+                const ml = size_label.replace(/[^0-9.]/g, "");
+                const size_ml = ml && !v.size_ml ? ml : v.size_ml;
+                onChange(variants.map((row, idx) =>
+                  idx === i ? { ...row, size_label, size_ml } : row));
               }} />
             <input className="input" type="number" min="0" placeholder="50" value={v.size_ml}
               onChange={(e) => patch(i, "size_ml", e.target.value)} />
