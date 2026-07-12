@@ -64,18 +64,21 @@ export default function AdminLayout() {
     if (!authLoading && !user) navigate("/login", { replace: true });
   }, [authLoading, user, navigate]);
 
-  const { data: profileData, isLoading: profileLoading } = useQuery({
+  const { data: profileData, isLoading: profileLoading, isError: profileError } = useQuery({
     queryKey: ["profile", token],
     queryFn: () => getProfile(token),
     enabled: !!token,
+    retry: false,
   });
   const isAdmin = profileData?.data?.role === "admin";
 
   useEffect(() => {
-    if (!profileLoading && profileData && !isAdmin) navigate("/account", { replace: true });
-  }, [profileLoading, profileData, isAdmin, navigate]);
+    if (profileLoading) return;
+    if (profileError) { signOut(); navigate("/login", { replace: true }); return; }
+    if (profileData && !isAdmin) navigate("/account", { replace: true });
+  }, [profileLoading, profileError, profileData, isAdmin, navigate, signOut]);
 
-  if (authLoading || !user || profileLoading || !isAdmin) return null;
+  if (authLoading || !user || profileLoading || profileError || !isAdmin) return null;
 
   const isItemActive = (item) =>
     item.match.some((m) => location.pathname === m || location.pathname.startsWith(`${m}/`));
