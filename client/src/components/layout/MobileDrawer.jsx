@@ -18,6 +18,7 @@ const NAV_LINKS = [
   ...SHOP_NAV.map((tab) => ({ to: tab.path, label: tab.label.split(" —")[0] })),
   { to: "/account?tab=wishlist", label: "Wishlist" },
   { to: "/account", label: "Account" },
+  { to: "/admin", label: "Control Panel" },
 ];
 
 export default function MobileDrawer({ open, onClose }) {

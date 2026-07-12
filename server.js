@@ -135,6 +135,7 @@ const sanitizeProductPayload = (payload) => {
     listing_type: trimValue(payload.listing_type) || null,
     fragrance_category: trimValue(payload.fragrance_category) || null,
     sample_type: trimValue(payload.sample_type) || null,
+    product_category: trimValue(payload.product_category) || null,
     is_bestseller: parseBool(payload.is_bestseller),
     is_spotlight: parseBool(payload.is_spotlight),
     season: trimValue(payload.season) || null,
@@ -149,18 +150,42 @@ const validateProductPayload = (payload, requireId = true) => {
   if (!(Number.isFinite(payload.ar_price) && payload.ar_price > 0) || !(Number.isFinite(payload.en_price) && payload.en_price > 0)) return "Arabic/English prices are required.";
   if (!payload.image) return "image is required.";
   if (!payload.brand) return "Brand is required.";
-  if (!payload.listing_type || !LISTING_TYPES.has(payload.listing_type)) return "Listing type is required and must be Fragrance, Sample, or Bundle.";
-  if ((payload.listing_type === "fragrance" || payload.listing_type === "bundle") && !FRAGRANCE_CATEGORIES.has(payload.fragrance_category)) {
-    return "Fragrance category is required for Fragrance and Bundle listings.";
-  }
-  if (payload.listing_type === "sample" && !SAMPLE_TYPES.has(payload.sample_type)) {
-    return "Sample type is required for Sample listings.";
-  }
+  if (!payload.product_category) return "Category is required.";
+  if (payload.listing_type && !LISTING_TYPES.has(payload.listing_type)) return "Listing type must be Fragrance, Sample, or Bundle.";
+  if (payload.fragrance_category && !FRAGRANCE_CATEGORIES.has(payload.fragrance_category)) return "Fragrance category is invalid.";
+  if (payload.sample_type && !SAMPLE_TYPES.has(payload.sample_type)) return "Sample type is invalid.";
   if (payload.season && !SEASONS.has(payload.season)) return "Season must be spring, summer, fall, or winter.";
   if (payload.perfume_classification && !PERFUME_CLASSIFICATIONS.has(payload.perfume_classification)) {
     return "Perfume classification must be niche or design.";
   }
   return null;
+};
+
+// Optional columns that may not exist yet on deployments where the matching
+// migration hasn't been applied. writeProductRow drops any of these that
+// Postgres reports as unknown and retries, so product saves never hard-fail
+// just because a newer column hasn't been migrated on.
+const OPTIONAL_PRODUCT_COLUMNS = ["product_category"];
+
+const isMissingColumnError = (error, column) =>
+  !!error &&
+  (error.code === "PGRST204" || /column/i.test(error.message || "")) &&
+  (error.message || "").includes(column);
+
+const writeProductRow = async (client, row, { id } = {}) => {
+  const payload = { ...row };
+  for (;;) {
+    const query = id
+      ? client.from("products").update(payload).eq("id", id)
+      : client.from("products").insert(payload);
+    const { data, error } = await query.select().single();
+    if (!error) return { data };
+    const missing = OPTIONAL_PRODUCT_COLUMNS.find(
+      (col) => col in payload && isMissingColumnError(error, col)
+    );
+    if (missing) { delete payload[missing]; continue; }
+    return { error };
+  }
 };
 
 const parsePrice = (price) => {
@@ -1261,6 +1286,41 @@ app.delete("/api/admin/discounts/:id", requireUser, requireAdmin, async (req, re
 // the order is placed, so the shopper sees the applied discount immediately.
 // Builds cart lines from real DB prices, same as /api/checkout, so the two
 // can never disagree about the amount.
+// Public (no auth) — lets the catalog show a "free shipping unlocked" badge
+// that reflects whatever automatic shipping discount is actually live in
+// admin, instead of a hardcoded claim. Returns the lowest min_purchase among
+// currently-active automatic shipping discounts (null = unconditional), or
+// null overall if no such discount is active right now.
+app.get("/api/discounts/shipping", async (_req, res) => {
+  const serviceClient = createServiceClient();
+  const { data, error } = await serviceClient
+    .from("discounts")
+    .select("min_purchase, starts_at, ends_at")
+    .eq("method", "automatic")
+    .eq("discount_class", "shipping")
+    .eq("active", true);
+
+  if (error) {
+    return res.status(500).json({ error: "Failed to load shipping discounts." });
+  }
+
+  const now = new Date();
+  const active = (data || []).filter((d) => {
+    if (d.starts_at && new Date(d.starts_at) > now) return false;
+    if (d.ends_at && new Date(d.ends_at) < now) return false;
+    return true;
+  });
+
+  if (active.length === 0) return res.json({ data: null });
+
+  const unconditional = active.some((d) => d.min_purchase == null);
+  const minPurchase = unconditional
+    ? null
+    : Math.min(...active.map((d) => d.min_purchase));
+
+  res.json({ data: { min_purchase: minPurchase } });
+});
+
 app.post("/api/discounts/validate", requireUser, async (req, res) => {
   const code = String(req.body?.code || "").trim().toUpperCase();
   const items = Array.isArray(req.body?.items) ? req.body.items : [];
@@ -1557,11 +1617,7 @@ app.post("/api/products", requireUser, requireAdmin, async (req, res) => {
     return res.status(400).json({ error: validationError });
   }
 
-  const { data, error } = await userClient
-    .from("products")
-    .insert(productToInsert)
-    .select()
-    .single();
+  const { data, error } = await writeProductRow(userClient, productToInsert);
 
   if (error) {
     return res.status(500).json({ error: error.message || "Failed to save product." });
@@ -1579,11 +1635,7 @@ app.post("/api/admin/products", requireUser, requireAdmin, async (req, res) => {
     return res.status(400).json({ error: validationError });
   }
 
-  const { data, error } = await userClient
-    .from("products")
-    .insert(productToInsert)
-    .select()
-    .single();
+  const { data, error } = await writeProductRow(userClient, productToInsert);
 
   if (error) {
     return res.status(500).json({ error: error.message || "Failed to save product." });
@@ -1617,12 +1669,7 @@ app.patch("/api/admin/products/:id", requireUser, requireAdmin, async (req, res)
     return res.status(400).json({ error: validationError });
   }
 
-  const { data, error } = await userClient
-    .from("products")
-    .update(productToUpdate)
-    .eq("id", req.params.id)
-    .select()
-    .single();
+  const { data, error } = await writeProductRow(userClient, productToUpdate, { id: req.params.id });
 
   if (error) {
     return res.status(500).json({ error: error.message || "Failed to update product." });

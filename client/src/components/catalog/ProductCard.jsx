@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 import { useCart } from "@/stores/cart";
 import { useToast } from "@/components/ui/Toast";
+import { getShippingDiscountThreshold } from "@/lib/api";
 import "./ProductCardNew.css";
 
 const HeartIcon = () => (
@@ -28,9 +30,22 @@ export default function ProductCard({ product, index = 0, showInspiredTag = fals
 
   const name = product.en_name || product.ar_name;
   const price = product.price ?? product.ar_price ?? product.en_price ?? 0;
-  
+
   // Calculate discount if old price exists (mock logic for demo if no old price)
   const discount = product.old_price ? Math.round(((product.old_price - price) / product.old_price) * 100) : 20;
+
+  // Shared cache key — one network request no matter how many cards render.
+  // Reflects whatever automatic "free shipping" discount is live in admin
+  // right now; hidden entirely when none is active.
+  const { data: shippingDiscount } = useQuery({
+    queryKey: ["shipping-discount-threshold"],
+    queryFn: getShippingDiscountThreshold,
+    staleTime: 60_000,
+  });
+  const shippingThreshold = shippingDiscount?.data;
+  const hasFreeShipping =
+    !!shippingThreshold &&
+    (shippingThreshold.min_purchase == null || price >= shippingThreshold.min_purchase);
 
   const handleAddToCart = (e) => {
     e.preventDefault();
@@ -61,15 +76,20 @@ export default function ProductCard({ product, index = 0, showInspiredTag = fals
             <div className="product-new__img product-new__img--placeholder" />
           )}
         </Link>
-        <span className="product-new__classification-tag">
-          {product.classification ? (product.classification.charAt(0).toUpperCase() + product.classification.slice(1)) : 'Niche'}
-        </span>
+        {product.classification && (
+          <span className="product-new__classification-tag">
+            {product.classification.charAt(0).toUpperCase() + product.classification.slice(1)}
+          </span>
+        )}
       </div>
 
       <div className="product-new__body">
         <Link className="product-new__name" to={`/product?id=${product.id}`}>{name}</Link>
-        <p className="product-new__size">{product.size || "100ml"}</p>
-        <p className="product-new__brand">{product.brand || "Luxury Brand"}</p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.25rem' }}>
+          <span className="product-new__size">{product.size || "100ml"}</span>
+          <span style={{ width: '4px', height: '4px', backgroundColor: '#d1d1d6', borderRadius: '50%' }}></span>
+          <span className="product-new__brand">{product.brand || "Luxury Brand"}</span>
+        </div>
         <p className="product-new__scent">Scent: {product.fragrance_category || "Oriental"}</p>
         
         <div className="product-new__price-row">
@@ -82,10 +102,12 @@ export default function ProductCard({ product, index = 0, showInspiredTag = fals
           )}
         </div>
 
-        <div className="product-new__shipping">
-          <TruckIcon />
-          <span>You've unlocked Free Shipping!</span>
-        </div>
+        {hasFreeShipping && (
+          <div className="product-new__shipping">
+            <TruckIcon />
+            <span>You've unlocked Free Shipping!</span>
+          </div>
+        )}
       </div>
 
       <div className="product-new__footer">

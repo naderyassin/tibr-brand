@@ -4,7 +4,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/stores/auth";
 import { adminGetProducts, adminCreateProduct, adminUpdateProduct } from "@/lib/api";
 import { useToast } from "@/components/ui/Toast";
-import { FRAGRANCE_SUBS, SAMPLE_SUBS, LISTING_TYPES } from "@/lib/shopNav";
+import JoditEditor from "jodit-react";
 
 const NOTES_CATALOG = {
   citrus: [
@@ -740,7 +740,26 @@ const NOTES_CATALOG = {
     { en: "Wan Sao Lhong", ar: "وان ساو لونغ" },
     { en: "Wasabi", ar: "واسابي" },
     { en: "Water Pepper", ar: "فلفل الماء" },
-    { en: "West Indian Bay", ar: "ورق غار غرب الهند" },
+    { en: "West Indian Bay", ar: "ورق غار هندي" },
+  ],
+  categories: [
+    { en: "Men", ar: "رجالي" },
+    { en: "Women", ar: "نسائي" },
+    { en: "Unisex", ar: "للجنسين" },
+    { en: "Classic", ar: "كلاسيكي" },
+    { en: "Summer", ar: "صيفي" },
+    { en: "Winter", ar: "شتوي" },
+    { en: "Spring", ar: "ربيعي" },
+    { en: "Fall", ar: "خريفي" },
+    { en: "Oriental", ar: "شرقي" },
+    { en: "Floral", ar: "زهري" },
+    { en: "Woody", ar: "خشبي" },
+    { en: "Fresh", ar: "منعش" },
+    { en: "Citrus", ar: "حمضي" },
+    { en: "Sweet", ar: "حلو" },
+    { en: "Spicy", ar: "توابل" },
+    { en: "Niche", ar: "نيش" },
+    { en: "Designer", ar: "ديزاينر" }
   ],
 };
 
@@ -840,7 +859,7 @@ function NotesTagInput({ id, label, value, onChange, universe, placeholder, hint
           />
         </div>
         {open && filtered.length > 0 && (
-          <div className="notes-dropdown">
+          <div className="notes-dropdown" data-lenis-prevent>
             {filtered.slice(0, 100).map(n => (
               <button
                 key={n.en}
@@ -863,9 +882,7 @@ function NotesTagInput({ id, label, value, onChange, universe, placeholder, hint
 const EMPTY_FORM = {
   id: "",
   brand: "",
-  listing_type: "",
-  fragrance_category: "",
-  sample_type: "",
+  product_category: "",
   name: "",
   price: "",
   quantity: "",
@@ -875,7 +892,7 @@ const EMPTY_FORM = {
   mid_notes: "",
   base_notes: "",
   desc: "",
-  image: "",
+  images: [],
   is_bestseller: false,
   is_spotlight: false,
   season: "",
@@ -892,8 +909,6 @@ export default function AdminProduct() {
   const fileInputRef = useRef(null);
 
   const [form, setForm] = useState(EMPTY_FORM);
-  const [imgPreview, setImgPreview] = useState("");
-  const [fileInfo, setFileInfo] = useState(null);
   const [descLang, setDescLang] = useState("ar");
   const [uploading, setUploading] = useState(false);
 
@@ -918,9 +933,7 @@ export default function AdminProduct() {
         setForm({
           id: p.id,
           brand: p.brand || "",
-          listing_type: p.listing_type || "",
-          fragrance_category: p.fragrance_category || "",
-          sample_type: p.sample_type || "",
+          product_category: p.product_category || "",
           name: p.en_name || p.ar_name || "",
           price: p.en_price ?? p.ar_price ?? "",
           quantity: p.quantity ?? "",
@@ -930,14 +943,17 @@ export default function AdminProduct() {
           mid_notes: "",
           base_notes: "",
           desc: p.en_desc || p.ar_desc || "",
-          image: p.image || "",
+          images: (() => {
+            if (!p.image) return [];
+            try { return JSON.parse(p.image); }
+            catch { return [p.image]; }
+          })(),
           is_bestseller: !!p.is_bestseller,
           is_spotlight: !!p.is_spotlight,
           season: p.season || "",
           perfume_classification: p.perfume_classification || "",
           is_egyptian_brand: !!p.is_egyptian_brand,
         });
-        setImgPreview(p.image || "");
       }
     }
   }, [editId, allProducts]);
@@ -949,9 +965,6 @@ export default function AdminProduct() {
   const handleFileChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const localUrl = URL.createObjectURL(file);
-    setImgPreview(localUrl);
-    setFileInfo({ name: file.name });
     setUploading(true);
     try {
       const fd = new FormData();
@@ -963,27 +976,21 @@ export default function AdminProduct() {
       });
       const json = await res.json();
       if (json.url) {
-        setForm((f) => ({ ...f, image: json.url }));
-        setImgPreview(json.url);
-        URL.revokeObjectURL(localUrl);
+        setForm((f) => ({ ...f, images: [...f.images, json.url] }));
       }
     } catch {
       toast("Upload failed");
     } finally {
       setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
-  const clearFile = () => {
-    if (fileInputRef.current) fileInputRef.current.value = "";
-    setFileInfo(null);
-    setForm((f) => ({ ...f, image: "" }));
-    setImgPreview("");
-  };
-
-  const handleUrlChange = (url) => {
-    setForm((f) => ({ ...f, image: url }));
-    setImgPreview(url);
+  const removeImage = (indexToRemove) => {
+    setForm((f) => ({
+      ...f,
+      images: f.images.filter((_, i) => i !== indexToRemove)
+    }));
   };
 
   const handleAutoDesc = () => {
@@ -1209,25 +1216,18 @@ export default function AdminProduct() {
       toast("Brand is required.");
       return;
     }
-    if (!LISTING_TYPES[form.listing_type]) {
-      toast("Select a listing type (Fragrances, Sample & Travel Size, or Bundle).");
-      return;
-    }
-    if ((form.listing_type === "fragrance" || form.listing_type === "bundle") && !form.fragrance_category) {
-      toast("Select a fragrance category.");
-      return;
-    }
-    if (form.listing_type === "sample" && !form.sample_type) {
-      toast("Select a sample type.");
+    if (!form.product_category) {
+      toast("Select a category.");
       return;
     }
     const price = Number(form.price);
     const body = {
       id: form.id,
       brand: form.brand.trim(),
-      listing_type: form.listing_type,
-      fragrance_category: form.listing_type === "sample" ? null : form.fragrance_category,
-      sample_type: form.listing_type === "sample" ? form.sample_type : null,
+      listing_type: null,
+      fragrance_category: null,
+      sample_type: null,
+      product_category: form.product_category || null,
       ar_name: form.name,
       en_name: form.name,
       ar_price: price,
@@ -1236,7 +1236,7 @@ export default function AdminProduct() {
       sizes: form.sizes.split(",").map((s) => s.trim()).filter(Boolean),
       ar_desc: form.desc,
       en_desc: form.desc,
-      image: form.image,
+      image: form.images.length > 0 ? JSON.stringify(form.images) : null,
       review_avg: 0,
       review_count: 0,
       is_bestseller: form.is_bestseller,
@@ -1320,88 +1320,15 @@ export default function AdminProduct() {
                   <p className="field__hint">Powers the Shop by Brand directory and the brand line on product cards</p>
                 </div>
 
-                <div className="field">
-                  <label className="field__label" htmlFor="p-listing-type">
-                    Listing Type <span className="field__req">*</span>
-                  </label>
-                  <div className="select-field">
-                    <select
-                      id="p-listing-type"
-                      className="select"
-                      value={form.listing_type}
-                      onChange={(e) => setForm((f) => ({ ...f, listing_type: e.target.value, fragrance_category: "", sample_type: "" }))}
-                    >
-                      <option value="" disabled>Select a listing type…</option>
-                      {Object.entries(LISTING_TYPES).map(([value, { label }]) => (
-                        <option key={value} value={value}>{label}</option>
-                      ))}
-                    </select>
-                    <svg className="select-field__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-                  </div>
-                  <p className="field__hint">Which shop tab this product appears under</p>
-                </div>
-
-                {(form.listing_type === "fragrance" || form.listing_type === "bundle") && (
-                  <div className="field">
-                    <label className="field__label" htmlFor="p-fragrance-category">
-                      Fragrance Category <span className="field__req">*</span>
-                    </label>
-                    <div className="select-field">
-                      <select
-                        id="p-fragrance-category"
-                        className="select"
-                        value={form.fragrance_category}
-                        onChange={set("fragrance_category")}
-                      >
-                        <option value="" disabled>Select a category…</option>
-                        {FRAGRANCE_SUBS.map((s) => (
-                          <option key={s.slug} value={s.slug}>{s.label}</option>
-                        ))}
-                      </select>
-                      <svg className="select-field__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-                    </div>
-                  </div>
-                )}
-
-                {form.listing_type === "sample" && (
-                  <div className="field">
-                    <label className="field__label" htmlFor="p-sample-type">
-                      Sample Type <span className="field__req">*</span>
-                    </label>
-                    <div className="select-field">
-                      <select
-                        id="p-sample-type"
-                        className="select"
-                        value={form.sample_type}
-                        onChange={set("sample_type")}
-                      >
-                        <option value="" disabled>Select a type…</option>
-                        {SAMPLE_SUBS.map((s) => (
-                          <option key={s.slug} value={s.slug}>{s.label}</option>
-                        ))}
-                      </select>
-                      <svg className="select-field__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-                    </div>
-                  </div>
-                )}
-
-                <div className="field field--full">
-                  <label className="field__label" htmlFor="p-gender">Gender / الجنس</label>
-                  <div className="select-field">
-                    <select
-                      id="p-gender"
-                      className="select"
-                      value={form.gender}
-                      onChange={set("gender")}
-                    >
-                      <option value="">— اختر —</option>
-                      <option value="men">للرجال</option>
-                      <option value="women">للنساء</option>
-                      <option value="unisex">للجنسين</option>
-                    </select>
-                    <svg className="select-field__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-                  </div>
-                </div>
+                <NotesTagInput
+                  id="p-category"
+                  label="Product Categories / Tags"
+                  value={form.product_category}
+                  onChange={(v) => setForm((f) => ({ ...f, product_category: v }))}
+                  universe="categories"
+                  placeholder="Search or type a category (e.g. Men, Summer)..."
+                  hint="Add multiple tags. Type a custom tag and press Enter or Comma if it's not in the list."
+                />
 
                 <NotesTagInput
                   id="p-top"
@@ -1440,10 +1367,64 @@ export default function AdminProduct() {
               </div>
             </div>
 
+            {/* Media */}
+            <div className="co-card">
+              <p className="co-card__title">
+                <span className="co-card__num">2</span> Media
+              </p>
+              
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="ap-file-hidden"
+                onChange={handleFileChange}
+              />
+
+              {form.images.length === 0 && !uploading ? (
+                <div 
+                  className="ap-media-dropzone"
+                  onClick={() => fileInputRef.current?.click()}
+                  role="button"
+                  tabIndex={0}
+                >
+                  <div className="ap-media-dropzone__inner">
+                    <button type="button" className="btn btn--outline ap-media-upload-btn">Upload new</button>
+                    <span className="ap-media-dropzone__or">Select existing</span>
+                  </div>
+                  <p className="ap-media-dropzone__hint">Accepts images, videos, or 3D models</p>
+                </div>
+              ) : (
+                <div className="ap-media-grid">
+                  {form.images.map((img, i) => (
+                    <div key={i} className="ap-media-item">
+                      <img src={img} alt={`Product media ${i+1}`} />
+                      <button type="button" className="ap-media-item__remove" onClick={(e) => { e.stopPropagation(); removeImage(i); }}>✕</button>
+                    </div>
+                  ))}
+                  
+                  {uploading && (
+                    <div className="ap-media-item ap-media-item--loading">
+                      <div className="ap-media-spinner"></div>
+                      <span>Uploading...</span>
+                    </div>
+                  )}
+
+                  <button 
+                    type="button" 
+                    className="ap-media-add" 
+                    onClick={() => !uploading && fileInputRef.current?.click()}
+                  >
+                    +
+                  </button>
+                </div>
+              )}
+            </div>
+
             {/* Merchandising & Curation */}
             <div className="co-card">
               <p className="co-card__title">
-                <span className="co-card__num">2</span> Merchandising &amp; Curation
+                <span className="co-card__num">3</span> Merchandising &amp; Curation
               </p>
               <div className="admin-form-grid">
                 <label className="field field--checkbox">
@@ -1493,7 +1474,7 @@ export default function AdminProduct() {
             {/* Pricing & Stock */}
             <div className="co-card">
               <p className="co-card__title">
-                <span className="co-card__num">3</span> Pricing &amp; Stock
+                <span className="co-card__num">4</span> Pricing &amp; Stock
               </p>
               <div className="admin-form-grid">
                 <div className="field">
@@ -1529,7 +1510,7 @@ export default function AdminProduct() {
             {/* Description */}
             <div className="co-card">
               <p className="co-card__title">
-                <span className="co-card__num">4</span> Description
+                <span className="co-card__num">5</span> Description
               </p>
               <div className="field">
                 <div className="ap-desc-bar">
@@ -1557,13 +1538,19 @@ export default function AdminProduct() {
                     </button>
                   </div>
                 </div>
-                <textarea
-                  id="p-desc"
-                  className="textarea"
+                <JoditEditor
                   value={form.desc}
-                  onChange={set("desc")}
-                  rows={4}
-                  placeholder="Write a description, or click Auto-generate to build one from the product details above."
+                  onBlur={newContent => setForm(f => ({ ...f, desc: newContent }))}
+                  config={{
+                    placeholder: "Write a description, or click Auto-generate to build one from the product details above.",
+                    showCharsCounter: false,
+                    showWordsCounter: false,
+                    showXPathInStatusbar: false,
+                    buttons: ["eraser", "paragraph", "bold", "italic", "underline", "brush", "align", "link", "image", "video", "table", "dots", "source"],
+                    buttonsMD: ["eraser", "paragraph", "bold", "italic", "underline", "brush", "align", "link", "image", "video", "table", "dots", "source"],
+                    buttonsSM: ["eraser", "paragraph", "bold", "italic", "underline", "brush", "align", "link", "image", "video", "table", "dots", "source"],
+                    buttonsXS: ["eraser", "paragraph", "bold", "italic", "underline", "brush", "align", "link", "image", "video", "table", "dots", "source"],
+                  }}
                 />
               </div>
             </div>
@@ -1580,86 +1567,6 @@ export default function AdminProduct() {
             </div>
           </div>
 
-          {/* ── Right: image sidebar ── */}
-          <div>
-            <div className="co-card">
-              <p className="co-card__title">
-                <span className="co-card__num">✦</span> Image
-              </p>
-
-              {/* Preview — click anywhere to browse */}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="ap-file-hidden"
-                onChange={handleFileChange}
-              />
-              <div
-                className={`ap-preview-img${uploading ? " ap-preview-img--loading" : ""}`}
-                onClick={() => !uploading && fileInputRef.current?.click()}
-                role="button"
-                tabIndex={0}
-                aria-label="Click to upload product image"
-                onKeyDown={(e) => e.key === "Enter" && !uploading && fileInputRef.current?.click()}
-              >
-                {imgPreview ? (
-                  <img src={imgPreview} alt="Product preview" />
-                ) : (
-                  <>
-                    <div className="ap-preview-icon" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-                        <rect x="2" y="8" width="20" height="13" rx="2" strokeWidth="1.5"/>
-                        <circle cx="12" cy="14.5" r="3.5" strokeWidth="1.5"/>
-                        <circle cx="12" cy="14.5" r="1.4" fill="currentColor" opacity=".4" stroke="none"/>
-                        <path d="M8 8V7a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1" strokeWidth="1.5"/>
-                      </svg>
-                    </div>
-                    <span className="ap-preview-hint">
-                      {uploading ? "Uploading…" : "Click to browse"}
-                    </span>
-                  </>
-                )}
-              </div>
-
-              {/* File info + URL */}
-              <div className="ap-img-picker">
-                {fileInfo && (
-                  <div className="ap-file-info">
-                    <span className="ap-file-name">{fileInfo.name}</span>
-                    <button type="button" className="ap-file-clear" onClick={clearFile} aria-label="Remove file">✕</button>
-                  </div>
-                )}
-
-                <div className="ap-url-divider"><span>or</span></div>
-
-                <div className="field">
-                  <label className="field__label" htmlFor="p-img-url">
-                    Image URL <span className="field__req">*</span>
-                  </label>
-                  <input
-                    id="p-img-url"
-                    className="input"
-                    type="url"
-                    value={form.image}
-                    onChange={(e) => handleUrlChange(e.target.value)}
-                    placeholder="https://…"
-                  />
-                </div>
-              </div>
-
-              <div className="ap-preview-meta">
-                <div className="ap-meta-row">
-                  <span className="ap-meta-key">Listing Type</span>
-                  <span className="ap-meta-val">{LISTING_TYPES[form.listing_type]?.label || "—"}</span>
-                </div>
-                <div className="ap-meta-row">
-                  <span className="ap-meta-key">Status</span>
-                  <span style={{ fontSize: "var(--fs-xs)", color: "var(--success)" }}>● Draft</span>
-                </div>
-              </div>
-            </div>
-          </div>
         </form>
       </div>
     </div>

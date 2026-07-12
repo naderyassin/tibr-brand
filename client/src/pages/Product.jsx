@@ -27,6 +27,7 @@ export default function Product() {
   const addItem = useCart((s) => s.addItem);
   const toast = useToast();
   const [selectedSize, setSelectedSize] = useState(null);
+  const [activeImgIndex, setActiveImgIndex] = useState(0);
 
   const { data: productData, isLoading, isError } = useQuery({
     queryKey: ["product", id],
@@ -79,9 +80,28 @@ export default function Product() {
   const catPath = `/shop/${p.category || "perfumes"}`;
   const catLabel = p.category ? p.category.charAt(0).toUpperCase() + p.category.slice(1) : "Perfumes";
 
+  const images = (() => {
+    if (!p.image) return [];
+    try { return JSON.parse(p.image); }
+    catch { return [p.image]; }
+  })();
+
   const handleAddToCart = () => {
     addItem(p, sizes.length > 0 ? selectedSize : null);
     toast(`<strong>${name}</strong> added to cart`);
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 15 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
   };
 
   return (
@@ -96,13 +116,19 @@ export default function Product() {
 
       <motion.article
         className="pdp"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.4 }}
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
       >
-        <div className="pdp__media">
-          {p.image && (
-            <img className="pdp__img" src={p.image} alt={name} />
+        <div className="pdp__gallery">
+          {images.length > 0 ? (
+            images.map((img, idx) => (
+              <motion.div key={idx} variants={itemVariants} className="pdp__gallery-item">
+                <img src={img} alt={`${name} - View ${idx + 1}`} loading={idx > 0 ? "lazy" : "eager"} />
+              </motion.div>
+            ))
+          ) : (
+            <motion.div variants={itemVariants} className="pdp__gallery-item skeleton" />
           )}
           <button className="pdp__wish" type="button" aria-pressed="false" aria-label="Add to wishlist">
             <HeartIcon />
@@ -110,13 +136,14 @@ export default function Product() {
         </div>
 
         <div className="pdp__buy">
-          <p className="pdp__collection">{catLabel}</p>
-          <h1 className="pdp__title">{name}</h1>
-          <p className="pdp__price">{price} EGP</p>
-          {desc && <p className="pdp__desc">{desc}</p>}
+          <motion.div variants={itemVariants}>
+            <p className="pdp__collection">{catLabel}</p>
+            <h1 className="pdp__title">{name}</h1>
+            <p className="pdp__price">{price} EGP</p>
+          </motion.div>
 
           {sizes.length > 0 && (
-            <div>
+            <motion.div variants={itemVariants}>
               <p className="pdp__field-label">Size</p>
               <div className="size-options">
                 {sizes.map((sz) => (
@@ -132,38 +159,64 @@ export default function Product() {
                   </label>
                 ))}
               </div>
-            </div>
+            </motion.div>
           )}
 
-          <div className="pdp__actions">
+          <motion.div variants={itemVariants} className="pdp__actions">
             <button
-              className="btn btn--primary btn--lg"
+              className="btn btn--primary btn--lg pdp__add-cart"
               type="button"
               onClick={handleAddToCart}
               disabled={sizes.length > 0 && !selectedSize}
             >
               Add to cart
             </button>
-          </div>
-
-          <p className="pdp__cod">
-            <TruckIcon />
-            Cash on delivery across Egypt
-          </p>
-
-          {reviewsData?.data?.length > 0 && (
-            <div style={{ marginTop: "1.5rem" }}>
-              <p className="pdp__field-label" style={{ marginBottom: "0.75rem" }}>
-                Reviews ({reviewsData.data.length})
-              </p>
-              {reviewsData.data.slice(0, 3).map((r) => (
-                <div key={r.id} style={{ marginBottom: "0.75rem", paddingBottom: "0.75rem", borderBottom: "1px solid var(--line)" }}>
-                  <p style={{ color: "var(--gold)", marginBottom: "0.25rem" }}>{"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}</p>
-                  {r.body && <p style={{ color: "var(--ink-2)", fontSize: "var(--fs-sm)" }}>{r.body}</p>}
-                </div>
-              ))}
+            <div className="pdp__trust">
+              <span className="pdp__trust-item"><TruckIcon /> Cash on delivery across Egypt</span>
+              <span className="pdp__trust-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> 
+                100% Authentic Guarantee
+              </span>
             </div>
-          )}
+          </motion.div>
+
+          <motion.div variants={itemVariants} className="pdp__accordions">
+            {desc && (
+              <details className="pdp-accordion" open>
+                <summary className="pdp-accordion__title">Description <span className="pdp-accordion__icon">+</span></summary>
+                <div className="pdp-accordion__content">
+                  <div className="pdp__desc pdp__desc--rich" dangerouslySetInnerHTML={{ __html: desc }} />
+                </div>
+              </details>
+            )}
+
+            {(p.top_notes || p.mid_notes || p.base_notes) && (
+              <details className="pdp-accordion">
+                <summary className="pdp-accordion__title">Fragrance Notes <span className="pdp-accordion__icon">+</span></summary>
+                <div className="pdp-accordion__content">
+                  <div className="pdp__notes">
+                    {p.top_notes && <div><p className="note__label">Top Notes</p><p className="note__val">{p.top_notes}</p></div>}
+                    {p.mid_notes && <div><p className="note__label">Heart Notes</p><p className="note__val">{p.mid_notes}</p></div>}
+                    {p.base_notes && <div><p className="note__label">Base Notes</p><p className="note__val">{p.base_notes}</p></div>}
+                  </div>
+                </div>
+              </details>
+            )}
+
+            {reviewsData?.data?.length > 0 && (
+              <details className="pdp-accordion">
+                <summary className="pdp-accordion__title">Reviews ({reviewsData.data.length}) <span className="pdp-accordion__icon">+</span></summary>
+                <div className="pdp-accordion__content">
+                  {reviewsData.data.slice(0, 3).map((r) => (
+                    <div key={r.id} className="pdp__review">
+                      <p className="pdp__review-stars">{"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}</p>
+                      {r.body && <p className="pdp__review-body">{r.body}</p>}
+                    </div>
+                  ))}
+                </div>
+              </details>
+            )}
+          </motion.div>
         </div>
       </motion.article>
     </div>

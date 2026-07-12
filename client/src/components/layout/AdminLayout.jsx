@@ -107,7 +107,7 @@ export default function AdminLayout() {
               <span className="admin-sidebar__user-email">{user.email}</span>
               <span className="admin-sidebar__user-role">Admin</span>
             </div>
-            <NavLink className="admin-sidebar__action" to="/">
+            <NavLink className="admin-sidebar__action" to="/shop">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
                 <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>

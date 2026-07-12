@@ -8,17 +8,6 @@ import BrandLogoStrip from "./home/BrandLogoStrip";
 import ReviewsBanner from "./home/ReviewsBanner";
 import AboutBlurb from "./home/AboutBlurb";
 
-const BESTSELLER_PILLS = [
-  { key: "men", label: "Men Fragrances" },
-  { key: "women", label: "Women Fragrances" },
-  { key: "gulf", label: "Gulf Fragrances" },
-  { key: "sets", label: "SETS" },
-  { key: "health", label: "Health & Beauty" },
-  { key: "makeup", label: "Makeup" },
-];
-
-const bestsellerPredicate = (pill) => (p) => true; // Temporarily return all products so the Best Sellers section shows up even without backend flags
-
 const SPOTLIGHT_PILLS = [
   { key: "all", label: "All" },
   { key: "fall", label: "Fall" },
@@ -49,12 +38,6 @@ export default function ShopHome() {
         <CategoryTiles />
         <PromoTiles />
         <TrustBadges />
-
-        <ProductRail
-          title="Best Sellers"
-          pills={BESTSELLER_PILLS}
-          predicateForPill={bestsellerPredicate}
-        />
 
         <ProductRail
           title="Bundle"

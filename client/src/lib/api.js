@@ -49,6 +49,7 @@ export const validateDiscount = (code, items, token) =>
   api.post("/api/discounts/validate", { code, items }, token);
 export const getAutomaticDiscount = (items, token) =>
   api.post("/api/discounts/automatic", { items }, token);
+export const getShippingDiscountThreshold = () => api.get("/api/discounts/shipping");
 
 // Admin
 export const adminGetProducts = (token) => api.get("/api/admin/products", token);
