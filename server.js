@@ -65,17 +65,65 @@ const normalizeSizes = (sizes) => {
   return [];
 };
 
-const normalizeProduct = (product) => ({
-  ...product,
-  price: parsePrice(product.ar_price || product.en_price || product.price),
-  sizes: normalizeSizes(product.sizes)
-});
+// The product graph: the row plus its variants and its notes pyramid.
+const PRODUCT_GRAPH_SELECT =
+  "*, product_variants(*), product_notes(layer, sort, notes(slug, name_en, name_ar, family))";
 
-const LISTING_TYPES = new Set(["fragrance", "sample", "bundle"]);
-const FRAGRANCE_CATEGORIES = new Set(["men", "women", "unisex", "gulf", "sets", "air-fresheners", "candles"]);
-const SAMPLE_TYPES = new Set(["special", "travel"]);
+const normalizeProduct = (product) => {
+  const variants = [...(product.product_variants || [])].sort((a, b) => (a.sort || 0) - (b.sort || 0));
+  const defaultVariant = variants.find((v) => v.is_default) || variants[0] || null;
+
+  // Notes come back flat from PostgREST; regroup into the pyramid.
+  const notes = { top: [], heart: [], base: [] };
+  for (const row of [...(product.product_notes || [])].sort((a, b) => (a.sort || 0) - (b.sort || 0))) {
+    if (row.notes && notes[row.layer]) notes[row.layer].push(row.notes);
+  }
+
+  return {
+    ...product,
+    variants,
+    notes,
+    // `price` is the default variant's; the legacy columns are the fallback
+    // until step 5 of docs/DATA-MODEL.md drops them.
+    price: defaultVariant
+      ? Number(defaultVariant.price)
+      : parsePrice(product.ar_price || product.en_price || product.price),
+    inStock: variants.length
+      ? variants.some((v) => v.quantity > 0)
+      : (product.quantity || 0) > 0,
+    sizes: variants.length ? variants.map((v) => v.size_label) : normalizeSizes(product.sizes)
+  };
+};
+
+// Catalog taxonomy — must stay in lockstep with the CHECK constraints in
+// 20260713010000_products_taxonomy.sql and with client/src/lib/taxonomy.js.
+// (The old listing_type / fragrance_category / sample_type / perfume_classification
+// vocabularies are gone: they described columns that never existed in the DB.)
+const LINES = new Set(["original", "inspired", "signature"]);
+const PRODUCT_TYPES = new Set(["perfume", "candle", "air-freshener", "set", "sample", "bakhoor"]);
+const AUDIENCES = new Set(["men", "women", "unisex"]);
+const CLASSIFICATIONS = new Set(["designer", "niche", "arabian", "celebrity"]);
+const CONCENTRATIONS = new Set(["parfum", "edp", "edt", "edc", "attar", "mist"]);
+const LONGEVITIES = new Set(["light", "moderate", "long", "eternal"]);
+const SILLAGES = new Set(["intimate", "moderate", "strong", "enormous"]);
+const FAMILIES = new Set(["floral", "woody", "oriental", "fresh", "citrus", "gourmand",
+                          "spicy", "aquatic", "leather", "musk", "oud", "fruity"]);
 const SEASONS = new Set(["spring", "summer", "fall", "winter"]);
-const PERFUME_CLASSIFICATIONS = new Set(["niche", "design"]);
+const STATUSES = new Set(["draft", "active", "archived"]);
+const NOTE_LAYERS = ["top", "heart", "base"];
+
+const slugifyValue = (value) =>
+  String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
+const parseStringArray = (value, allowed) => {
+  const raw = Array.isArray(value)
+    ? value
+    : typeof value === "string"
+      ? value.split(/[,،]/)
+      : [];
+  const out = [...new Set(raw.map((v) => trimValue(v)).filter(Boolean))];
+  return allowed ? out.filter((v) => allowed.has(v)) : out;
+};
 
 const parseBool = (value) => value === true || value === "true" || value === "on" || value === "1";
 
@@ -108,57 +156,169 @@ const parseSizesInput = (sizes) => {
   return [];
 };
 
+// A product write is a graph: the products row, its variants, and its notes.
+// sanitize splits the incoming payload into those three pieces.
 const sanitizeProductPayload = (payload) => {
-  const sizes = parseSizesInput(payload.sizes);
-  const arPrice = payload.ar_price ?? payload.arPrice;
-  const enPrice = payload.en_price ?? payload.enPrice;
+  const images = parseStringArray(payload.images);
+  const variants = parseVariantsInput(payload.variants);
+  const defaultVariant = variants.find((v) => v.is_default) || variants[0] || null;
 
-  return {
+  const row = {
     id: trimValue(payload.id),
-    // The old category/perfume_type taxonomy is retired from the admin UI —
-    // nothing reads it anymore, but the columns are still NOT NULL/CHECK
-    // constrained, so keep sending values that satisfy them.
-    category: "perfumes",
-    perfume_type: "original",
-    image: trimValue(payload.image) || null,
+    slug: slugifyValue(payload.slug || payload.en_name),
+    status: trimValue(payload.status) || "active",
+    brand_id: trimValue(payload.brand_id) || null,
+    line: trimValue(payload.line) || null,
+    original_perfume_id: trimValue(payload.original_perfume_id) || null,
+    product_type: trimValue(payload.product_type) || null,
+    audience: trimValue(payload.audience) || null,
+    classification: trimValue(payload.classification) || null,
+    concentration: trimValue(payload.concentration) || null,
+    longevity: trimValue(payload.longevity) || null,
+    sillage: trimValue(payload.sillage) || null,
+    families: parseStringArray(payload.families, FAMILIES),
+    seasons: parseStringArray(payload.seasons, SEASONS),
+    tags: parseStringArray(payload.tags),
+    images,
     ar_name: trimValue(payload.ar_name) || null,
     en_name: trimValue(payload.en_name) || null,
-    ar_price: parsePrice(arPrice),
-    en_price: parsePrice(enPrice),
-    quantity: parseInt(payload.quantity, 10) || 0,
-    sizes,
-    review_avg: Math.min(5, Math.max(0, parseFloat(payload.review_avg) || 0)),
-    review_count: parseInt(payload.review_count, 10) || 0,
     ar_desc: trimValue(payload.ar_desc) || null,
     en_desc: trimValue(payload.en_desc) || null,
-    brand: trimValue(payload.brand) || null,
-    listing_type: trimValue(payload.listing_type) || null,
-    fragrance_category: trimValue(payload.fragrance_category) || null,
-    sample_type: trimValue(payload.sample_type) || null,
-    product_category: trimValue(payload.product_category) || null,
     is_bestseller: parseBool(payload.is_bestseller),
     is_spotlight: parseBool(payload.is_spotlight),
-    season: trimValue(payload.season) || null,
-    perfume_classification: trimValue(payload.perfume_classification) || null,
-    is_egyptian_brand: parseBool(payload.is_egyptian_brand)
+    review_avg: Math.min(5, Math.max(0, parseFloat(payload.review_avg) || 0)),
+    review_count: parseInt(payload.review_count, 10) || 0,
+
+    // ── Legacy bridge. These columns are still NOT NULL / still read by the
+    // live storefront, so they are kept in sync FROM the variants until step 5
+    // of docs/DATA-MODEL.md drops them. Do not hand-edit them anywhere else.
+    category: "perfumes",
+    image: images[0] || null,
+    ar_price: defaultVariant ? defaultVariant.price : 0,
+    en_price: defaultVariant ? defaultVariant.price : 0,
+    sizes: variants.map((v) => v.size_label),
+    quantity: variants.reduce((sum, v) => sum + v.quantity, 0)
   };
+
+  // { top: [...slugs], heart: [...], base: [...] }
+  const notes = {};
+  for (const layer of NOTE_LAYERS) notes[layer] = parseStringArray(payload.notes?.[layer]);
+
+  return { row, variants, notes };
 };
 
-const validateProductPayload = (payload, requireId = true) => {
-  if (requireId && !payload.id) return "id is required.";
-  if (!payload.en_name) return "Product name is required.";
-  if (!(Number.isFinite(payload.ar_price) && payload.ar_price > 0) || !(Number.isFinite(payload.en_price) && payload.en_price > 0)) return "Arabic/English prices are required.";
-  if (!payload.image) return "image is required.";
-  if (!payload.brand) return "Brand is required.";
-  if (!payload.product_category) return "Category is required.";
-  if (payload.listing_type && !LISTING_TYPES.has(payload.listing_type)) return "Listing type must be Fragrance, Sample, or Bundle.";
-  if (payload.fragrance_category && !FRAGRANCE_CATEGORIES.has(payload.fragrance_category)) return "Fragrance category is invalid.";
-  if (payload.sample_type && !SAMPLE_TYPES.has(payload.sample_type)) return "Sample type is invalid.";
-  if (payload.season && !SEASONS.has(payload.season)) return "Season must be spring, summer, fall, or winter.";
-  if (payload.perfume_classification && !PERFUME_CLASSIFICATIONS.has(payload.perfume_classification)) {
-    return "Perfume classification must be niche or design.";
+// Signature products are bespoke and reference no original; a perfume that is
+// Original or Inspired must resolve to one. Mirrors the CHECK constraint
+// products_perfume_line_needs_original.
+const requiresOriginal = (line, productType) =>
+  productType === "perfume" && (line === "original" || line === "inspired");
+
+const parseVariantsInput = (input) => {
+  const list = Array.isArray(input) ? input : [];
+  const variants = list.map((v, i) => ({
+    size_label: trimValue(v.size_label) || "One size",
+    size_ml: v.size_ml === "" || v.size_ml == null ? null : Number(v.size_ml),
+    sku: trimValue(v.sku) || null,
+    price: parsePrice(v.price),
+    compare_at_price:
+      v.compare_at_price === "" || v.compare_at_price == null ? null : parsePrice(v.compare_at_price),
+    quantity: parseInt(v.quantity, 10) || 0,
+    is_default: parseBool(v.is_default),
+    sort: i + 1
+  }));
+
+  // Exactly one default — the DB has a partial unique index that enforces this,
+  // so fix it here rather than bouncing the admin with a constraint error.
+  const defaults = variants.filter((v) => v.is_default);
+  if (defaults.length !== 1 && variants.length) {
+    variants.forEach((v, i) => { v.is_default = i === 0; });
+  }
+  return variants;
+};
+
+const validateProductPayload = ({ row, variants }, requireId = true) => {
+  if (requireId && !row.id) return "id is required.";
+  if (!row.en_name || !row.ar_name) return "Product name (AR + EN) is required.";
+  if (!row.slug) return "Could not derive a URL slug from the product name.";
+  if (!row.images.length) return "At least one product image is required.";
+  if (!row.brand_id) return "Brand is required.";
+  if (!STATUSES.has(row.status)) return "Status must be draft, active, or archived.";
+  if (!LINES.has(row.line)) return "Line must be Original, Inspired, or Signature.";
+  if (!PRODUCT_TYPES.has(row.product_type)) return "Product type is invalid.";
+  if (!AUDIENCES.has(row.audience)) return "Audience must be Men, Women, or Unisex.";
+  if (row.classification && !CLASSIFICATIONS.has(row.classification)) return "Classification is invalid.";
+  if (row.concentration && !CONCENTRATIONS.has(row.concentration)) return "Concentration is invalid.";
+  if (row.longevity && !LONGEVITIES.has(row.longevity)) return "Longevity is invalid.";
+  if (row.sillage && !SILLAGES.has(row.sillage)) return "Sillage is invalid.";
+
+  if (row.line === "signature" && row.original_perfume_id) {
+    return "A Signature product is bespoke — it cannot reference an original perfume.";
+  }
+  if (requiresOriginal(row.line, row.product_type) && !row.original_perfume_id) {
+    return "An Original or Inspired perfume must be linked to an original perfume.";
+  }
+
+  if (!variants.length) return "At least one variant (size + price) is required.";
+  if (variants.some((v) => !(Number.isFinite(v.price) && v.price > 0))) {
+    return "Every variant needs a price greater than zero.";
+  }
+  if (new Set(variants.map((v) => v.size_label)).size !== variants.length) {
+    return "Variant sizes must be unique.";
+  }
+  if (variants.some((v) => v.compare_at_price != null && v.compare_at_price < v.price)) {
+    return "A variant's compare-at price cannot be lower than its price.";
   }
   return null;
+};
+
+// Writes the row, then replaces its variants and notes.
+//
+// NOT atomic — supabase-js has no transaction support, so a failure after the
+// row lands leaves the product saved but its variants stale. The admin fixes
+// that by hitting Save again (every step is idempotent). Making it atomic means
+// moving this into a Postgres function; deliberately deferred, since this is a
+// single-admin panel and a retry is a full repair.
+const saveProductGraph = async (client, { row, variants, notes }, { id } = {}) => {
+  const productId = id || row.id;
+  const payload = { ...row };
+  if (id) delete payload.id;
+
+  const { data, error } = await writeProductRow(client, payload, id ? { id } : {});
+  if (error) return { error };
+
+  const { error: variantDeleteError } = await client
+    .from("product_variants").delete().eq("product_id", productId);
+  if (variantDeleteError) return { error: variantDeleteError };
+
+  const { error: variantInsertError } = await client
+    .from("product_variants")
+    .insert(variants.map((v) => ({ ...v, product_id: productId })));
+  if (variantInsertError) return { error: variantInsertError };
+
+  const { error: noteDeleteError } = await client
+    .from("product_notes").delete().eq("product_id", productId);
+  if (noteDeleteError) return { error: noteDeleteError };
+
+  // The admin sends note SLUGS (it holds the catalog locally); resolve to ids.
+  const wanted = NOTE_LAYERS.flatMap((layer) => notes[layer] || []);
+  if (wanted.length) {
+    const { data: noteRows, error: noteLookupError } = await client
+      .from("notes").select("id, slug").in("slug", wanted);
+    if (noteLookupError) return { error: noteLookupError };
+
+    const idBySlug = new Map((noteRows || []).map((n) => [n.slug, n.id]));
+    const rows = NOTE_LAYERS.flatMap((layer) =>
+      (notes[layer] || [])
+        .map((slug, i) => ({ product_id: productId, note_id: idBySlug.get(slug), layer, sort: i + 1 }))
+        .filter((r) => r.note_id)
+    );
+    if (rows.length) {
+      const { error: noteInsertError } = await client.from("product_notes").insert(rows);
+      if (noteInsertError) return { error: noteInsertError };
+    }
+  }
+
+  return { data };
 };
 
 // Optional columns that may not exist yet on deployments where the matching
@@ -629,7 +789,8 @@ app.get("/api/health", (_req, res) => {
 app.get("/api/products", async (_req, res) => {
   const { data, error } = await supabase
     .from("products")
-    .select("*")
+    .select(`${PRODUCT_GRAPH_SELECT}, brands(id, slug, name_en, name_ar)`)
+    .eq("status", "active")
     .order("created_at", { ascending: true });
 
   if (error) {
@@ -639,11 +800,14 @@ app.get("/api/products", async (_req, res) => {
   res.json({ data: data.map(normalizeProduct) });
 });
 
+// Accepts either the numeric id or the SEO slug, so /product/sauvage-… works
+// without breaking the existing /product?id=2 links.
 app.get("/api/products/:id", async (req, res) => {
+  const key = req.params.id;
   const { data, error } = await supabase
     .from("products")
-    .select("*")
-    .eq("id", req.params.id)
+    .select(`${PRODUCT_GRAPH_SELECT}, brands(id, slug, name_en, name_ar), original_perfumes(id, slug, name_en, name_ar, brands(name_en, slug))`)
+    .or(`id.eq.${key},slug.eq.${key}`)
     .maybeSingle();
 
   if (error) return res.status(500).json({ error: "Failed to load product." });
@@ -1608,48 +1772,32 @@ app.post("/api/products/:id/reviews", requireUser, async (req, res) => {
 
 // ── Products (Admin) ─────────────────────────────────────────────────────────
 
-app.post("/api/products", requireUser, requireAdmin, async (req, res) => {
+const createProductHandler = async (req, res) => {
   const userClient = createAuthedClient(req.accessToken);
-  const productToInsert = sanitizeProductPayload(req.body || {});
-  const validationError = validateProductPayload(productToInsert, true);
+  const graph = sanitizeProductPayload(req.body || {});
+  const validationError = validateProductPayload(graph, true);
 
   if (validationError) {
     return res.status(400).json({ error: validationError });
   }
 
-  const { data, error } = await writeProductRow(userClient, productToInsert);
+  const { data, error } = await saveProductGraph(userClient, graph);
 
   if (error) {
     return res.status(500).json({ error: error.message || "Failed to save product." });
   }
 
   res.status(201).json({ data: normalizeProduct(data) });
-});
+};
 
-app.post("/api/admin/products", requireUser, requireAdmin, async (req, res) => {
-  const userClient = createAuthedClient(req.accessToken);
-  const productToInsert = sanitizeProductPayload(req.body || {});
-  const validationError = validateProductPayload(productToInsert, true);
-
-  if (validationError) {
-    return res.status(400).json({ error: validationError });
-  }
-
-  const { data, error } = await writeProductRow(userClient, productToInsert);
-
-  if (error) {
-    return res.status(500).json({ error: error.message || "Failed to save product." });
-  }
-
-  res.status(201).json({ data: normalizeProduct(data) });
-});
+app.post("/api/products", requireUser, requireAdmin, createProductHandler);
+app.post("/api/admin/products", requireUser, requireAdmin, createProductHandler);
 
 app.get("/api/admin/products", requireUser, requireAdmin, async (req, res) => {
   const userClient = createAuthedClient(req.accessToken);
   const { data, error } = await userClient
     .from("products")
-    .select("*")
-    .order("category", { ascending: true })
+    .select(`${PRODUCT_GRAPH_SELECT}, brands(id, slug, name_en, name_ar)`)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -1661,21 +1809,102 @@ app.get("/api/admin/products", requireUser, requireAdmin, async (req, res) => {
 
 app.patch("/api/admin/products/:id", requireUser, requireAdmin, async (req, res) => {
   const userClient = createAuthedClient(req.accessToken);
-  const productToUpdate = sanitizeProductPayload(req.body || {});
-  delete productToUpdate.id;
-  const validationError = validateProductPayload({ ...productToUpdate, id: req.params.id }, false);
+  const graph = sanitizeProductPayload({ ...req.body, id: req.params.id });
+  const validationError = validateProductPayload(graph, false);
 
   if (validationError) {
     return res.status(400).json({ error: validationError });
   }
 
-  const { data, error } = await writeProductRow(userClient, productToUpdate, { id: req.params.id });
+  const { data, error } = await saveProductGraph(userClient, graph, { id: req.params.id });
 
   if (error) {
     return res.status(500).json({ error: error.message || "Failed to update product." });
   }
 
   res.json({ data: normalizeProduct(data) });
+});
+
+// ── Brands + the original-perfume registry — the two entities the product form
+// picks from. Both are admin-writable so a new house or a newly-referenced
+// original can be created without leaving the product page. ─────────────────
+
+app.get("/api/admin/brands", requireUser, requireAdmin, async (req, res) => {
+  const { data, error } = await createAuthedClient(req.accessToken)
+    .from("brands")
+    .select("*")
+    .order("sort", { ascending: true })
+    .order("name_en", { ascending: true });
+
+  if (error) return res.status(500).json({ error: "Failed to load brands." });
+  res.json({ data: data || [] });
+});
+
+app.post("/api/admin/brands", requireUser, requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  const name_en = trimValue(body.name_en);
+  if (!name_en) return res.status(400).json({ error: "Brand name (EN) is required." });
+
+  const { data, error } = await createAuthedClient(req.accessToken)
+    .from("brands")
+    .insert({
+      slug: slugifyValue(body.slug || name_en),
+      name_en,
+      name_ar: trimValue(body.name_ar) || null,
+      country: trimValue(body.country) || null,
+      is_house: parseBool(body.is_house)
+    })
+    .select()
+    .single();
+
+  if (error) {
+    const conflict = error.code === "23505";
+    return res.status(conflict ? 409 : 500)
+      .json({ error: conflict ? "A brand with that name already exists." : "Failed to create brand." });
+  }
+  res.status(201).json({ data });
+});
+
+app.get("/api/admin/originals", requireUser, requireAdmin, async (req, res) => {
+  const { data, error } = await createAuthedClient(req.accessToken)
+    .from("original_perfumes")
+    .select("*, brands(id, slug, name_en, name_ar)")
+    .order("name_en", { ascending: true });
+
+  if (error) return res.status(500).json({ error: "Failed to load original perfumes." });
+  res.json({ data: data || [] });
+});
+
+app.post("/api/admin/originals", requireUser, requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  const name_en = trimValue(body.name_en);
+  const brand_id = trimValue(body.brand_id);
+  const audience = trimValue(body.audience);
+
+  if (!name_en) return res.status(400).json({ error: "Original perfume name (EN) is required." });
+  if (!brand_id) return res.status(400).json({ error: "The original's house (brand) is required." });
+  if (!AUDIENCES.has(audience)) return res.status(400).json({ error: "Audience must be Men, Women, or Unisex." });
+
+  const { data, error } = await createAuthedClient(req.accessToken)
+    .from("original_perfumes")
+    .insert({
+      slug: slugifyValue(body.slug || name_en),
+      brand_id,
+      name_en,
+      name_ar: trimValue(body.name_ar) || null,
+      audience,
+      year: parseInt(body.year, 10) || null,
+      families: parseStringArray(body.families, FAMILIES)
+    })
+    .select("*, brands(id, slug, name_en, name_ar)")
+    .single();
+
+  if (error) {
+    const conflict = error.code === "23505";
+    return res.status(conflict ? 409 : 500)
+      .json({ error: conflict ? "That original perfume already exists." : "Failed to create original perfume." });
+  }
+  res.status(201).json({ data });
 });
 
 app.delete("/api/admin/products/:id", requireUser, requireAdmin, async (req, res) => {
@@ -1791,3 +2020,14 @@ if (!process.env.SKIP_LISTEN) {
 }
 
 module.exports = app;
+
+// Exposed for tests (scripts/test-product-graph.cjs) — the product write path
+// is a graph across three tables and is worth exercising without booting HTTP
+// or minting an admin session. Not used at runtime.
+module.exports.catalog = {
+  sanitizeProductPayload,
+  validateProductPayload,
+  saveProductGraph,
+  normalizeProduct,
+  PRODUCT_GRAPH_SELECT
+};
