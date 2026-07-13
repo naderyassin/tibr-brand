@@ -68,7 +68,9 @@ export default function App() {
             <Route path="/shop/arabian" element={<CollectionPage />} />
             <Route path="/shop/niche" element={<CollectionPage />} />
             <Route path="/shop/candles" element={<CollectionPage />} />
+            <Route path="/shop/bakhoor" element={<CollectionPage />} />
             <Route path="/shop/home-fragrance" element={<CollectionPage />} />
+            <Route path="/shop/sets" element={<CollectionPage />} />
             <Route path="/shop/samples" element={<CollectionPage />} />
             <Route path="/shop/new-arrivals" element={<CollectionPage />} />
             <Route path="/shop/brands" element={<BrandDirectory />} />
@@ -82,17 +84,16 @@ export default function App() {
           <Route path="/shop/fragrances/women" element={<Navigate to="/shop/perfumes?audience=women" replace />} />
           <Route path="/shop/fragrances/unisex" element={<Navigate to="/shop/perfumes?audience=unisex" replace />} />
           <Route path="/shop/fragrances/gulf" element={<Navigate to="/shop/arabian" replace />} />
-          <Route path="/shop/fragrances/sets" element={<Navigate to="/shop/all?type=set" replace />} />
+          <Route path="/shop/fragrances/sets" element={<Navigate to="/shop/sets" replace />} />
           <Route path="/shop/fragrances/candles" element={<Navigate to="/shop/candles" replace />} />
           <Route path="/shop/fragrances/air-fresheners" element={<Navigate to="/shop/home-fragrance" replace />} />
           <Route path="/shop/fragrances/:sub" element={<Navigate to="/shop/perfumes" replace />} />
           <Route path="/shop/samples/:sub" element={<Navigate to="/shop/samples" replace />} />
-          <Route path="/shop/bundle" element={<Navigate to="/shop/all?type=set" replace />} />
-          <Route path="/shop/bundle/:sub" element={<Navigate to="/shop/all?type=set" replace />} />
+          <Route path="/shop/bundle" element={<Navigate to="/shop/sets" replace />} />
+          <Route path="/shop/bundle/:sub" element={<Navigate to="/shop/sets" replace />} />
           <Route path="/shop/perfumes/original" element={<Navigate to="/shop/original" replace />} />
           <Route path="/shop/perfumes/inspired" element={<Navigate to="/shop/inspired" replace />} />
           <Route path="/shop/perfumes/signature" element={<Navigate to="/shop/signature" replace />} />
-          <Route path="/shop/bakhoor" element={<Navigate to="/shop/all?type=bakhoor" replace />} />
           <Route path="/shop/body-splash" element={<Navigate to="/shop/all?concentration=mist" replace />} />
 
           {/* Blog */}

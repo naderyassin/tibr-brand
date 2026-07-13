@@ -7,12 +7,12 @@ import "./CategoryTiles.css";
 // Each tile is a saved filter query, not a route of its own — same contract as
 // the nav (docs/DATA-MODEL.md §5).
 const TILES = [
-  { key: "men",       label: "Men",        ar: "رجالي",   to: "/shop/perfumes?audience=men",   match: (p) => p.audience === "men" },
-  { key: "women",     label: "Women",      ar: "نسائي",   to: "/shop/perfumes?audience=women", match: (p) => p.audience === "women" },
-  { key: "unisex",    label: "Unisex",     ar: "للجنسين", to: "/shop/perfumes?audience=unisex", match: (p) => p.audience === "unisex" },
-  { key: "inspired",  label: "Inspired",   ar: "مستوحى",  to: "/shop/inspired",                match: (p) => p.line === "inspired" },
-  { key: "arabian",   label: "Arabian",    ar: "خليجي",   to: "/shop/arabian",                 match: (p) => p.classification === "arabian" },
-  { key: "candles",   label: "Candles",    ar: "شموع",    to: "/shop/candles",                 match: (p) => p.product_type === "candle" },
+  { key: "men",       label: "Men",      to: "/shop/perfumes?audience=men",   match: (p) => p.audience === "men" },
+  { key: "women",     label: "Women",    to: "/shop/perfumes?audience=women", match: (p) => p.audience === "women" },
+  { key: "unisex",    label: "Unisex",   to: "/shop/perfumes?audience=unisex", match: (p) => p.audience === "unisex" },
+  { key: "inspired",  label: "Inspired", to: "/shop/inspired",                match: (p) => p.line === "inspired" },
+  { key: "arabian",   label: "Arabian",  to: "/shop/arabian",                 match: (p) => p.classification === "arabian" },
+  { key: "candles",   label: "Candles",  to: "/shop/candles",                 match: (p) => p.product_type === "candle" },
 ];
 
 export default function CategoryTiles() {

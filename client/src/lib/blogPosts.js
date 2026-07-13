@@ -41,12 +41,12 @@ Layering helps too: a matching scented shower gel or body lotion, if available, 
   {
     slug: "the-story-behind-tibr",
     title: "The Story Behind TIBR",
-    excerpt: "Why TIBR exists, and what الأصالة والحنين والفخامة actually means to us.",
+    excerpt: "Why TIBR exists, and what authenticity, nostalgia, and luxury actually mean to us.",
     image: "",
     date: "2026-06-25",
     body: `TIBR started from a simple frustration: it was hard to find fragrance in Egypt that felt both genuinely Egyptian and genuinely luxurious at once — most options felt like you had to choose one or the other.
 
-الأصالة والحنين والفخامة — authenticity, nostalgia, and luxury — isn't a slogan we picked after the fact. It's the filter every product goes through before it reaches the shop: does this feel true to where we're from, does it carry something worth remembering, and does it meet a standard we'd stand behind.
+Authenticity, nostalgia, and luxury — isn't a slogan we picked after the fact. It's the filter every product goes through before it reaches the shop: does this feel true to where we're from, does it carry something worth remembering, and does it meet a standard we'd stand behind.
 
 That's why you'll find both our own house fragrances and select designer names carried side by side here — not because we couldn't decide on a lane, but because we don't think authenticity and recognizable luxury have to be opposites.`,
   },

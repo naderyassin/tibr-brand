@@ -1,7 +1,10 @@
 import { useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 import { SHOP_NAV } from "@/lib/shopNav";
+import { useAuth } from "@/stores/auth";
+import { getProfile } from "@/lib/api";
 
 const CloseIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
@@ -14,14 +17,24 @@ const WhatsAppIcon = () => (
   </svg>
 );
 
-const NAV_LINKS = [
+const BASE_NAV_LINKS = [
   ...SHOP_NAV.map((tab) => ({ to: tab.path, label: tab.label.split(" —")[0] })),
   { to: "/account?tab=wishlist", label: "Wishlist" },
   { to: "/account", label: "Account" },
-  { to: "/admin", label: "Control Panel" },
 ];
 
 export default function MobileDrawer({ open, onClose }) {
+  const token = useAuth((s) => s.token);
+  const { data: profileData } = useQuery({
+    queryKey: ["profile", token],
+    queryFn: () => getProfile(token),
+    enabled: !!token,
+  });
+  const isAdmin = profileData?.data?.role === "admin";
+  const navLinks = isAdmin
+    ? [...BASE_NAV_LINKS, { to: "/admin", label: "Control Panel" }]
+    : BASE_NAV_LINKS;
+
   useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
@@ -59,7 +72,7 @@ export default function MobileDrawer({ open, onClose }) {
               </button>
             </div>
             <nav className="store-drawer__nav" aria-label="Categories">
-              {NAV_LINKS.map(({ to, label }) => (
+              {navLinks.map(({ to, label }) => (
                 <NavLink
                   key={to}
                   className="store-drawer__link"

@@ -42,7 +42,7 @@ export default function BrandDirectory() {
       </nav>
 
       <header className="shop-header">
-        <h1 className="shop-header__title">Shop by Brand — تسوق حسب الماركة</h1>
+        <h1 className="shop-header__title">Shop by Brand</h1>
       </header>
 
       <nav className="brand-directory__jump" aria-label="Jump to letter">

@@ -5,41 +5,32 @@
 //
 // Replaces the old listing_type / fragrance_category / sample_type vocabularies,
 // which described columns that never existed in the database.
+//
+// English-only for now — Arabic labels come back with the dedicated AR page.
 
-import { LINES, PRODUCT_TYPES, AUDIENCES, CLASSIFICATIONS, FAMILIES, SEASONS } from "./taxonomy";
+import { LINES, PRODUCT_TYPES, AUDIENCES, CLASSIFICATIONS, CONCENTRATIONS, FAMILIES, SEASONS } from "./taxonomy";
 
 const sub = (vocab, slug, path) => {
   const v = vocab.find((x) => x.slug === slug);
-  return { slug, path, label: `${v.en} — ${v.ar}` };
+  return { slug, path, label: v.en };
 };
 
 /** The 5 top-level tabs, in nav order. `filters` is what the tab preselects. */
 export const SHOP_NAV = [
   {
     key: "perfumes",
-    label: "Perfumes — العطور",
+    label: "Fragrances — العطور",
     path: "/shop/perfumes",
     filters: { type: "perfume" },
     groups: [
       {
-        title: "By audience — حسب الفئة",
-        items: AUDIENCES.map((a) => sub(AUDIENCES, a.slug, `/shop/perfumes?audience=${a.slug}`)),
-      },
-      {
-        title: "By line — حسب المصدر",
-        items: LINES.map((l) => sub(LINES, l.slug, `/shop/perfumes?line=${l.slug}`)),
-      },
-      {
-        title: "By classification — حسب التصنيف",
-        items: CLASSIFICATIONS.map((c) => sub(CLASSIFICATIONS, c.slug, `/shop/perfumes?classification=${c.slug}`)),
-      },
-      {
-        title: "By family — حسب العائلة",
-        items: FAMILIES.slice(0, 6).map((f) => sub(FAMILIES, f.slug, `/shop/perfumes?family=${f.slug}`)),
-      },
-      {
-        title: "By season — حسب الموسم",
-        items: SEASONS.map((s) => sub(SEASONS, s.slug, `/shop/perfumes?season=${s.slug}`)),
+        title: "Category",
+        items: [
+          { slug: "men", path: "/shop/perfumes?audience=men", label: "Men Fragrances — عطور رجالية" },
+          { slug: "women", path: "/shop/perfumes?audience=women", label: "Women Fragrances — عطور نسائية" },
+          { slug: "unisex", path: "/shop/perfumes?audience=unisex", label: "Unisex Fragrances — عطور للجنسين" },
+          { slug: "gulf", path: "/shop/perfumes?classification=arabian", label: "Gulf Fragrances — عطور خليجية" },
+        ],
       },
     ],
   },
@@ -50,26 +41,32 @@ export const SHOP_NAV = [
     filters: {},
     groups: [
       {
-        title: "Product type — نوع المنتج",
-        items: ["candle", "air-freshener", "bakhoor"].map((t) =>
-          sub(PRODUCT_TYPES, t, `/shop/all?type=${t}`)),
+        title: "Product type",
+        items: [
+          sub(PRODUCT_TYPES, "candle", "/shop/candles"),
+          sub(PRODUCT_TYPES, "air-freshener", "/shop/home-fragrance"),
+          sub(PRODUCT_TYPES, "bakhoor", "/shop/bakhoor"),
+        ],
       },
     ],
   },
   {
     key: "sets",
-    label: "Sets & Samples — الأطقم والعينات",
-    path: "/shop/all?type=set",
+    label: "Sets & Samples — المجموعات والعينات",
+    path: "/shop/sets",
     filters: {},
     groups: [
       {
-        title: "Product type — نوع المنتج",
-        items: ["set", "sample"].map((t) => sub(PRODUCT_TYPES, t, `/shop/all?type=${t}`)),
+        title: "Product type",
+        items: [
+          sub(PRODUCT_TYPES, "set", "/shop/sets"),
+          sub(PRODUCT_TYPES, "sample", "/shop/samples"),
+        ],
       },
     ],
   },
   { key: "brands", label: "Shop by Brand — تسوق حسب الماركة", path: "/shop/brands" },
-  { key: "new-arrivals", label: "New Arrivals — وصل حديثاً", path: "/shop/new-arrivals" },
+  { key: "new-arrivals", label: "New Arrivals — وصلنا حديثاً", path: "/shop/new-arrivals" },
 ];
 
 /**
@@ -78,30 +75,33 @@ export const SHOP_NAV = [
  * equivalent ?query=string, and the page is the same component.
  */
 export const ROUTE_PRESETS = {
-  "/shop/all":            { title: "Everything — كل المنتجات",        filters: {} },
-  "/shop/perfumes":       { title: "Perfumes — العطور",               filters: { type: "perfume" } },
-  "/shop/men":            { title: "For Men — رجالي",                 filters: { audience: "men" } },
-  "/shop/women":          { title: "For Women — نسائي",               filters: { audience: "women" } },
-  "/shop/unisex":         { title: "Unisex — للجنسين",                filters: { audience: "unisex" } },
-  "/shop/original":       { title: "Original — أصلي",                 filters: { line: "original" } },
-  "/shop/inspired":       { title: "Inspired — مستوحى",               filters: { line: "inspired" } },
-  "/shop/signature":      { title: "Your Own Signature — توقيعك الخاص", filters: { line: "signature" } },
-  "/shop/arabian":        { title: "Arabian & Gulf — خليجي",          filters: { classification: "arabian" } },
-  "/shop/niche":          { title: "Niche — نيش",                     filters: { classification: "niche" } },
-  "/shop/candles":        { title: "Candles — شموع",                  filters: { type: "candle" } },
-  "/shop/home-fragrance": { title: "Home & Ambience — عطور المنزل",   filters: { type: "air-freshener" } },
-  "/shop/samples":        { title: "Samples & Travel — عينات وأحجام السفر", filters: { type: "sample" } },
-  "/shop/new-arrivals":   { title: "New Arrivals — وصل حديثاً",       filters: {}, sort: "newest" },
+  "/shop/all":            { title: "Everything",            filters: {} },
+  "/shop/perfumes":       { title: "Fragrances",               filters: { type: "perfume" } },
+  "/shop/men":            { title: "For Men",                filters: { audience: "men" } },
+  "/shop/women":          { title: "For Women",              filters: { audience: "women" } },
+  "/shop/unisex":         { title: "Unisex",                 filters: { audience: "unisex" } },
+  "/shop/original":       { title: "Original",               filters: { line: "original" } },
+  "/shop/inspired":       { title: "Inspired",               filters: { line: "inspired" } },
+  "/shop/signature":      { title: "Your Own Signature",     filters: { line: "signature" } },
+  "/shop/arabian":        { title: "Arabian & Gulf",         filters: { classification: "arabian" } },
+  "/shop/niche":          { title: "Niche",                  filters: { classification: "niche" } },
+  "/shop/candles":        { title: "Candles",                filters: { type: "candle" } },
+  "/shop/bakhoor":        { title: "Bakhoor",                filters: { type: "bakhoor" } },
+  "/shop/home-fragrance": { title: "Home & Ambience",        filters: { type: "air-freshener" } },
+  "/shop/sets":           { title: "Sets & Bundles",         filters: { type: "set" } },
+  "/shop/samples":        { title: "Samples & Travel",       filters: { type: "sample" } },
+  "/shop/new-arrivals":   { title: "New Arrivals",           filters: {}, sort: "newest" },
 };
 
 /** Facet groups rendered in the filter sidebar, in order. */
 export const FILTER_GROUPS = [
-  { key: "audience",       label: "Audience — الفئة",          vocab: AUDIENCES },
-  { key: "line",           label: "Line — المصدر",             vocab: LINES },
-  { key: "type",           label: "Product type — نوع المنتج", vocab: PRODUCT_TYPES },
-  { key: "classification", label: "Classification — التصنيف",  vocab: CLASSIFICATIONS },
-  { key: "family",         label: "Fragrance family — العائلة", vocab: FAMILIES },
-  { key: "season",         label: "Season — الموسم",           vocab: SEASONS },
+  { key: "audience",       label: "Audience",          vocab: AUDIENCES },
+  { key: "line",           label: "Line",              vocab: LINES },
+  { key: "type",           label: "Product type",      vocab: PRODUCT_TYPES },
+  { key: "classification", label: "Classification",    vocab: CLASSIFICATIONS },
+  { key: "concentration",  label: "Concentration",     vocab: CONCENTRATIONS },
+  { key: "family",         label: "Fragrance family",  vocab: FAMILIES },
+  { key: "season",         label: "Season",            vocab: SEASONS },
 ];
 
 export const SORT_OPTIONS = [

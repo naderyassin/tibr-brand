@@ -474,7 +474,6 @@ export default function Account() {
 
   if (authLoading || !user) return null;
 
-  const isAdmin = profileData?.data?.role === "admin";
   const setTab = (id) => setParams({ tab: id });
   const addresses = addressesData?.data ?? [];
 
@@ -518,17 +517,6 @@ export default function Account() {
               </button>
             ))}
           </div>
-
-          {isAdmin && (
-            <div className="dash-nav__admin">
-              <Link className="dash-nav__item dash-nav__item--admin" to="/admin">
-                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-                  <path d="M10 2l2.5 6H18l-4.5 3.3 1.7 5.7L10 13.5 4.8 17 6.5 11.3 2 8h5.5z" strokeLinejoin="round" />
-                </svg>
-                <span>Control panel</span>
-              </Link>
-            </div>
-          )}
 
           <div className="dash-nav__footer">
             <button

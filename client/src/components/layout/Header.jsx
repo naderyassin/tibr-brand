@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { useCart } from "@/stores/cart";
+import { useAuth } from "@/stores/auth";
+import { getProfile } from "@/lib/api";
 
 const BagIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -30,6 +33,13 @@ export default function Header({ onMenuOpen }) {
   const [scrolled, setScrolled] = useState(false);
   const items = useCart((s) => s.items);
   const count = items.reduce((n, i) => n + i.qty, 0);
+  const token = useAuth((s) => s.token);
+  const { data: profileData } = useQuery({
+    queryKey: ["profile", token],
+    queryFn: () => getProfile(token),
+    enabled: !!token,
+  });
+  const isAdmin = profileData?.data?.role === "admin";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 4);
@@ -76,9 +86,11 @@ export default function Header({ onMenuOpen }) {
         </nav>
 
         <div className="store-utils">
-          <Link className="store-iconbtn" to="/admin" aria-label="Control Panel">
-            <SettingsIcon />
-          </Link>
+          {isAdmin && (
+            <Link className="store-iconbtn" to="/admin" aria-label="Control Panel">
+              <SettingsIcon />
+            </Link>
+          )}
           <Link className="store-iconbtn" to="/cart" aria-label="Cart">
             <BagIcon />
             <span className={`store-cart-count${count > 0 ? " is-active" : ""}`} aria-hidden="true">
