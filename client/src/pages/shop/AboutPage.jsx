@@ -15,7 +15,10 @@ export default function AboutPage() {
           observer.unobserve(entry.target);
         }
       },
-      { threshold: 0.15 }
+      { 
+        threshold: 0.1,
+        rootMargin: "0px 0px -100px 0px"
+      }
     );
 
     if (philosophyRef.current) {

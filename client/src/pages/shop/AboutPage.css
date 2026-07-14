@@ -149,9 +149,9 @@ body:has(.about-page) .store-header {
   
   /* Reveal transition */
   opacity: 0;
-  transform: translateY(15px);
-  transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(30px);
+  transition: opacity 1.4s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 1.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .about-philosophy__quote {
@@ -164,9 +164,9 @@ body:has(.about-page) .store-header {
   
   /* Reveal transition with stagger delay */
   opacity: 0;
-  transform: translateY(25px);
-  transition: opacity 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.25s,
-              transform 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.25s;
+  transform: translateY(40px);
+  transition: opacity 1.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s,
+              transform 1.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
 }
 
 /* Visibility triggers */
