@@ -23,6 +23,7 @@ function StartAtHomeAndScroll() {
 import Collection from "@/pages/shop/Collection";
 import ShopLayout from "@/components/layout/ShopLayout";
 import ShopHome from "@/pages/shop/ShopHome";
+import AboutPage from "@/pages/shop/AboutPage";
 import CollectionPage from "@/pages/shop/CollectionPage";
 import BrandDirectory from "@/pages/shop/BrandDirectory";
 import BrandCollection from "@/pages/shop/BrandCollection";
@@ -57,6 +58,7 @@ export default function App() {
               adding a preset, not a page. */}
           <Route element={<ShopLayout />}>
             <Route path="/shop" element={<ShopHome />} />
+            <Route path="/about" element={<AboutPage />} />
             <Route path="/shop/all" element={<CollectionPage />} />
             <Route path="/shop/perfumes" element={<CollectionPage />} />
             <Route path="/shop/men" element={<CollectionPage />} />
