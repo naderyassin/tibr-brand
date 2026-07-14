@@ -5,28 +5,20 @@ import "./AboutPage.css";
 export default function AboutPage() {
   return (
     <div className="about-page">
-      {/* 1. IMMERSIVE SPLIT HERO */}
+      {/* 1. FULL-SCREEN IMAGE HERO */}
       <section className="about-hero" aria-label="Introduction">
-        <div className="about-hero__inner">
-          <div className="about-hero__text-side">
-            <span className="about-hero__kicker">About Tibr</span>
-            <h1 className="about-hero__title">The Narrative of Tibr</h1>
-            <div className="about-hero__line-deco" />
-            <p className="about-hero__lead">
-              Bridging the sacred prestige of ancient Egyptian perfumery with contemporary luxury fragrance design.
-            </p>
-            <div className="about-hero__scroll" aria-hidden="true">
-              <span className="about-hero__scroll-text">Scroll to explore</span>
-              <span className="about-hero__scroll-line" />
-            </div>
-          </div>
-          <div className="about-hero__image-side">
-            <img 
-              src="/categories/about_hero.png" 
-              alt="Frankincense and jasmine on basalt stone" 
-              className="about-hero__img" 
-            />
-          </div>
+        <div className="about-hero__bg" />
+        <div className="about-hero__content">
+          <span className="about-hero__kicker">About Tibr</span>
+          <h1 className="about-hero__title">The Narrative of Tibr</h1>
+          <div className="about-hero__line-deco" />
+          <p className="about-hero__lead">
+            Bridging the sacred prestige of ancient Egyptian perfumery with contemporary luxury fragrance design.
+          </p>
+        </div>
+        <div className="about-hero__scroll" aria-hidden="true">
+          <span className="about-hero__scroll-text">Scroll to explore</span>
+          <span className="about-hero__scroll-line" />
         </div>
       </section>
 
