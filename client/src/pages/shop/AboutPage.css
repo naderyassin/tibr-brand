@@ -7,6 +7,11 @@
   padding-bottom: 4rem;
 }
 
+/* Force a delicate hairline border on the header so it doesn't merge with the white background */
+body:has(.about-page) .store-header {
+  border-block-end: 1px solid rgba(201, 168, 76, 0.15) !important;
+}
+
 /* Hero Section */
 .about-hero {
   position: relative;

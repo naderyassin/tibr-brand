@@ -58,7 +58,6 @@ export default function App() {
               adding a preset, not a page. */}
           <Route element={<ShopLayout />}>
             <Route path="/shop" element={<ShopHome />} />
-            <Route path="/about" element={<AboutPage />} />
             <Route path="/shop/all" element={<CollectionPage />} />
             <Route path="/shop/perfumes" element={<CollectionPage />} />
             <Route path="/shop/men" element={<CollectionPage />} />
@@ -78,6 +77,8 @@ export default function App() {
             <Route path="/shop/brands" element={<BrandDirectory />} />
             <Route path="/shop/brands/:brand" element={<BrandCollection />} />
           </Route>
+
+          <Route path="/about" element={<AboutPage />} />
 
           {/* Retired URLs. The old sub-paths encoded a taxonomy that never
               existed in the database; they now resolve to the equivalent filter. */}
