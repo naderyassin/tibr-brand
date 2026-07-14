@@ -109,61 +109,60 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* 4. ASYMMETRIC BENTO GRID (Pillars) */}
+        {/* 4. HORIZONTAL PILLARS ROW (3 Pillars + 1 Image Card) */}
         <section className="about-pillars" aria-label="Sourcing and Craftsmanship">
           <h2 className="about-pillars__title">Sourcing & Craftsmanship</h2>
-          <div className="about-pillars__bento">
-            {/* Double-width Featured Card */}
-            <div className="about-pillar-card about-pillar-card--featured">
+          <div className="about-pillars__grid">
+            {/* Card 1: Alchemy */}
+            <div className="about-pillar-card">
               <div className="about-pillar-card__icon-wrapper">
                 <Fingerprint />
               </div>
-              <div className="about-pillar-card__featured-content">
-                <h3 className="about-pillar-card__title">Alchemy & Formulation (الحِرفة)</h3>
-                <p className="about-pillar-card__text">
-                  No shortcuts. Every extrait is blended in micro-batches, allowing the natural oils to age, 
-                  mature, and settle to absolute perfection. We combine traditional copper vessel distillation 
-                  with state-of-the-art modern formulation to create scents that wear beautifully for hours on the skin.
-                </p>
-                <div className="about-pillar-card__formula">
-                  <span className="about-pillar-card__formula-badge">Batch: 01-Cairo</span>
-                  <span className="about-pillar-card__formula-badge">Concentration: 30% Extrait</span>
-                </div>
+              <h3 className="about-pillar-card__title">Alchemy (الحِرفة)</h3>
+              <p className="about-pillar-card__text">
+                No shortcuts. Every extrait is blended in micro-batches, allowing the natural oils to age, 
+                mature, and settle to absolute perfection.
+              </p>
+              <div className="about-pillar-card__formula">
+                <span className="about-pillar-card__formula-badge">30% Extrait</span>
               </div>
             </div>
 
-            {/* Stacked Column of Single Cards */}
-            <div className="about-pillars__stack">
-              {/* Full-Bleed Image Card */}
-              <div className="about-pillar-card about-pillar-card--image">
-                <div className="about-pillar-card__bg-img" style={{ backgroundImage: "url('/categories/about_rose.png')" }} />
-                <div className="about-pillar-card__image-overlay" />
-                <div className="about-pillar-card__image-content">
-                  <div className="about-pillar-card__icon-wrapper">
-                    <Sparkles />
-                  </div>
-                  <h3 className="about-pillar-card__title">Nostalgia (الحنين)</h3>
-                  <p className="about-pillar-card__text">
-                    Reminiscent of ancient gardens, coastal Alexandria, and the warm, spice-laden air of Cairo's old markets.
-                  </p>
-                </div>
+            {/* Card 2: Nostalgia */}
+            <div className="about-pillar-card">
+              <div className="about-pillar-card__icon-wrapper">
+                <Sparkles />
               </div>
+              <h3 className="about-pillar-card__title">Nostalgia (الحنين)</h3>
+              <p className="about-pillar-card__text">
+                Reminiscent of ancient gardens, coastal Alexandria, and the warm, spice-laden air of Cairo's old markets.
+              </p>
+            </div>
 
-              {/* Sourcing card with bullet details */}
-              <div className="about-pillar-card">
-                <div className="about-pillar-card__icon-wrapper">
-                  <Compass />
-                </div>
-                <h3 className="about-pillar-card__title">Sourcing (المصدر)</h3>
-                <p className="about-pillar-card__text">
-                  We hunt the finest natural materials directly from historical Egyptian fields.
-                </p>
-                <ul className="about-pillar-card__list">
-                  <li><span>Nile Delta Jasmine</span> <span className="about-pillar-card__list-dot" /></li>
-                  <li><span>Damask Rose</span> <span className="about-pillar-card__list-dot" /></li>
-                  <li><span>Sinai Labdanum</span> <span className="about-pillar-card__list-dot" /></li>
-                </ul>
+            {/* Card 3: Sourcing */}
+            <div className="about-pillar-card">
+              <div className="about-pillar-card__icon-wrapper">
+                <Compass />
               </div>
+              <h3 className="about-pillar-card__title">Sourcing (المصدر)</h3>
+              <p className="about-pillar-card__text">
+                We hunt the finest natural materials directly from historical fields.
+              </p>
+              <ul className="about-pillar-card__list">
+                <li><span>Nile Delta Jasmine</span> <span className="about-pillar-card__list-dot" /></li>
+                <li><span>Damask Rose</span> <span className="about-pillar-card__list-dot" /></li>
+                <li><span>Sinai Labdanum</span> <span className="about-pillar-card__list-dot" /></li>
+              </ul>
+            </div>
+
+            {/* Card 4: Brand/Product Image Card */}
+            <div className="about-pillar-image-card">
+              <img 
+                src="/categories/about_manifesto.png" 
+                alt="Tibr gold oil bottle" 
+                className="about-pillar-image-card__img" 
+              />
+              <div className="about-pillar-image-card__overlay" />
             </div>
           </div>
         </section>

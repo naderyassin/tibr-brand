@@ -267,10 +267,11 @@ body:has(.about-page) .store-header {
   margin-block-end: 4rem;
 }
 
-.about-pillars__bento {
+.about-pillars__grid {
   display: grid;
-  grid-template-columns: 1.5fr 1fr;
+  grid-template-columns: repeat(4, 1fr);
   gap: 2rem;
+  align-items: stretch;
 }
 
 .about-pillar-card {
@@ -363,64 +364,34 @@ body:has(.about-page) .store-header {
   border: 1px solid rgba(201, 168, 76, 0.1);
 }
 
-/* Full-Bleed Image Card */
-.about-pillar-card--image {
+/* 4th Column Image Card */
+.about-pillar-image-card {
   position: relative;
+  border-radius: 20px;
   overflow: hidden;
-  border: 1px solid rgba(201, 168, 76, 0.1);
-  min-height: 18rem;
+  border: 1px solid rgba(201, 168, 76, 0.15);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.05);
   display: flex;
-  align-items: flex-end;
+  min-height: 18rem;
 }
 
-.about-pillar-card__bg-img {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
-  transition: transform 2s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 1;
+.about-pillar-image-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.about-pillar-card--image:hover .about-pillar-card__bg-img {
+.about-pillar-image-card:hover .about-pillar-image-card__img {
   transform: scale(1.05);
 }
 
-.about-pillar-card__image-overlay {
+.about-pillar-image-card__overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(13, 10, 7, 0.85) 25%, rgba(13, 10, 7, 0.35) 100%);
-  z-index: 2;
-}
-
-.about-pillar-card__image-content {
-  position: relative;
-  z-index: 3;
-  width: 100%;
-}
-
-.about-pillar-card--image .about-pillar-card__title {
-  color: #f5f0e6;
-}
-
-.about-pillar-card--image .about-pillar-card__text {
-  color: #ede0c8;
-}
-
-.about-pillar-card--image .about-pillar-card__icon-wrapper {
-  background-color: rgba(255, 255, 255, 0.12);
-  color: #c9a84c;
-  border: 1px solid rgba(201, 168, 76, 0.25);
-  margin-bottom: 1.25rem;
-}
-
-.about-pillar-card--image:hover .about-pillar-card__icon-wrapper {
-  background-color: #c9a84c;
-  color: #ffffff;
-  border-color: #c9a84c;
-}
-
-/* Sourcing Ingredient List */
+  background: linear-gradient(to top, rgba(13, 10, 7, 0.25) 0%, transparent 100%);
+  pointer-events: none;
+}/* Sourcing Ingredient List */
 .about-pillar-card__list {
   list-style: none;
   padding: 0;
@@ -660,16 +631,19 @@ body:has(.about-page) .store-header {
   }
 }
 
+@media (max-width: 64rem) {
+  .about-pillars__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 48rem) {
-  .about-pillars__bento {
+  .about-pillars__grid {
     grid-template-columns: 1fr;
-    gap: 2rem;
   }
-  .about-pillar-card--featured {
-    flex-direction: column;
-    gap: 1.5rem;
+  .about-pillar-image-card {
+    min-height: 22rem;
   }
-  
   .about-ingredients__vignettes {
     grid-template-columns: repeat(2, 1fr);
     gap: 3rem;
