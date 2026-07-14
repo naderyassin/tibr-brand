@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { getReviewsSummary } from "@/lib/api";
+
+const RATING_SUMMARY = { avg: 4.9, count: 140 };
 
 const REVIEWS = [
   {
@@ -78,13 +78,8 @@ function ReviewCard({ review }) {
 }
 
 export default function ReviewsBanner() {
-  const { data } = useQuery({
-    queryKey: ["reviews-summary"],
-    queryFn: () => getReviewsSummary(),
-  });
+  const { avg, count } = RATING_SUMMARY;
 
-  const { avg = 4.9, count = 140 } = data?.data ?? {};
-  
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(true);
 

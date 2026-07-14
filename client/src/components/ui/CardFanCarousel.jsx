@@ -3,9 +3,6 @@ import { Link } from "react-router-dom";
 import gsap from "gsap";
 import "./CardFanCarousel.css";
 
-const MAX_VISIBLE = 7;
-const HALF = 3;
-
 const FAN_POSITIONS = [
   { rot: -21, scale: 0.7756, x: -30, y: 7.3, zIndex: 1 },
   { rot: -14, scale: 0.8498, x: -22, y: 4.0, zIndex: 2 },
@@ -17,9 +14,9 @@ const FAN_POSITIONS = [
 ];
 
 function getResponsiveMultiplier(width) {
-  if (width < 480) return 0.28;
-  if (width < 640) return 0.38;
-  if (width < 768) return 0.5;
+  if (width < 480) return 0.5; // Spread out more on mobile for 3 cards
+  if (width < 640) return 0.55;
+  if (width < 768) return 0.6;
   if (width < 1024) return 0.75;
   return 1.0;
 }
@@ -37,8 +34,11 @@ function getHeightMultiplier(width) {
   return available / idealPx;
 }
 
-function getSlotConfig(totalCards, slot) {
-  if (totalCards >= MAX_VISIBLE) return FAN_POSITIONS[slot];
+function getSlotConfig(totalCards, slot, maxVisible) {
+  if (totalCards >= maxVisible) {
+    const offset = (7 - maxVisible) >> 1;
+    return FAN_POSITIONS[slot + offset];
+  }
   const center = totalCards >> 1;
   const distance = totalCards > 1 ? (slot - center) / center : 0;
   const absDistance = Math.abs(distance);
@@ -57,10 +57,39 @@ export default function CardFanCarousel({ cards }) {
   const hasEntered = useRef(false);
   const directionRef = useRef(null);
   const prevVisible = useRef(new Set());
+  const touchStartRef = useRef(null);
 
   const totalCards = cards.length;
-  const needsPagination = totalCards > MAX_VISIBLE;
-  const [centerIndex, setCenterIndex] = useState(needsPagination ? HALF : totalCards >> 1);
+
+  // Responsive visible slots based on screen width
+  const [maxVisible, setMaxVisible] = useState(() => {
+    if (typeof window !== "undefined") {
+      const w = window.innerWidth;
+      if (w < 480) return 3;
+      if (w < 768) return 5;
+    }
+    return 7;
+  });
+
+  const half = maxVisible >> 1;
+  const needsPagination = totalCards > maxVisible;
+  const [centerIndex, setCenterIndex] = useState(totalCards >> 1);
+
+  // Resize listener to update maxVisible slots dynamically
+  useEffect(() => {
+    const handleResize = () => {
+      const w = window.innerWidth;
+      let nextMax = 7;
+      if (w < 480) nextMax = 3;
+      else if (w < 768) nextMax = 5;
+      
+      if (nextMax !== maxVisible) {
+        setMaxVisible(nextMax);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [maxVisible]);
 
   const getVisibleMap = useCallback((center) => {
     const map = new Map();
@@ -68,11 +97,11 @@ export default function CardFanCarousel({ cards }) {
       cards.forEach((_, i) => map.set(i, i));
       return map;
     }
-    for (let slot = 0; slot < MAX_VISIBLE; slot++) {
-      map.set(((center + slot - HALF) % totalCards + totalCards) % totalCards, slot);
+    for (let slot = 0; slot < maxVisible; slot++) {
+      map.set(((center + slot - half) % totalCards + totalCards) % totalCards, slot);
     }
     return map;
-  }, [totalCards, needsPagination, cards]);
+  }, [totalCards, needsPagination, cards, maxVisible, half]);
 
   const cycle = useCallback((direction) => {
     if (isAnimating.current || !needsPagination) return;
@@ -82,6 +111,28 @@ export default function CardFanCarousel({ cards }) {
       direction === "right" ? (prev + 1) % totalCards : (prev - 1 + totalCards) % totalCards
     );
   }, [totalCards, needsPagination]);
+
+  const handleTouchStart = (e) => {
+    if (e.touches && e.touches.length > 0) {
+      touchStartRef.current = e.touches[0].clientX;
+    }
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStartRef.current === null) return;
+    if (e.changedTouches && e.changedTouches.length > 0) {
+      const endX = e.changedTouches[0].clientX;
+      const diffX = endX - touchStartRef.current;
+      if (Math.abs(diffX) > 40) { // threshold of 40px
+        if (diffX > 0) {
+          cycle("left");
+        } else {
+          cycle("right");
+        }
+      }
+      touchStartRef.current = null;
+    }
+  };
 
   useEffect(() => {
     const container = containerRef.current;
@@ -96,8 +147,8 @@ export default function CardFanCarousel({ cards }) {
     const isFirstMount = !hasEntered.current;
     const multiplier = getResponsiveMultiplier(window.innerWidth);
     const hMult = getHeightMultiplier(window.innerWidth);
-    const slotCount = needsPagination ? MAX_VISIBLE : totalCards;
-    const config = (slot) => getSlotConfig(slotCount, slot);
+    const slotCount = needsPagination ? maxVisible : totalCards;
+    const config = (slot) => getSlotConfig(slotCount, slot, maxVisible);
 
     if (isFirstMount) isAnimating.current = true;
 
@@ -129,8 +180,8 @@ export default function CardFanCarousel({ cards }) {
           gsap.set(card, { x: 0, y: `${12 * hMult}rem`, rotation: 0, scale: 0.5, opacity: 0 });
           gsap.to(card, { ...target, duration: 1.2, ease: "elastic.out(1.05,.78)", delay: 0.2 + slot * 0.06, onComplete: onCardDone });
         } else if (!wasVisible) {
-          const enterX = direction === "right" ? 40 : -40;
-          gsap.set(card, { x: `${enterX}rem`, y: `${y * hMult}rem`, rotation: direction === "right" ? 30 : -30, scale: 0.5, opacity: 0 });
+          const exitX = direction === "right" ? 40 : -40;
+          gsap.set(card, { x: `${exitX}rem`, y: `${y * hMult}rem`, rotation: direction === "right" ? 30 : -30, scale: 0.5, opacity: 0 });
           gsap.to(card, { ...target, duration: 0.6, ease: "power2.out", onComplete: onCardDone });
         } else {
           gsap.to(card, { ...target, duration: 0.5, ease: "power2.out", onComplete: onCardDone });
@@ -229,7 +280,7 @@ export default function CardFanCarousel({ cards }) {
       window.removeEventListener("resize", onResize);
       if (leaveTimer) clearTimeout(leaveTimer);
     };
-  }, [centerIndex, totalCards, getVisibleMap, needsPagination]);
+  }, [centerIndex, totalCards, getVisibleMap, needsPagination, maxVisible]);
 
   if (!totalCards) return null;
 
@@ -241,7 +292,11 @@ export default function CardFanCarousel({ cards }) {
 
   return (
     <div className="fan-carousel-section">
-      <div className="fan-carousel-outer">
+      <div 
+        className="fan-carousel-outer"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         <div ref={containerRef} className="fan-layout">
           {cards.map((card, index) => {
             const cardContent = (

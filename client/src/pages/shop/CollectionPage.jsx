@@ -100,8 +100,10 @@ export default function CollectionPage() {
   }, [products, availabilityOnly, minPrice, maxPrice]);
 
   // A filter the preset already pins isn't editable here — you don't offer a
-  // "Perfume" toggle on a page that is by definition perfumes.
-  const pinned = new Set(Object.keys(preset.filters));
+  // "Men" toggle on a page that is by definition Men. Product type is the one
+  // exception: the mockup always shows it, and it's how a shopper pivots off
+  // perfumes into candles/sets/samples from any collection page.
+  const pinned = new Set(Object.keys(preset.filters).filter((k) => k !== "type"));
 
   const toggle = (key, value) => {
     const next = new URLSearchParams(params);
