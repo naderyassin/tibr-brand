@@ -13,10 +13,10 @@ export default function ShopHome() {
       <div className="store-container shop-home">
         <CategoryTiles />
         <PromoTiles />
-        <TrustBadges />
-
+        
         <BrandLogoStrip />
         <ReviewsBanner />
+        <TrustBadges />
         <AboutBlurb />
       </div>
     </>
