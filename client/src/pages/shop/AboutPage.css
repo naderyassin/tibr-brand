@@ -180,88 +180,6 @@ body:has(.about-page) .store-header {
   margin-block-end: 0;
 }
 
-/* NEW SECTION 1: FOUNDERS LETTER */
-.about-founders {
-  padding-block: 6rem;
-  border-bottom: 1px solid rgba(201, 168, 76, 0.1);
-}
-
-.about-founders__inner {
-  display: grid;
-  grid-template-columns: 1.25fr 0.75fr;
-  gap: 5rem;
-  align-items: center;
-}
-
-.about-founders__text {
-  display: flex;
-  flex-direction: column;
-}
-
-.about-founders__title {
-  font-family: var(--font-headline, "Bodoni Moda", serif);
-  font-size: clamp(2rem, 1.5rem + 1.5vw, 2.75rem);
-  font-weight: 600;
-  color: #0d0d0d;
-  margin-block-end: 2rem;
-}
-
-.about-founders__paragraph {
-  font-family: var(--font-body, system-ui, sans-serif);
-  font-size: 1.05rem;
-  color: #444444;
-  line-height: 1.8;
-  margin-block-end: 1.5rem;
-}
-
-.about-founders__signature {
-  font-family: var(--font-display, "Bodoni Moda", serif);
-  font-size: 1.25rem;
-  font-style: italic;
-  color: #c9a84c;
-  margin-block-start: 1.5rem;
-}
-
-.about-founders__visual {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #fbfbf9;
-  border: 1px solid rgba(201, 168, 76, 0.15);
-  border-radius: 20px;
-  padding: 4rem 2.5rem;
-  min-height: 20rem;
-  position: relative;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
-}
-
-.about-founders__quote-box {
-  position: relative;
-  text-align: center;
-}
-
-.about-founders__large-quote {
-  position: absolute;
-  font-size: 8rem;
-  font-family: serif;
-  color: rgba(201, 168, 76, 0.08);
-  top: -4.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  user-select: none;
-}
-
-.about-founders__vision {
-  font-family: var(--font-display, "Bodoni Moda", serif);
-  font-size: 1.35rem;
-  font-style: italic;
-  color: #2d2926;
-  line-height: 1.65;
-  position: relative;
-  z-index: 2;
-  margin: 0;
-}
-
 /* 4. PILLARS SECTION (Asymmetric Bento Grid) */
 .about-pillars {
   padding-block: 6rem;
@@ -355,147 +273,6 @@ body:has(.about-page) .store-header {
   display: flex;
   flex-direction: column;
   gap: 2rem;
-}
-
-/* NEW SECTION 2: THE SCENT RITUAL (Editorial Guide) */
-.about-ritual {
-  padding-block: 6rem;
-  background-color: #fcfbfa;
-  border-top: 1px solid rgba(201, 168, 76, 0.12);
-  border-bottom: 1px solid rgba(201, 168, 76, 0.12);
-  margin-block: 4rem;
-}
-
-.about-ritual__title {
-  font-family: var(--font-headline, "Bodoni Moda", serif);
-  font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
-  font-weight: 600;
-  text-align: center;
-  color: #0d0d0d;
-  margin-block-end: 1rem;
-}
-
-.about-ritual__subtitle {
-  font-family: var(--font-body, system-ui, sans-serif);
-  font-size: 1.05rem;
-  color: #555555;
-  text-align: center;
-  margin-block-end: 4.5rem;
-  line-height: 1.6;
-}
-
-.about-ritual__grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 3rem;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding-inline: var(--gutter);
-}
-
-.about-ritual-step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.about-ritual-step__num {
-  font-family: var(--font-display, "Bodoni Moda", serif);
-  font-size: clamp(2.5rem, 2rem + 1.5vw, 3.5rem);
-  font-weight: 600;
-  color: rgba(201, 168, 76, 0.45);
-  margin-block-end: 1.25rem;
-  display: block;
-}
-
-.about-ritual-step__title {
-  font-family: var(--font-body, system-ui, sans-serif);
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #0d0d0d;
-  margin-block-end: 0.75rem;
-}
-
-.about-ritual-step__text {
-  font-family: var(--font-body, system-ui, sans-serif);
-  font-size: 0.92rem;
-  color: #555555;
-  line-height: 1.75;
-  margin: 0;
-}
-
-/* NEW SECTION 3: EXTRACTIONS */
-.about-extractions {
-  padding-block: 6rem;
-  border-bottom: 1px solid rgba(201, 168, 76, 0.1);
-}
-
-.about-extractions__header {
-  text-align: center;
-  margin-block-end: 4rem;
-}
-
-.about-extractions__title {
-  font-family: var(--font-headline, "Bodoni Moda", serif);
-  font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
-  font-weight: 600;
-  color: #0d0d0d;
-  margin-block-end: 1rem;
-}
-
-.about-extractions__subtitle {
-  font-family: var(--font-body, system-ui, sans-serif);
-  font-size: 1.05rem;
-  color: #555555;
-}
-
-.about-extractions__grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2.5rem;
-}
-
-.about-extraction-card {
-  background-color: #ffffff;
-  border: 1px solid rgba(201, 168, 76, 0.12);
-  padding: 2.75rem 2rem;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.about-extraction-card:hover {
-  transform: translateY(-4px);
-  border-color: #c9a84c;
-  box-shadow: 0 10px 25px rgba(201, 168, 76, 0.04);
-}
-
-.about-extraction-card__kicker {
-  font-family: var(--font-body, system-ui, sans-serif);
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #c9a84c;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  display: block;
-  margin-block-end: 0.75rem;
-}
-
-.about-extraction-card__title {
-  font-family: var(--font-headline, "Bodoni Moda", serif);
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: #0d0d0d;
-  margin-block-end: 1rem;
-}
-
-.about-extraction-card__text {
-  font-family: var(--font-body, system-ui, sans-serif);
-  font-size: 0.9rem;
-  color: #666666;
-  line-height: 1.7;
-  margin: 0;
 }
 
 /* 5. INGREDIENTS SECTION (Botanical Vignettes) */
@@ -597,45 +374,6 @@ body:has(.about-page) .store-header {
   padding-inline: 0.5rem;
 }
 
-/* NEW SECTION 4: PROMISES */
-.about-promises {
-  padding-block: 6rem;
-  background-color: #fbfbf9;
-  border-top: 1px solid rgba(201, 168, 76, 0.12);
-  border-bottom: 1px solid rgba(201, 168, 76, 0.12);
-  margin-block: 4rem;
-}
-
-.about-promises__inner {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 4rem;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding-inline: var(--gutter);
-}
-
-.about-promise-item {
-  text-align: center;
-  padding: 1rem;
-}
-
-.about-promise-item__title {
-  font-family: var(--font-headline, "Bodoni Moda", serif);
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #0d0d0d;
-  margin-block-end: 1rem;
-}
-
-.about-promise-item__text {
-  font-family: var(--font-body, system-ui, sans-serif);
-  font-size: 0.9rem;
-  color: #555555;
-  line-height: 1.7;
-  margin: 0;
-}
-
 /* 6. SCENT PROFILE CTA */
 .about-cta {
   padding-block: 6rem;
@@ -726,18 +464,6 @@ body:has(.about-page) .store-header {
     order: 1;
     align-items: center;
   }
-
-  .about-founders__inner {
-    grid-template-columns: 1fr;
-    gap: 3.5rem;
-    text-align: center;
-  }
-  .about-founders__visual {
-    max-width: 30rem;
-    margin: 0 auto;
-    width: 100%;
-    min-height: 16rem;
-  }
 }
 
 @media (max-width: 48rem) {
@@ -753,13 +479,6 @@ body:has(.about-page) .store-header {
   .about-ingredients__vignettes {
     grid-template-columns: repeat(2, 1fr);
     gap: 3rem;
-  }
-
-  .about-ritual__grid,
-  .about-extractions__grid,
-  .about-promises__inner {
-    grid-template-columns: 1fr;
-    gap: 3.5rem;
   }
 }
 

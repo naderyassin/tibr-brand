@@ -66,35 +66,6 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* NEW SECTION 1: A LETTER FROM THE FOUNDERS */}
-        <section className="about-founders" aria-label="Founders Letter">
-          <div className="about-founders__inner">
-            <div className="about-founders__text">
-              <h2 className="about-founders__title">A Letter from the Founders</h2>
-              <p className="about-founders__paragraph">
-                TIBR was born out of a shared obsession with olfactory heritage. Growing up surrounded by the rich 
-                scent culture of Egypt—from the jasmine fields of the Nile Delta to the historic perfume souks of Old Cairo—we 
-                realized that modern commercial perfumery had lost its soul. High-concentration natural oils had been 
-                replaced by mass-produced synthetic copies that lacked character and staying power.
-              </p>
-              <p className="about-founders__paragraph">
-                We established TIBR to reclaim that lost prestige. By marrying ancient Egyptian maceration methods 
-                with contemporary French perfume design, we create extraits that are slow, complex, and deeply personal. 
-                We invite you to experience scent not just as an accessory, but as a living memory.
-              </p>
-              <span className="about-founders__signature">Nader & The Alchemists of Tibr</span>
-            </div>
-            <div className="about-founders__visual">
-              <div className="about-founders__quote-box">
-                <span className="about-founders__large-quote">“</span>
-                <p className="about-founders__vision">
-                  We don't manufacture scents; we bottle memories, trade-routes, and historical alchemies.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* 4. ASYMMETRIC BENTO GRID (Pillars) */}
         <section className="about-pillars" aria-label="Sourcing and Craftsmanship">
           <h2 className="about-pillars__title">Sourcing & Craftsmanship</h2>
@@ -139,77 +110,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* NEW SECTION 2: THE SCENT RITUAL (Editorial Guide) */}
-        <section className="about-ritual" aria-label="Scent Ritual">
-          <h2 className="about-ritual__title">The Art of the Extrait</h2>
-          <p className="about-ritual__subtitle">How to wear and care for high-concentration perfume oils.</p>
-          <div className="about-ritual__grid">
-            <div className="about-ritual-step">
-              <span className="about-ritual-step__num">01</span>
-              <h3 className="about-ritual-step__title">Pulse Points (نقاط النبض)</h3>
-              <p className="about-ritual-step__text">
-                Apply extraits directly to your warm pulse points—wrists, inner elbows, and the nape of the neck. 
-                The heat of your body will slowly unfurl the complex layers over 12+ hours.
-              </p>
-            </div>
-            
-            <div className="about-ritual-step">
-              <span className="about-ritual-step__num">02</span>
-              <h3 className="about-ritual-step__title">Layering (مزج الطبقات)</h3>
-              <p className="about-ritual-step__text">
-                Our pure extraits are designed to be layered. Spray a base of warm Golden Amber, then crown it 
-                with the bright floral notes of Nile Jasmine to compose your own bespoke signature.
-              </p>
-            </div>
-
-            <div className="about-ritual-step">
-              <span className="about-ritual-step__num">03</span>
-              <h3 className="about-ritual-step__title">Maturation (التعتيق)</h3>
-              <p className="about-ritual-step__text">
-                Like fine wine, high-concentration natural perfumes mature over time. Keep your bottles in a cool, 
-                dark sanctuary to let the natural botanical oils deepen in complexity.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* NEW SECTION 3: EXTRACTION METHODS */}
-        <section className="about-extractions" aria-label="Extraction Methods">
-          <div className="about-extractions__header">
-            <h2 className="about-extractions__title">The Extraction</h2>
-            <p className="about-extractions__subtitle">Traditional processes that preserve botanical integrity.</p>
-          </div>
-          <div className="about-extractions__grid">
-            <div className="about-extraction-card">
-              <span className="about-extraction-card__kicker">Method I</span>
-              <h3 className="about-extraction-card__title">Enfleurage (استخلاص البتلات)</h3>
-              <p className="about-extraction-card__text">
-                An ancient, labor-intensive technique where delicate jasmine and rose petals are laid over organic fats 
-                to capture their volatile aromatic molecules without heat damage, preserving the living flower note.
-              </p>
-            </div>
-
-            <div className="about-extraction-card">
-              <span className="about-extraction-card__kicker">Method II</span>
-              <h3 className="about-extraction-card__title">Copper Maceration (التخمير بالنحاس)</h3>
-              <p className="about-extraction-card__text">
-                Our base resins, including myrrh and frankincense, are macerated in heavy copper vessels for up to three 
-                months, allowing the base compounds to build deep, resinous resonance and unparalleled staying power.
-              </p>
-            </div>
-
-            <div className="about-extraction-card">
-              <span className="about-extraction-card__kicker">Method III</span>
-              <h3 className="about-extraction-card__title">Resin Clay Aging (تعتيق اللبان)</h3>
-              <p className="about-extraction-card__text">
-                Pure resins harvested from the dry mountains of Sinai are aged in clay vessels to round out their sharp, 
-                balsamic edges and develop a smooth, dry woodiness before blending.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* 5. BOTANICAL INGREDIENTS VIGNETTES (Apothicary Style) */}
+        {/* 5. BOTANICAL INGREDIENTS VIGNETTES (Luxury Apothecary Style) */}
         <section className="about-ingredients" aria-label="Ingredients Grid">
           <h2 className="about-ingredients__title">Botanical Origins</h2>
           <p className="about-ingredients__subtitle">
@@ -258,7 +159,7 @@ export default function AboutPage() {
               <span className="about-ingredient-vignette__ar">الكهرمان الدافئ</span>
               <p className="about-ingredient-vignette__text">
                 A rich, warm, resinous accord matured in heavy vessels to anchor the base with exceptional longevity.
-              </p>
+                </p>
             </div>
 
             <div className="about-ingredient-vignette">
@@ -278,31 +179,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* NEW SECTION 4: OUR PROMISES */}
-        <section className="about-promises" aria-label="Our Commitments">
-          <div className="about-promises__inner">
-            <div className="about-promise-item">
-              <h3 className="about-promise-item__title">100% Traceability</h3>
-              <p className="about-promise-item__text">
-                Every raw material is sourced ethically and directly from independent Egyptian farmers, guaranteeing fair wages and crop sustainability.
-              </p>
-            </div>
-            <div className="about-promise-item">
-              <h3 className="about-promise-item__title">Zero Synthetic Fillers</h3>
-              <p className="about-promise-item__text">
-                We blend with 100% natural oil extracts. No synthetic silicones, petrochemicals, parabens, or chemical colorants.
-              </p>
-            </div>
-            <div className="about-promise-item">
-              <h3 className="about-promise-item__title">Micro-Batch Crafted</h3>
-              <p className="about-promise-item__text">
-                All Tibr perfumes are aged, hand-poured, and numbered in micro-batches under local artisan supervision in Cairo.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* 6. MINIMAL BOUTIQUE SCENTS CTA */}
+        {/* 6. MINIMAL BOUTIQUE SCCNTS CTA */}
         <section className="about-cta" aria-label="Explore collection">
           <div className="about-cta__box">
             <h2 className="about-cta__title">Find Your Signature</h2>
