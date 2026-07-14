@@ -12,237 +12,219 @@ body:has(.about-page) .store-header {
   border-block-end: 1px solid rgba(201, 168, 76, 0.15) !important;
 }
 
-/* Hero Section */
+/* 1. HERO SECTION (Asymmetric split) */
 .about-hero {
-  position: relative;
   padding-block: 6rem 4rem;
-  text-align: center;
-  background-color: #fbfbf9;
-  border-bottom: 1px solid rgba(201, 168, 76, 0.15);
-  margin-bottom: 4rem;
+  background-color: #fcfbfa;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.12);
+  margin-bottom: 2rem;
 }
 
-.about-hero__content {
-  max-width: 50rem;
+.about-hero__inner {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 4rem;
+  align-items: center;
+  max-width: 1400px;
   margin: 0 auto;
   padding-inline: var(--gutter);
 }
 
-.about-hero__kicker {
-  font-family: var(--font-body, system-ui, sans-serif);
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #c9a84c;
-  text-transform: uppercase;
-  letter-spacing: 0.25em;
-  margin-bottom: 0.75rem;
+.about-hero__text-side {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .about-hero__title {
   font-family: var(--font-display, "Bodoni Moda", "Reem Kufi", serif);
-  font-size: clamp(2.5rem, 1.5rem + 4.5vw, 5rem);
+  font-size: clamp(2.5rem, 1.8rem + 4vw, 4.5rem);
   font-weight: 600;
   line-height: 1.1;
-  color: #0d0a07;
-  margin-bottom: 1.25rem;
-}
-
-.about-hero__divider {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 1.5rem;
-}
-
-.about-hero__line {
-  width: 3rem;
-  height: 1px;
-  background: rgba(201, 168, 76, 0.4);
-}
-
-.about-hero__gem {
-  width: 6px;
-  height: 6px;
-  background: #c9a84c;
-  transform: rotate(45deg);
-}
-
-/* Manifesto Section */
-.about-manifesto {
-  padding-block: var(--sp-10, 4rem);
-  border-bottom: 1px solid rgba(201, 168, 76, 0.1);
-}
-
-.about-manifesto__inner {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--sp-8, 3rem);
-  align-items: center;
-}
-
-@media (min-width: 56rem) {
-  .about-manifesto__inner {
-    grid-template-columns: 1.1fr 0.9fr;
-    gap: var(--sp-10, 4rem);
-  }
-}
-
-.about-manifesto__content {
-  display: flex;
-  flex-direction: column;
-}
-
-.about-manifesto__kicker {
-  font-family: var(--font-body);
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #c9a84c;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  margin-block-end: 0.75rem;
-}
-
-.about-manifesto__title {
-  font-family: var(--font-headline, "Bodoni Moda", serif);
-  font-size: clamp(1.8rem, 1.3rem + 2vw, 2.75rem);
-  font-weight: 600;
-  line-height: 1.2;
-  color: #111111;
-  margin-block-end: 1.5rem;
-}
-
-.about-manifesto__text {
-  font-family: var(--font-body);
-  font-size: 1.025rem;
-  color: #444444;
-  line-height: 1.75;
-  margin-block-end: 1.25rem;
-}
-
-.about-manifesto__image-wrapper {
-  position: relative;
-  border-radius: 20px;
-  overflow: hidden;
-  border: 1px solid rgba(201, 168, 76, 0.15);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
-  aspect-ratio: 0.95 / 1;
-}
-
-.about-manifesto__image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.about-manifesto__image-wrapper:hover .about-manifesto__image {
-  transform: scale(1.03);
-}
-
-/* Heritage Section */
-.about-heritage {
-  padding-block: var(--sp-10, 4rem);
-  border-bottom: 1px solid rgba(201, 168, 76, 0.1);
-}
-
-.about-heritage__title {
-  font-family: var(--font-headline, "Bodoni Moda", serif);
-  font-size: clamp(1.8rem, 1.3rem + 2vw, 2.5rem);
-  font-weight: 600;
-  text-align: center;
-  color: #111111;
-  margin-block-end: 2rem;
-}
-
-.about-heritage__quote-box {
-  max-width: 48rem;
-  margin: 0 auto 3rem;
-  text-align: center;
-  padding: 2rem;
-  border-left: 2px solid #c9a84c;
-  border-right: 2px solid #c9a84c;
-  background: #fdfdfb;
-}
-
-.about-heritage__quote {
-  font-family: var(--font-display, "Bodoni Moda", serif);
-  font-size: 1.35rem;
-  font-style: italic;
-  line-height: 1.6;
-  color: #2d2926;
+  color: #0d0d0d;
+  letter-spacing: -0.02em;
   margin: 0;
 }
 
-.about-heritage__text-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2rem;
+.about-hero__line-deco {
+  width: 80px;
+  height: 2px;
+  background-color: #c9a84c;
+  margin-block: 2rem;
 }
 
-@media (min-width: 48rem) {
-  .about-heritage__text-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
-  }
-}
-
-.about-heritage__desc {
-  font-family: var(--font-body);
-  font-size: 1rem;
+.about-hero__lead {
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-size: 1.15rem;
+  line-height: 1.8;
   color: #444444;
-  line-height: 1.7;
+  margin: 0;
+  max-width: 38rem;
 }
 
-/* Pillars Section */
+.about-hero__image-side {
+  position: relative;
+  aspect-ratio: 1.15 / 1;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(201, 168, 76, 0.15);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.05);
+}
+
+.about-hero__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.about-hero__image-side:hover .about-hero__img {
+  transform: scale(1.04);
+}
+
+/* 2. PHILOSOPHY SECTION (Centered Editorial) */
+.about-philosophy {
+  padding-block: 6rem;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.1);
+}
+
+.about-philosophy__content {
+  max-width: 48rem;
+  margin: 0 auto;
+  text-align: center;
+  padding-inline: var(--gutter);
+}
+
+.about-philosophy__title {
+  font-family: var(--font-display, "Bodoni Moda", serif);
+  font-size: clamp(1.2rem, 1rem + 1vw, 1.8rem);
+  font-weight: 600;
+  color: #c9a84c;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-block-end: 1.5rem;
+}
+
+.about-philosophy__quote {
+  font-family: var(--font-display, "Bodoni Moda", serif);
+  font-size: clamp(1.35rem, 1rem + 1vw, 1.95rem);
+  line-height: 1.6;
+  color: #0d0d0d;
+  font-style: italic;
+  margin: 0;
+}
+
+/* 3. HERITAGE SECTION (Inverted Split) */
+.about-heritage {
+  padding-block: 6rem;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.1);
+}
+
+.about-heritage__inner {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 5rem;
+  align-items: center;
+}
+
+.about-heritage__image-col {
+  display: flex;
+  justify-content: center;
+}
+
+.about-heritage__img-frame {
+  position: relative;
+  aspect-ratio: 0.9 / 1;
+  width: 100%;
+  max-width: 25rem;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(201, 168, 76, 0.15);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.05);
+}
+
+.about-heritage__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.about-heritage__img-frame:hover .about-heritage__img {
+  transform: scale(1.04);
+}
+
+.about-heritage__text-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.about-heritage__section-title {
+  font-family: var(--font-headline, "Bodoni Moda", serif);
+  font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
+  font-weight: 600;
+  color: #0d0d0d;
+  margin-block-end: 2rem;
+}
+
+.about-heritage__text {
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-size: 1.05rem;
+  color: #444444;
+  line-height: 1.8;
+  margin-block-end: 1.5rem;
+}
+
+.about-heritage__text:last-of-type {
+  margin-block-end: 0;
+}
+
+/* 4. PILLARS SECTION (Asymmetric Bento Grid) */
 .about-pillars {
-  padding-block: var(--sp-10, 4rem);
+  padding-block: 6rem;
   border-bottom: 1px solid rgba(201, 168, 76, 0.1);
 }
 
 .about-pillars__title {
   font-family: var(--font-headline, "Bodoni Moda", serif);
-  font-size: clamp(1.8rem, 1.3rem + 2vw, 2.5rem);
+  font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
   font-weight: 600;
   text-align: center;
-  color: #111111;
-  margin-block-end: 3.5rem;
+  color: #0d0d0d;
+  margin-block-end: 4rem;
 }
 
-.about-pillars__grid {
+.about-pillars__bento {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--sp-6, 2rem);
-}
-
-@media (min-width: 48rem) {
-  .about-pillars__grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
+  grid-template-columns: 1.5fr 1fr;
+  gap: 2rem;
 }
 
 .about-pillar-card {
-  background: #ffffff;
+  background-color: #fbfbf9;
   border: 1px solid rgba(201, 168, 76, 0.15);
-  padding: 2.5rem 2rem;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  padding: 3rem 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
   transition: 
     transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
     box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
     border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
 }
 
 .about-pillar-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
   border-color: #c9a84c;
   box-shadow: 
-    0 15px 35px rgba(0, 0, 0, 0.06),
+    0 15px 35px rgba(201, 168, 76, 0.06),
     0 4px 12px rgba(201, 168, 76, 0.04);
+}
+
+.about-pillar-card--featured {
+  display: flex;
+  gap: 2.5rem;
+  align-items: flex-start;
 }
 
 .about-pillar-card__icon-wrapper {
@@ -252,14 +234,14 @@ body:has(.about-page) .store-header {
   width: 3.5rem;
   height: 3.5rem;
   border-radius: 50%;
-  background: rgba(201, 168, 76, 0.08);
+  background-color: rgba(201, 168, 76, 0.08);
   color: #c9a84c;
-  margin-block-end: 1.5rem;
+  flex-shrink: 0;
   transition: transform 0.5s ease, background-color 0.3s, color 0.3s;
 }
 
 .about-pillar-card:hover .about-pillar-card__icon-wrapper {
-  transform: scale(1.1);
+  transform: scale(1.08);
   background-color: #c9a84c;
   color: #ffffff;
 }
@@ -270,152 +252,159 @@ body:has(.about-page) .store-header {
 }
 
 .about-pillar-card__title {
-  font-family: var(--font-body);
-  font-size: 0.95rem;
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-size: 1.15rem;
   font-weight: 700;
-  color: #111111;
+  color: #0d0d0d;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   margin-block-end: 0.75rem;
 }
 
 .about-pillar-card__text {
-  font-family: var(--font-body);
-  font-size: 0.875rem;
-  color: #666666;
-  line-height: 1.6;
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-size: 0.95rem;
+  color: #555555;
+  line-height: 1.75;
   margin: 0;
 }
 
-/* Ingredients Section */
+.about-pillars__stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* 5. INGREDIENTS SECTION (Botanical Vignettes) */
 .about-ingredients {
-  padding-block: var(--sp-10, 4rem);
+  padding-block: 6rem;
   border-bottom: 1px solid rgba(201, 168, 76, 0.1);
 }
 
 .about-ingredients__title {
   font-family: var(--font-headline, "Bodoni Moda", serif);
-  font-size: clamp(1.8rem, 1.3rem + 2vw, 2.5rem);
+  font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
   font-weight: 600;
   text-align: center;
-  color: #111111;
+  color: #0d0d0d;
   margin-block-end: 1rem;
 }
 
 .about-ingredients__subtitle {
-  font-family: var(--font-body);
-  font-size: 1rem;
-  color: #666666;
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-size: 1.05rem;
+  color: #555555;
   text-align: center;
-  margin-block-end: 3.5rem;
-  max-width: 32rem;
-  margin-inline: auto;
+  max-width: 34rem;
+  margin: 0 auto 4.5rem;
+  line-height: 1.6;
 }
 
-.about-ingredients__grid {
+.about-ingredients__vignettes {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 2rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2.5rem;
 }
 
-@media (min-width: 35rem) {
-  .about-ingredients__grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 64rem) {
-  .about-ingredients__grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-.about-ingredient-card {
+.about-ingredient-vignette {
+  text-align: center;
   display: flex;
   flex-direction: column;
-  background: #ffffff;
-  border: 1px solid rgba(201, 168, 76, 0.1);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
-  transition: transform 0.4s ease, border-color 0.4s ease;
+  align-items: center;
 }
 
-.about-ingredient-card:hover {
-  transform: translateY(-4px);
+.about-ingredient-vignette__img-wrapper {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
+  margin-block-end: 1.5rem;
+  transition: 
+    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.about-ingredient-vignette:hover .about-ingredient-vignette__img-wrapper {
+  transform: scale(1.05);
   border-color: #c9a84c;
+  box-shadow: 
+    0 15px 30px rgba(201, 168, 76, 0.12),
+    0 4px 12px rgba(201, 168, 76, 0.06);
 }
 
-.about-ingredient-card__img-wrapper {
-  width: 100%;
-  aspect-ratio: 1.2 / 1;
-  overflow: hidden;
-  background: #f7f6f2;
-}
-
-.about-ingredient-card__img {
+.about-ingredient-vignette__img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.6s ease;
+  transition: transform 0.8s ease;
 }
 
-.about-ingredient-card:hover .about-ingredient-card__img {
-  transform: scale(1.04);
+.about-ingredient-vignette:hover .about-ingredient-vignette__img {
+  transform: scale(1.05);
 }
 
-.about-ingredient-card__content {
-  padding: 1.5rem;
-}
-
-.about-ingredient-card__title {
+.about-ingredient-vignette__title {
   font-family: var(--font-headline, "Bodoni Moda", serif);
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   font-weight: 600;
-  color: #111111;
-  margin-block-end: 0.5rem;
+  color: #0d0d0d;
+  margin: 0 0 0.25rem 0;
 }
 
-.about-ingredient-card__text {
-  font-family: var(--font-body);
+.about-ingredient-vignette__ar {
+  font-family: var(--font-body, system-ui, sans-serif);
   font-size: 0.85rem;
-  color: #666666;
-  line-height: 1.5;
-  margin: 0;
+  color: #c9a84c;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  display: block;
+  margin-block-end: 1rem;
 }
 
-/* Scent Profile CTA */
+.about-ingredient-vignette__text {
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-size: 0.875rem;
+  color: #555555;
+  line-height: 1.6;
+  margin: 0;
+  padding-inline: 0.5rem;
+}
+
+/* 6. SCENT PROFILE CTA */
 .about-cta {
-  padding-block: var(--sp-12, 5rem);
+  padding-block: 6rem;
   text-align: center;
-  position: relative;
 }
 
 .about-cta__box {
-  background: #fbfbf9;
+  background-color: #fbfbf8;
   border: 1px solid rgba(201, 168, 76, 0.25);
-  border-radius: 24px;
-  padding: 4.5rem 2rem;
+  border-radius: 28px;
+  padding: 5rem 2rem;
   max-width: 55rem;
   margin: 0 auto;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
 }
 
 .about-cta__title {
   font-family: var(--font-display, "Bodoni Moda", serif);
   font-size: clamp(2rem, 1.5rem + 2.5vw, 3.25rem);
   font-weight: 600;
-  color: #111111;
-  margin-block-end: 1rem;
+  color: #0d0d0d;
+  margin-block-end: 1.25rem;
 }
 
 .about-cta__text {
-  font-family: var(--font-body);
+  font-family: var(--font-body, system-ui, sans-serif);
   font-size: 1.05rem;
-  color: #555555;
+  color: #444444;
   line-height: 1.6;
   max-width: 32rem;
-  margin: 0 auto 2.25rem;
+  margin: 0 auto 2.5rem;
 }
 
 .cta-button {
@@ -424,12 +413,12 @@ body:has(.about-page) .store-header {
   justify-content: center;
   background-color: #c9a84c;
   color: #ffffff;
-  font-family: var(--font-body);
+  font-family: var(--font-body, system-ui, sans-serif);
   font-size: 0.875rem;
   font-weight: 700;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  padding: 1rem 2.5rem;
+  padding: 1.1rem 2.75rem;
   border-radius: 4px;
   text-decoration: none;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -444,4 +433,64 @@ body:has(.about-page) .store-header {
 
 .cta-button:active {
   transform: translateY(0);
+}
+
+/* ============================ RESPONSIVENESS ============================ */
+
+@media (max-width: 56rem) {
+  .about-hero__inner {
+    grid-template-columns: 1fr;
+    gap: 3.5rem;
+    text-align: center;
+  }
+  .about-hero__text-side {
+    align-items: center;
+  }
+  .about-hero__image-side {
+    max-width: 30rem;
+    margin: 0 auto;
+    width: 100%;
+  }
+  
+  .about-heritage__inner {
+    grid-template-columns: 1fr;
+    gap: 3.5rem;
+    text-align: center;
+  }
+  .about-heritage__image-col {
+    order: 2;
+  }
+  .about-heritage__text-col {
+    order: 1;
+    align-items: center;
+  }
+}
+
+@media (max-width: 48rem) {
+  .about-pillars__bento {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .about-pillar-card--featured {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .about-ingredients__vignettes {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3rem;
+  }
+}
+
+@media (max-width: 35rem) {
+  .about-ingredients__vignettes {
+    grid-template-columns: 1fr;
+    gap: 3.5rem;
+  }
+  .about-pillar-card {
+    padding: 2.25rem 1.75rem;
+  }
+  .about-cta__box {
+    padding: 4rem 1.5rem;
+  }
 }

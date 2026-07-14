@@ -5,180 +5,182 @@ import "./AboutPage.css";
 export default function AboutPage() {
   return (
     <div className="about-page">
-      {/* HERO SECTION */}
-      <section className="about-hero" aria-label="About Tibr">
-        <div className="about-hero__content">
-          <span className="about-hero__kicker">Egypt's Liquid Gold</span>
-          <h1 className="about-hero__title">The Narrative of Tibr</h1>
-          <div className="about-hero__divider" aria-hidden="true">
-            <span className="about-hero__line" />
-            <span className="about-hero__gem" />
-            <span className="about-hero__line" />
+      {/* 1. ASYMMETRIC SPLIT HERO */}
+      <section className="about-hero" aria-label="Introduction">
+        <div className="about-hero__inner">
+          <div className="about-hero__text-side">
+            <h1 className="about-hero__title">The Narrative of Tibr</h1>
+            <div className="about-hero__line-deco" />
+            <p className="about-hero__lead">
+              Bridging the sacred prestige of ancient Egyptian perfumery with contemporary luxury fragrance design.
+            </p>
+          </div>
+          <div className="about-hero__image-side">
+            <img 
+              src="/categories/about_hero.png" 
+              alt="Frankincense and jasmine on basalt stone" 
+              className="about-hero__img" 
+            />
           </div>
         </div>
       </section>
 
       <div className="store-container">
-        {/* OUR STORY & MANIFESTO */}
-        <section className="about-manifesto" aria-label="Our Story">
-          <div className="about-manifesto__inner">
-            <div className="about-manifesto__content">
-              <span className="about-manifesto__kicker">Our Story</span>
-              <h2 className="about-manifesto__title">Composing Legacy</h2>
-              <p className="about-manifesto__text">
-                TIBR (تِبْر) translates to "gold dust" or "raw gold before it is shaped" in classical Arabic. 
-                Like raw gold, we believe scent is one of nature’s most precious raw treasures, awaiting 
-                the touch of alchemy to be shaped into art.
-              </p>
-              <p className="about-manifesto__text">
-                TIBR was built on authenticity, nostalgia, and luxury. Every fragrance we carry joins the 
-                heritage of the past to the luxury of the present, composed with the same meticulous care whether 
-                it is our own signature perfume or a classic Egyptian recipe.
-              </p>
-            </div>
-            <div className="about-manifesto__image-wrapper">
-              <img 
-                src="/categories/about_manifesto.png" 
-                alt="TIBR Perfume Bottle on Volcanic Gold Sand" 
-                className="about-manifesto__image" 
-              />
-            </div>
-          </div>
-        </section>
-
-        {/* THE EGYPTIAN HERITAGE (New Section) */}
-        <section className="about-heritage" aria-label="The Egyptian Heritage">
-          <h2 className="about-heritage__title">The Egyptian Heritage</h2>
-          <div className="about-heritage__quote-box">
-            <p className="about-heritage__quote">
-              "Egypt is the cradle of perfumery—the land of sacred Kyphi, temple resins, and world-renowned flower oils."
-            </p>
-          </div>
-          <div className="about-heritage__text-grid">
-            <p className="about-heritage__desc">
-              For thousands of years, scent in Egypt was more than a cosmetic; it was a sacred bridge between the physical 
-              and the spiritual. The legendary temple recipes of *Kyphi*—blended from frankincense, myrrh, raisins, and honey—were 
-              aged in stone jars to produce scents of unmatched depth and longevity.
-            </p>
-            <p className="about-heritage__desc">
-              At TIBR, we honor this heritage by researching ancient extraction methodologies and classic Egyptian structures. 
-              We carry this history forward into contemporary extraits de parfum, offering sophisticated modern formulations 
-              that retain the rich, heavy base notes that define classical Middle Eastern perfumery.
+        {/* 2. CENTERED EDITORIAL MANIFESTO */}
+        <section className="about-philosophy" aria-label="Our Philosophy">
+          <div className="about-philosophy__content">
+            <h2 className="about-philosophy__title">Composing Legacy</h2>
+            <p className="about-philosophy__quote">
+              TIBR (تِبْر) translates to "gold dust" or "raw gold before it is shaped" in classical Arabic. 
+              Like raw gold, we believe scent is one of nature’s most precious raw treasures, awaiting 
+              the touch of alchemy to be shaped into art.
             </p>
           </div>
         </section>
 
-        {/* PILLARS SECTION */}
-        <section className="about-pillars" aria-label="Sourcing & Craftsmanship">
+        {/* 3. INVERTED HERITAGE SPLIT */}
+        <section className="about-heritage" aria-label="Egyptian Heritage">
+          <div className="about-heritage__inner">
+            <div className="about-heritage__image-col">
+              <div className="about-heritage__img-frame">
+                <img 
+                  src="/categories/about_manifesto.png" 
+                  alt="Tibr Amber bottle on volcanic gold sand" 
+                  className="about-heritage__img" 
+                />
+              </div>
+            </div>
+            <div className="about-heritage__text-col">
+              <h2 className="about-heritage__section-title">Sacred Roots</h2>
+              <p className="about-heritage__text">
+                For thousands of years, scent in Egypt was a sacred bridge between the physical and the spiritual. 
+                The legendary temple recipes of <em>Kyphi</em>—blended from frankincense, myrrh, resins, and honey—were 
+                aged in heavy stone jars to produce scents of unmatched depth and longevity.
+              </p>
+              <p className="about-heritage__text">
+                We honor this lineage by researching ancient extraction methodologies and classic structures. 
+                We carry this history forward into contemporary extraits de parfum, offering sophisticated modern formulations 
+                that retain the rich, heavy base notes that define classical Middle Eastern perfumery.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* 4. ASYMMETRIC BENTO GRID (Pillars) */}
+        <section className="about-pillars" aria-label="Sourcing and Craftsmanship">
           <h2 className="about-pillars__title">Sourcing & Craftsmanship</h2>
-          <div className="about-pillars__grid">
-            <div className="about-pillar-card">
-              <div className="about-pillar-card__icon-wrapper">
-                <Sparkles />
-              </div>
-              <h3 className="about-pillar-card__title">Nostalgia (الحنين)</h3>
-              <p className="about-pillar-card__text">
-                Reminiscent of ancient gardens, coastal Alexandria, and the warm, spice-laden air of Cairo's old markets.
-              </p>
-            </div>
-            
-            <div className="about-pillar-card">
-              <div className="about-pillar-card__icon-wrapper">
-                <Compass />
-              </div>
-              <h3 className="about-pillar-card__title">Sourcing (المصدر)</h3>
-              <p className="about-pillar-card__text">
-                We hunt the finest natural materials: Nile Delta jasmine grandiflorum, damask rose, and Sinai labdanum.
-              </p>
-            </div>
-            
-            <div className="about-pillar-card">
+          <div className="about-pillars__bento">
+            {/* Double-width Featured Card */}
+            <div className="about-pillar-card about-pillar-card--featured">
               <div className="about-pillar-card__icon-wrapper">
                 <Fingerprint />
               </div>
-              <h3 className="about-pillar-card__title">Alchemy (الحِرفة)</h3>
-              <p className="about-pillar-card__text">
-                No shortcuts. Every extrait is blended in micro-batches, allowing the oils to age and mature to perfection.
+              <div className="about-pillar-card__featured-content">
+                <h3 className="about-pillar-card__title">Alchemy & Formulation (الحِرفة)</h3>
+                <p className="about-pillar-card__text">
+                  No shortcuts. Every extrait is blended in micro-batches, allowing the natural oils to age, 
+                  mature, and settle to absolute perfection. We combine traditional copper vessel distillation 
+                  with state-of-the-art modern formulation to create scents that wear beautifully for hours on the skin.
+                </p>
+              </div>
+            </div>
+
+            {/* Stacked Column of Single Cards */}
+            <div className="about-pillars__stack">
+              <div className="about-pillar-card">
+                <div className="about-pillar-card__icon-wrapper">
+                  <Sparkles />
+                </div>
+                <h3 className="about-pillar-card__title">Nostalgia (الحنين)</h3>
+                <p className="about-pillar-card__text">
+                  Reminiscent of ancient gardens, coastal Alexandria, and the warm, spice-laden air of Cairo's old markets.
+                </p>
+              </div>
+
+              <div className="about-pillar-card">
+                <div className="about-pillar-card__icon-wrapper">
+                  <Compass />
+                </div>
+                <h3 className="about-pillar-card__title">Sourcing (المصدر)</h3>
+                <p className="about-pillar-card__text">
+                  We hunt the finest natural materials: Nile Delta jasmine, damask rose, and Sinai labdanum.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 5. BOTANICAL INGREDIENTS VIGNETTES (Luxury Apothecary Style) */}
+        <section className="about-ingredients" aria-label="Ingredients Grid">
+          <h2 className="about-ingredients__title">Botanical Origins</h2>
+          <p className="about-ingredients__subtitle">
+            A curated selection of the finest natural extractions sourced directly from historical Egyptian fields.
+          </p>
+          <div className="about-ingredients__vignettes">
+            <div className="about-ingredient-vignette">
+              <div className="about-ingredient-vignette__img-wrapper">
+                <img 
+                  src="/categories/about_jasmine.png" 
+                  alt="Nile Jasmine grandiflorum" 
+                  className="about-ingredient-vignette__img" 
+                />
+              </div>
+              <h3 className="about-ingredient-vignette__title">Nile Jasmine</h3>
+              <span className="about-ingredient-vignette__ar">ياسمين النيل</span>
+              <p className="about-ingredient-vignette__text">
+                Hand-harvested at dawn in the Nile Delta, yielding a rich, deeply floral nectar with clean green facets.
+              </p>
+            </div>
+
+            <div className="about-ingredient-vignette">
+              <div className="about-ingredient-vignette__img-wrapper">
+                <img 
+                  src="/categories/about_rose.png" 
+                  alt="Egyptian Damask Rose" 
+                  className="about-ingredient-vignette__img" 
+                />
+              </div>
+              <h3 className="about-ingredient-vignette__title">Damask Rose</h3>
+              <span className="about-ingredient-vignette__ar">الورد البلدي</span>
+              <p className="about-ingredient-vignette__text">
+                Distilled in traditional copper vessels, offering a luxurious, velvety heart note with spicy honeyed undertones.
+              </p>
+            </div>
+
+            <div className="about-ingredient-vignette">
+              <div className="about-ingredient-vignette__img-wrapper">
+                <img 
+                  src="/categories/about_amber.png" 
+                  alt="Golden Amber" 
+                  className="about-ingredient-vignette__img" 
+                />
+              </div>
+              <h3 className="about-ingredient-vignette__title">Golden Amber</h3>
+              <span className="about-ingredient-vignette__ar">الكهرمان الدافئ</span>
+              <p className="about-ingredient-vignette__text">
+                A rich, warm, resinous accord matured in heavy vessels to anchor the base with exceptional longevity.
+                </p>
+            </div>
+
+            <div className="about-ingredient-vignette">
+              <div className="about-ingredient-vignette__img-wrapper">
+                <img 
+                  src="/categories/about_frankincense.png" 
+                  alt="Sacred Frankincense Tears" 
+                  className="about-ingredient-vignette__img" 
+                />
+              </div>
+              <h3 className="about-ingredient-vignette__title">Frankincense</h3>
+              <span className="about-ingredient-vignette__ar">اللبان المقدس</span>
+              <p className="about-ingredient-vignette__text">
+                A mystical, wood resin sourced from historic trade routes to add a divine, clean incense glow.
               </p>
             </div>
           </div>
         </section>
 
-        {/* NATURAL INGREDIENTS GRID (New Section) */}
-        <section className="about-ingredients" aria-label="Our Natural Ingredients">
-          <h2 className="about-ingredients__title">Our Ingredients</h2>
-          <p className="about-ingredients__subtitle">
-            A curated selection of the finest natural extractions sourced directly from historical Egyptian fields.
-          </p>
-          <div className="about-ingredients__grid">
-            <div className="about-ingredient-card">
-              <div className="about-ingredient-card__img-wrapper">
-                <img 
-                  src="/categories/about_jasmine.png" 
-                  alt="Nile Jasmine Flowers" 
-                  className="about-ingredient-card__img" 
-                />
-              </div>
-              <div className="about-ingredient-card__content">
-                <h3 className="about-ingredient-card__title">Nile Jasmine (ياسمين النيل)</h3>
-                <p className="about-ingredient-card__text">
-                  Hand-harvested at dawn in the Nile Delta, yielding a rich, deeply floral nectar with clean green facets.
-                </p>
-              </div>
-            </div>
-
-            <div className="about-ingredient-card">
-              <div className="about-ingredient-card__img-wrapper">
-                <img 
-                  src="/categories/about_rose.png" 
-                  alt="Egyptian Damask Rose Petals" 
-                  className="about-ingredient-card__img" 
-                />
-              </div>
-              <div className="about-ingredient-card__content">
-                <h3 className="about-ingredient-card__title">Damask Rose (الورد البلدي)</h3>
-                <p className="about-ingredient-card__text">
-                  Distilled in traditional copper vessels, offering a luxurious, velvety heart note with spicy honeyed undertones.
-                </p>
-              </div>
-            </div>
-
-            <div className="about-ingredient-card">
-              <div className="about-ingredient-card__img-wrapper">
-                <img 
-                  src="/categories/about_amber.png" 
-                  alt="Golden Amber Resins" 
-                  className="about-ingredient-card__img" 
-                />
-              </div>
-              <div className="about-ingredient-card__content">
-                <h3 className="about-ingredient-card__title">Golden Amber (الكهرمان الدافئ)</h3>
-                <p className="about-ingredient-card__text">
-                  A rich, warm, resinous accord matured in heavy vessels to anchor the base with exceptional longevity.
-                </p>
-              </div>
-            </div>
-
-            <div className="about-ingredient-card">
-              <div className="about-ingredient-card__img-wrapper">
-                <img 
-                  src="/categories/about_frankincense.png" 
-                  alt="Sacred Frankincense Tears" 
-                  className="about-ingredient-card__img" 
-                />
-              </div>
-              <div className="about-ingredient-card__content">
-                <h3 className="about-ingredient-card__title">Frankincense (اللبان المقدس)</h3>
-                <p className="about-ingredient-card__text">
-                  A mystical, lemon-bright wood resin sourced from historic trade routes to add a divine, clean incense glow.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA SECTION */}
-        <section className="about-cta" aria-label="Find Your Scent">
+        {/* 6. MINIMAL BOUTIQUE SCCNTS CTA */}
+        <section className="about-cta" aria-label="Explore collection">
           <div className="about-cta__box">
             <h2 className="about-cta__title">Find Your Signature</h2>
             <p className="about-cta__text">
