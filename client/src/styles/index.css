@@ -21,7 +21,8 @@
  * make it transparent so it overlays the full-bleed image below.
  */
 body:has(.collection-page) .store-header,
-body:has(.perfume-page) .store-header {
+body:has(.perfume-page) .store-header,
+body:has(.about-page) .store-header {
   position: fixed;
   inset-inline: 0;
   inset-block-start: 0;
@@ -30,7 +31,8 @@ body:has(.perfume-page) .store-header {
 }
 
 body:has(.collection-page) .store-header.is-scrolled,
-body:has(.perfume-page) .store-header.is-scrolled {
+body:has(.perfume-page) .store-header.is-scrolled,
+body:has(.about-page) .store-header.is-scrolled {
   background: rgba(8, 8, 8, 0.7);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -41,32 +43,44 @@ body:has(.perfume-page) .store-header.is-scrolled {
    from the landing palette instead of the store's dark-on-light ink. */
 body:has(.collection-page) .store-header .store-wordmark,
 body:has(.perfume-page) .store-header .store-wordmark,
+body:has(.about-page) .store-header .store-wordmark,
 body:has(.collection-page) .store-header .store-nav__link,
 body:has(.perfume-page) .store-header .store-nav__link,
+body:has(.about-page) .store-header .store-nav__link,
 body:has(.collection-page) .store-header .store-iconbtn,
 body:has(.perfume-page) .store-header .store-iconbtn,
+body:has(.about-page) .store-header .store-iconbtn,
 body:has(.collection-page) .store-header .store-burger,
-body:has(.perfume-page) .store-header .store-burger {
+body:has(.perfume-page) .store-header .store-burger,
+body:has(.about-page) .store-header .store-burger {
   color: #f5f0e6;
 }
 body:has(.collection-page) .store-header .store-wordmark:hover,
 body:has(.perfume-page) .store-header .store-wordmark:hover,
+body:has(.about-page) .store-header .store-wordmark:hover,
 body:has(.collection-page) .store-header .store-wordmark .dot,
 body:has(.perfume-page) .store-header .store-wordmark .dot,
+body:has(.about-page) .store-header .store-wordmark .dot,
 body:has(.collection-page) .store-header .store-nav__link:hover,
 body:has(.perfume-page) .store-header .store-nav__link:hover,
+body:has(.about-page) .store-header .store-nav__link:hover,
 body:has(.collection-page) .store-header .store-nav__link[aria-current="page"],
 body:has(.perfume-page) .store-header .store-nav__link[aria-current="page"],
+body:has(.about-page) .store-header .store-nav__link[aria-current="page"],
 body:has(.collection-page) .store-header .store-iconbtn:hover,
 body:has(.perfume-page) .store-header .store-iconbtn:hover,
+body:has(.about-page) .store-header .store-iconbtn:hover,
 body:has(.collection-page) .store-header .store-iconbtn[aria-pressed="true"],
-body:has(.perfume-page) .store-header .store-iconbtn[aria-pressed="true"] {
+body:has(.perfume-page) .store-header .store-iconbtn[aria-pressed="true"],
+body:has(.about-page) .store-header .store-iconbtn[aria-pressed="true"] {
   color: var(--gold, #d4af37);
 }
 
 /* Footer's top margin reveals the page's default white background between
    the landing's black content and the (also black) footer — close the gap. */
-body:has(.collection-page) .store-footer {
+body:has(.collection-page) .store-footer,
+body:has(.perfume-page) .store-footer,
+body:has(.about-page) .store-footer {
   margin-block-start: 0;
 }
 
@@ -77,7 +91,8 @@ body {
 
 /* Hero pages need 0 top-padding because the hero fills the full viewport */
 body:has(.collection-page),
-body:has(.perfume-page) {
+body:has(.perfume-page),
+body:has(.about-page) {
   padding-top: 0;
 }
 
