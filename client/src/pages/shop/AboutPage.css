@@ -124,37 +124,66 @@ body:has(.about-page) .store-header {
   transform: scale(1.04);
 }
 
-/* 2. PHILOSOPHY SECTION (Centered Editorial) */
+/* 2. PHILOSOPHY SECTION (Composing Legacy Split) */
 .about-philosophy {
   padding-block: 6rem;
   border-bottom: 1px solid rgba(201, 168, 76, 0.1);
 }
 
-.about-philosophy__content {
-  max-width: 48rem;
-  margin: 0 auto;
-  text-align: center;
-  padding-inline: var(--gutter);
+.about-philosophy__inner {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 5rem;
+  align-items: center;
 }
 
-.about-philosophy__title {
-  font-family: var(--font-display, "Bodoni Moda", serif);
-  font-size: clamp(1.2rem, 1rem + 1vw, 1.8rem);
+.about-philosophy__text-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.about-philosophy__section-title {
+  font-family: var(--font-headline, "Bodoni Moda", serif);
+  font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
   font-weight: 600;
-  color: #c9a84c;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  margin-block-end: 1.75rem;
-  text-align: center;
+  color: #0d0d0d;
+  margin-block-end: 2rem;
 }
 
-.about-philosophy__quote {
-  font-family: var(--font-display, "Bodoni Moda", serif);
-  font-size: clamp(1.35rem, 1.05rem + 1.2vw, 2.15rem);
-  line-height: 1.7;
-  color: #2b2b2b;
-  font-style: italic;
+.about-philosophy__text {
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-size: 1.05rem;
+  color: #444444;
+  line-height: 1.8;
   margin: 0;
+}
+
+.about-philosophy__image-col {
+  display: flex;
+  justify-content: center;
+}
+
+.about-philosophy__img-frame {
+  position: relative;
+  aspect-ratio: 0.9 / 1;
+  width: 100%;
+  max-width: 25rem;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(201, 168, 76, 0.15);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.05);
+}
+
+.about-philosophy__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.about-philosophy__img-frame:hover .about-philosophy__img {
+  transform: scale(1.04);
 }
 
 /* 3. HERITAGE SECTION (Inverted Split) */
@@ -310,6 +339,118 @@ body:has(.about-page) .store-header {
   color: #555555;
   line-height: 1.75;
   margin: 0;
+}
+
+/* Formula Badges */
+.about-pillar-card__formula {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(201, 168, 76, 0.1);
+}
+
+.about-pillar-card__formula-badge {
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #c9a84c;
+  background-color: rgba(201, 168, 76, 0.04);
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  border: 1px solid rgba(201, 168, 76, 0.1);
+}
+
+/* Full-Bleed Image Card */
+.about-pillar-card--image {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(201, 168, 76, 0.1);
+  min-height: 18rem;
+  display: flex;
+  align-items: flex-end;
+}
+
+.about-pillar-card__bg-img {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: transform 2s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1;
+}
+
+.about-pillar-card--image:hover .about-pillar-card__bg-img {
+  transform: scale(1.05);
+}
+
+.about-pillar-card__image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(13, 10, 7, 0.85) 25%, rgba(13, 10, 7, 0.35) 100%);
+  z-index: 2;
+}
+
+.about-pillar-card__image-content {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+}
+
+.about-pillar-card--image .about-pillar-card__title {
+  color: #f5f0e6;
+}
+
+.about-pillar-card--image .about-pillar-card__text {
+  color: #ede0c8;
+}
+
+.about-pillar-card--image .about-pillar-card__icon-wrapper {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: #c9a84c;
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  margin-bottom: 1.25rem;
+}
+
+.about-pillar-card--image:hover .about-pillar-card__icon-wrapper {
+  background-color: #c9a84c;
+  color: #ffffff;
+  border-color: #c9a84c;
+}
+
+/* Sourcing Ingredient List */
+.about-pillar-card__list {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  border-top: 1px solid rgba(201, 168, 76, 0.1);
+  padding-top: 1.25rem;
+}
+
+.about-pillar-card__list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #666666;
+}
+
+.about-pillar-card__list li span {
+  font-style: italic;
+}
+
+.about-pillar-card__list-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: #c9a84c;
 }
 
 .about-pillars__stack {
@@ -492,6 +633,19 @@ body:has(.about-page) .store-header {
     bottom: 2.5rem;
   }
   
+  .about-philosophy__inner {
+    grid-template-columns: 1fr;
+    gap: 3.5rem;
+    text-align: center;
+  }
+  .about-philosophy__image-col {
+    order: 2;
+  }
+  .about-philosophy__text-col {
+    order: 1;
+    align-items: center;
+  }
+
   .about-heritage__inner {
     grid-template-columns: 1fr;
     gap: 3.5rem;

@@ -24,29 +24,40 @@ export default function AboutPage() {
       </section>
 
       <div className="store-container">
-        {/* 2. CENTERED EDITORIAL MANIFESTO (With Framer Motion Scroll Reveal) */}
+        {/* 2. COMPOSING LEGACY SPLIT SECTION */}
         <section className="about-philosophy" aria-label="Our Philosophy">
-          <div className="about-philosophy__content">
-            <motion.h2 
-              className="about-philosophy__title"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.25 }}
-              transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
-            >
-              Composing Legacy
-            </motion.h2>
-            <motion.p 
-              className="about-philosophy__quote"
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.25 }}
-              transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            >
-              TIBR (تِبْر) translates to "gold dust" or "raw gold before it is shaped" in classical Arabic. 
-              Like raw gold, we believe scent is one of nature’s most precious raw treasures, awaiting 
-              the touch of alchemy to be shaped into art.
-            </motion.p>
+          <div className="about-philosophy__inner">
+            <div className="about-philosophy__text-col">
+              <motion.h2 
+                className="about-philosophy__section-title"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.25 }}
+                transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
+              >
+                Composing Legacy
+              </motion.h2>
+              <motion.p 
+                className="about-philosophy__text"
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.25 }}
+                transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              >
+                TIBR (تِبْر) translates to "gold dust" or "raw gold before it is shaped" in classical Arabic. 
+                Like raw gold, we believe scent is one of nature’s most precious raw treasures, awaiting 
+                the touch of alchemy to be shaped into art.
+              </motion.p>
+            </div>
+            <div className="about-philosophy__image-col">
+              <div className="about-philosophy__img-frame">
+                <img 
+                  src="/categories/about_manifesto.png" 
+                  alt="Tibr Amber bottle on volcanic gold sand" 
+                  className="about-philosophy__img" 
+                />
+              </div>
+            </div>
           </div>
         </section>
 
@@ -56,24 +67,44 @@ export default function AboutPage() {
             <div className="about-heritage__image-col">
               <div className="about-heritage__img-frame">
                 <img 
-                  src="/categories/about_manifesto.png" 
-                  alt="Tibr Amber bottle on volcanic gold sand" 
+                  src="/categories/about_heritage.png" 
+                  alt="Raw golden amber resins and frankincense tears" 
                   className="about-heritage__img" 
                 />
               </div>
             </div>
             <div className="about-heritage__text-col">
-              <h2 className="about-heritage__section-title">Sacred Roots</h2>
-              <p className="about-heritage__text">
+              <motion.h2 
+                className="about-heritage__section-title"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.25 }}
+                transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
+              >
+                Sacred Roots
+              </motion.h2>
+              <motion.p 
+                className="about-heritage__text"
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.25 }}
+                transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              >
                 For thousands of years, scent in Egypt was a sacred bridge between the physical and the spiritual. 
                 The legendary temple recipes of <em>Kyphi</em>—blended from frankincense, myrrh, resins, and honey—were 
                 aged in heavy stone jars to produce scents of unmatched depth and longevity.
-              </p>
-              <p className="about-heritage__text">
+              </motion.p>
+              <motion.p 
+                className="about-heritage__text"
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.25 }}
+                transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              >
                 We honor this lineage by researching ancient extraction methodologies and classic structures. 
                 We carry this history forward into contemporary extraits de parfum, offering sophisticated modern formulations 
                 that retain the rich, heavy base notes that define classical Middle Eastern perfumery.
-              </p>
+              </motion.p>
             </div>
           </div>
         </section>
@@ -94,29 +125,44 @@ export default function AboutPage() {
                   mature, and settle to absolute perfection. We combine traditional copper vessel distillation 
                   with state-of-the-art modern formulation to create scents that wear beautifully for hours on the skin.
                 </p>
+                <div className="about-pillar-card__formula">
+                  <span className="about-pillar-card__formula-badge">Batch: 01-Cairo</span>
+                  <span className="about-pillar-card__formula-badge">Concentration: 30% Extrait</span>
+                </div>
               </div>
             </div>
 
             {/* Stacked Column of Single Cards */}
             <div className="about-pillars__stack">
-              <div className="about-pillar-card">
-                <div className="about-pillar-card__icon-wrapper">
-                  <Sparkles />
+              {/* Full-Bleed Image Card */}
+              <div className="about-pillar-card about-pillar-card--image">
+                <div className="about-pillar-card__bg-img" style={{ backgroundImage: "url('/categories/about_rose.png')" }} />
+                <div className="about-pillar-card__image-overlay" />
+                <div className="about-pillar-card__image-content">
+                  <div className="about-pillar-card__icon-wrapper">
+                    <Sparkles />
+                  </div>
+                  <h3 className="about-pillar-card__title">Nostalgia (الحنين)</h3>
+                  <p className="about-pillar-card__text">
+                    Reminiscent of ancient gardens, coastal Alexandria, and the warm, spice-laden air of Cairo's old markets.
+                  </p>
                 </div>
-                <h3 className="about-pillar-card__title">Nostalgia (الحنين)</h3>
-                <p className="about-pillar-card__text">
-                  Reminiscent of ancient gardens, coastal Alexandria, and the warm, spice-laden air of Cairo's old markets.
-                </p>
               </div>
 
+              {/* Sourcing card with bullet details */}
               <div className="about-pillar-card">
                 <div className="about-pillar-card__icon-wrapper">
                   <Compass />
                 </div>
                 <h3 className="about-pillar-card__title">Sourcing (المصدر)</h3>
                 <p className="about-pillar-card__text">
-                  We hunt the finest natural materials: Nile Delta jasmine, damask rose, and Sinai labdanum.
+                  We hunt the finest natural materials directly from historical Egyptian fields.
                 </p>
+                <ul className="about-pillar-card__list">
+                  <li><span>Nile Delta Jasmine</span> <span className="about-pillar-card__list-dot" /></li>
+                  <li><span>Damask Rose</span> <span className="about-pillar-card__list-dot" /></li>
+                  <li><span>Sinai Labdanum</span> <span className="about-pillar-card__list-dot" /></li>
+                </ul>
               </div>
             </div>
           </div>
