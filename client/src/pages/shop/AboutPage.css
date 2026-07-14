@@ -124,17 +124,16 @@ body:has(.about-page) .store-header {
   transform: scale(1.04);
 }
 
-/* 2. PHILOSOPHY SECTION (Centered Editorial) */
+/* 2. PHILOSOPHY SECTION (Centered Editorial / Marquee) */
 .about-philosophy {
   padding-block: 6rem;
   border-bottom: 1px solid rgba(201, 168, 76, 0.1);
-}
-
-.about-philosophy__content {
-  max-width: 48rem;
-  margin: 0 auto;
-  text-align: center;
-  padding-inline: var(--gutter);
+  overflow: hidden;
+  width: 100vw;
+  position: relative;
+  /* Break out of container to go full-viewport width */
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
 }
 
 .about-philosophy__title {
@@ -144,16 +143,49 @@ body:has(.about-page) .store-header {
   color: #c9a84c;
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  margin-block-end: 1.5rem;
+  margin-block-end: 3rem;
+  text-align: center;
+}
+
+.about-philosophy__marquee-wrapper {
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+  display: flex;
+  white-space: nowrap;
+}
+
+.about-philosophy__marquee-content {
+  display: flex;
+  animation: aboutMarquee 35s linear infinite;
+  width: max-content;
+  will-change: transform;
+}
+
+/* Pause the scrolling animation when hovered */
+.about-philosophy__marquee-wrapper:hover .about-philosophy__marquee-content {
+  animation-play-state: paused;
 }
 
 .about-philosophy__quote {
   font-family: var(--font-display, "Bodoni Moda", serif);
-  font-size: clamp(1.35rem, 1rem + 1vw, 1.95rem);
-  line-height: 1.6;
+  font-size: clamp(1.6rem, 1.2rem + 1.8vw, 2.8rem);
+  line-height: 1.4;
   color: #0d0d0d;
   font-style: italic;
   margin: 0;
+  display: inline-block;
+  padding-right: 6rem; /* Spacing between loop repetitions */
+  flex-shrink: 0;
+}
+
+@keyframes aboutMarquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
 }
 
 /* 3. HERITAGE SECTION (Inverted Split) */
