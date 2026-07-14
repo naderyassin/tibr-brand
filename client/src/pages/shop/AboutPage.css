@@ -124,7 +124,7 @@ body:has(.about-page) .store-header {
   transform: scale(1.04);
 }
 
-/* 2. PHILOSOPHY SECTION (Centered Editorial Reveal) */
+/* 2. PHILOSOPHY SECTION (Centered Editorial) */
 .about-philosophy {
   padding-block: 6rem;
   border-bottom: 1px solid rgba(201, 168, 76, 0.1);
@@ -146,12 +146,6 @@ body:has(.about-page) .store-header {
   letter-spacing: 0.15em;
   margin-block-end: 1.75rem;
   text-align: center;
-  
-  /* Reveal transition */
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 1.4s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 1.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .about-philosophy__quote {
@@ -161,23 +155,6 @@ body:has(.about-page) .store-header {
   color: #2b2b2b;
   font-style: italic;
   margin: 0;
-  
-  /* Reveal transition with stagger delay */
-  opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 1.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s,
-              transform 1.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
-}
-
-/* Visibility triggers */
-.about-philosophy.is-visible .about-philosophy__title {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.about-philosophy.is-visible .about-philosophy__quote {
-  opacity: 1;
-  transform: translateY(0);
 }
 
 /* 3. HERITAGE SECTION (Inverted Split) */
