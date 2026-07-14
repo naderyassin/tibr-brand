@@ -1,8 +1,30 @@
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Sparkles, Compass, Fingerprint } from "lucide-react";
 import "./AboutPage.css";
 
 export default function AboutPage() {
+  const philosophyRef = useRef(null);
+  const [philosophyVisible, setPhilosophyVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setPhilosophyVisible(true);
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.15 }
+    );
+
+    if (philosophyRef.current) {
+      observer.observe(philosophyRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="about-page">
       {/* 1. FULL-SCREEN IMAGE HERO */}
@@ -23,18 +45,19 @@ export default function AboutPage() {
       </section>
 
       <div className="store-container">
-        {/* 2. CENTERED EDITORIAL MANIFESTO (Moving text marquee) */}
-        <section className="about-philosophy" aria-label="Our Philosophy">
-          <h2 className="about-philosophy__title">Composing Legacy</h2>
-          <div className="about-philosophy__marquee-wrapper">
-            <div className="about-philosophy__marquee-content">
-              <span className="about-philosophy__quote">
-                TIBR (تِبْر) translates to "gold dust" or "raw gold before it is shaped" in classical Arabic. Like raw gold, we believe scent is one of nature’s most precious raw treasures, awaiting the touch of alchemy to be shaped into art. &mdash;&nbsp;
-              </span>
-              <span className="about-philosophy__quote" aria-hidden="true">
-                TIBR (تِبْر) translates to "gold dust" or "raw gold before it is shaped" in classical Arabic. Like raw gold, we believe scent is one of nature’s most precious raw treasures, awaiting the touch of alchemy to be shaped into art. &mdash;&nbsp;
-              </span>
-            </div>
+        {/* 2. CENTERED EDITORIAL MANIFESTO (With Scroll Reveal) */}
+        <section 
+          ref={philosophyRef}
+          className={`about-philosophy ${philosophyVisible ? "is-visible" : ""}`} 
+          aria-label="Our Philosophy"
+        >
+          <div className="about-philosophy__content">
+            <h2 className="about-philosophy__title">Composing Legacy</h2>
+            <p className="about-philosophy__quote">
+              TIBR (تِبْر) translates to "gold dust" or "raw gold before it is shaped" in classical Arabic. 
+              Like raw gold, we believe scent is one of nature’s most precious raw treasures, awaiting 
+              the touch of alchemy to be shaped into art.
+            </p>
           </div>
         </section>
 

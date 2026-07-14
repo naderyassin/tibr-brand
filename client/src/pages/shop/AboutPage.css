@@ -124,16 +124,17 @@ body:has(.about-page) .store-header {
   transform: scale(1.04);
 }
 
-/* 2. PHILOSOPHY SECTION (Centered Editorial / Marquee) */
+/* 2. PHILOSOPHY SECTION (Centered Editorial Reveal) */
 .about-philosophy {
   padding-block: 6rem;
   border-bottom: 1px solid rgba(201, 168, 76, 0.1);
-  overflow: hidden;
-  width: 100vw;
-  position: relative;
-  /* Break out of container to go full-viewport width */
-  margin-left: calc(-50vw + 50%);
-  margin-right: calc(-50vw + 50%);
+}
+
+.about-philosophy__content {
+  max-width: 48rem;
+  margin: 0 auto;
+  text-align: center;
+  padding-inline: var(--gutter);
 }
 
 .about-philosophy__title {
@@ -143,49 +144,40 @@ body:has(.about-page) .store-header {
   color: #c9a84c;
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  margin-block-end: 3rem;
+  margin-block-end: 1.75rem;
   text-align: center;
-}
-
-.about-philosophy__marquee-wrapper {
-  overflow: hidden;
-  width: 100%;
-  position: relative;
-  display: flex;
-  white-space: nowrap;
-}
-
-.about-philosophy__marquee-content {
-  display: flex;
-  animation: aboutMarquee 35s linear infinite;
-  width: max-content;
-  will-change: transform;
-}
-
-/* Pause the scrolling animation when hovered */
-.about-philosophy__marquee-wrapper:hover .about-philosophy__marquee-content {
-  animation-play-state: paused;
+  
+  /* Reveal transition */
+  opacity: 0;
+  transform: translateY(15px);
+  transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .about-philosophy__quote {
   font-family: var(--font-display, "Bodoni Moda", serif);
-  font-size: clamp(1.6rem, 1.2rem + 1.8vw, 2.8rem);
-  line-height: 1.4;
-  color: #0d0d0d;
+  font-size: clamp(1.35rem, 1.05rem + 1.2vw, 2.15rem);
+  line-height: 1.7;
+  color: #2b2b2b;
   font-style: italic;
   margin: 0;
-  display: inline-block;
-  padding-right: 6rem; /* Spacing between loop repetitions */
-  flex-shrink: 0;
+  
+  /* Reveal transition with stagger delay */
+  opacity: 0;
+  transform: translateY(25px);
+  transition: opacity 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.25s,
+              transform 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.25s;
 }
 
-@keyframes aboutMarquee {
-  0% {
-    transform: translate3d(0, 0, 0);
-  }
-  100% {
-    transform: translate3d(-50%, 0, 0);
-  }
+/* Visibility triggers */
+.about-philosophy.is-visible .about-philosophy__title {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.about-philosophy.is-visible .about-philosophy__quote {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* 3. HERITAGE SECTION (Inverted Split) */
