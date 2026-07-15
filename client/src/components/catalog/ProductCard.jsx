@@ -130,7 +130,7 @@ export default function ProductCard({ product, index = 0 }) {
 
           <div className="product-new__action-pill">
             <span className="product-new__price-text">
-              From EGP {Number(fromPrice).toLocaleString()}
+              EGP {Number(fromPrice).toLocaleString()}
             </span>
             <span className="product-new__arrow-wrap">
               <svg className="product-new__arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
