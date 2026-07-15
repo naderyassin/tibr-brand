@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/stores/auth";
@@ -14,6 +15,16 @@ export default function AdminCustomers() {
   });
 
   const customers = data?.data ?? [];
+  const [search, setSearch] = useState("");
+
+  const visibleCustomers = customers.filter((c) => {
+    if (!search) return true;
+    const q = search.toLowerCase();
+    return (
+      c.name?.toLowerCase().includes(q) ||
+      c.phone?.includes(q)
+    );
+  });
 
   return (
     <div className="admin-content">
@@ -46,6 +57,31 @@ export default function AdminCustomers() {
       )}
 
       <div className="admin-card">
+        <div className="admin-search-toolbar">
+          <div className="admin-search">
+            <svg className="admin-search__icon" width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+              <circle cx="6.5" cy="6.5" r="4" stroke="currentColor" strokeWidth="1.4"/>
+              <path d="M9.5 9.5L12.5 12.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+            </svg>
+            <input
+              className="admin-search__input"
+              type="search"
+              placeholder="Search by name or phone…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            {search && (
+              <button
+                className="admin-search__clear"
+                type="button"
+                onClick={() => setSearch("")}
+                aria-label="Clear search"
+              >
+                ×
+              </button>
+            )}
+          </div>
+        </div>
         {isLoading ? (
           <div className="table-wrap">
             <table className="table" aria-label="Customers loading">
@@ -91,7 +127,13 @@ export default function AdminCustomers() {
                 </tr>
               </thead>
               <tbody>
-                {customers.map((c) => (
+                {visibleCustomers.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} style={{ textAlign: "center", padding: "var(--sp-6)", color: "var(--muted)" }}>
+                      No customers match your search.
+                    </td>
+                  </tr>
+                ) : visibleCustomers.map((c) => (
                   <tr
                     key={c.id}
                     className="admin-row-link"
