@@ -210,7 +210,7 @@ html.lenis, html.lenis body {
   border-bottom: 1px solid var(--line);
 }
 .shop-header__title {
-  font-family: var(--font-display);
+  font-family: 'Jost', var(--font-sans), sans-serif;
   font-size: clamp(2rem, 1.5rem + 2vw, 2.5rem);
   font-weight: var(--fw-semibold);
 }

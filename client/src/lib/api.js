@@ -54,6 +54,11 @@ export const deleteAddress = (id, token) => api.delete(`/api/profile/addresses/$
 export const setDefaultAddress = (id, token) =>
   api.put(`/api/profile/addresses/${id}/default`, {}, token);
 
+// Wishlist
+export const getWishlist = (token) => api.get("/api/wishlist", token);
+export const addToWishlist = (productId, token) => api.post(`/api/wishlist/${productId}`, {}, token);
+export const removeFromWishlist = (productId, token) => api.delete(`/api/wishlist/${productId}`, token);
+
 // Orders
 export const getOrders = (token) => api.get("/api/orders", token);
 export const checkout = (body, token) => api.post("/api/checkout", body, token);

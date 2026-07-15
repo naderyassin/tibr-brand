@@ -19,24 +19,24 @@ const sub = (vocab, slug, path) => {
 export const SHOP_NAV = [
   {
     key: "perfumes",
-    label: "Fragrances — العطور",
+    label: "Fragrances",
     path: "/shop/perfumes",
     filters: { type: "perfume" },
     groups: [
       {
         title: "Category",
         items: [
-          { slug: "men", path: "/shop/perfumes?audience=men", label: "Men Fragrances — عطور رجالية" },
-          { slug: "women", path: "/shop/perfumes?audience=women", label: "Women Fragrances — عطور نسائية" },
-          { slug: "unisex", path: "/shop/perfumes?audience=unisex", label: "Unisex Fragrances — عطور للجنسين" },
-          { slug: "gulf", path: "/shop/perfumes?classification=arabian", label: "Gulf Fragrances — عطور خليجية" },
+          { slug: "men", path: "/shop/perfumes?audience=men", label: "Men Fragrances" },
+          { slug: "women", path: "/shop/perfumes?audience=women", label: "Women Fragrances" },
+          { slug: "unisex", path: "/shop/perfumes?audience=unisex", label: "Unisex Fragrances" },
+          { slug: "gulf", path: "/shop/perfumes?classification=arabian", label: "Gulf Fragrances" },
         ],
       },
     ],
   },
   {
     key: "home",
-    label: "Home & Ambience — المنزل",
+    label: "Home & Ambience",
     path: "/shop/home-fragrance",
     filters: {},
     groups: [
@@ -52,7 +52,7 @@ export const SHOP_NAV = [
   },
   {
     key: "sets",
-    label: "Sets & Samples — المجموعات والعينات",
+    label: "Sets & Samples",
     path: "/shop/sets",
     filters: {},
     groups: [
@@ -65,8 +65,8 @@ export const SHOP_NAV = [
       },
     ],
   },
-  { key: "brands", label: "Shop by Brand — تسوق حسب الماركة", path: "/shop/brands" },
-  { key: "new-arrivals", label: "New Arrivals — وصلنا حديثاً", path: "/shop/new-arrivals" },
+  { key: "brands", label: "Shop by Brand", path: "/shop/brands" },
+  { key: "new-arrivals", label: "New Arrivals", path: "/shop/new-arrivals" },
 ];
 
 /**

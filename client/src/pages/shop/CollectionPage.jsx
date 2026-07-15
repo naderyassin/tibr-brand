@@ -35,6 +35,7 @@ const FILTER_KEYS = [
 export default function CollectionPage() {
   const [params, setParams] = useSearchParams();
   const { pathname } = useLocation();
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState({
     audience: true,
     brand: true,
@@ -120,13 +121,45 @@ export default function CollectionPage() {
 
   const activeCount = FILTER_KEYS.filter((k) => params.get(k)).length;
 
+  // Removable chips for the toolbar — one per active URL filter, labelled from
+  // the taxonomy (or the brand list, which lives in facets rather than a vocab).
+  const activeChips = useMemo(() => {
+    const chips = [];
+    for (const key of FILTER_KEYS) {
+      const value = params.get(key);
+      if (!value) continue;
+      if (key === "brand") {
+        const b = (facets.brand || []).find((x) => x.slug === value);
+        chips.push({ key, label: b?.name_en || value });
+      } else if (key === "q") {
+        chips.push({ key, label: `“${value}”` });
+      } else {
+        const group = FILTER_GROUPS.find((g) => g.key === key);
+        chips.push({ key, label: group ? label(group.vocab, value) : value });
+      }
+    }
+    return chips;
+  }, [params, facets]);
+
+  const removeFilter = (key) => {
+    const next = new URLSearchParams(params);
+    next.delete(key);
+    setParams(next, { replace: true });
+  };
+
+  // Lock the page behind the drawer while it's open.
+  useEffect(() => {
+    document.body.classList.toggle("drawer-open", filtersOpen);
+    return () => document.body.classList.remove("drawer-open");
+  }, [filtersOpen]);
+
   const displayTitle = useMemo(() => {
     const audience = params.get("audience");
     const classification = params.get("classification");
-    if (audience === "men") return "Men Fragrances — عطور رجالية";
-    if (audience === "women") return "Women Fragrances — عطور نسائية";
-    if (audience === "unisex") return "Unisex Fragrances — عطور للجنسين";
-    if (classification === "arabian") return "Gulf Fragrances — عطور خليجية";
+    if (audience === "men") return "Men Fragrances";
+    if (audience === "women") return "Women Fragrances";
+    if (audience === "unisex") return "Unisex Fragrances";
+    if (classification === "arabian") return "Gulf Fragrances";
     return preset.title;
   }, [preset, params]);
 
@@ -140,7 +173,39 @@ export default function CollectionPage() {
 
       <header className="shop-header">
         <h1 className="shop-header__title">{displayTitle}</h1>
-        <div className="shop-header__sort">
+      </header>
+
+      <div className="collection-toolbar">
+        <button
+          type="button"
+          className="filter-trigger"
+          onClick={() => setFiltersOpen(true)}
+          aria-haspopup="dialog"
+          aria-expanded={filtersOpen}
+        >
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
+            <path d="M3 6h18M6 12h12M10 18h4" />
+          </svg>
+          <span>Filter{activeCount > 0 ? ` (${activeCount})` : ""}</span>
+        </button>
+
+        <span className="collection-toolbar__count" role="status">
+          {isLoading ? "…" : `${displayedProducts.length} product${displayedProducts.length === 1 ? "" : "s"}`}
+        </span>
+
+        {activeChips.length > 0 && (
+          <div className="collection-toolbar__chips">
+            {activeChips.map((c) => (
+              <button key={c.key} type="button" className="chip" onClick={() => removeFilter(c.key)}>
+                {c.label}
+                <span className="chip__x" aria-hidden="true">×</span>
+              </button>
+            ))}
+            <button type="button" className="chip chip--clear" onClick={clearAll}>Clear all</button>
+          </div>
+        )}
+
+        <div className="collection-toolbar__sort">
           <label htmlFor="sort-select" className="sort-label">Sort by:</label>
           <select
             id="sort-select"
@@ -156,10 +221,25 @@ export default function CollectionPage() {
             {SORT_OPTIONS.map((s) => <option key={s.slug} value={s.slug}>{s.label}</option>)}
           </select>
         </div>
-      </header>
+      </div>
 
-      <div className="collection__body">
-        <aside className="filter-rail" aria-label="Filters">
+      <div className={`filter-drawer${filtersOpen ? " is-open" : ""}`}>
+        <div className="filter-drawer__scrim" onClick={() => setFiltersOpen(false)} aria-hidden="true" />
+        <aside className="filter-drawer__panel" role="dialog" aria-modal="true" aria-label="Filters">
+          <div className="filter-drawer__head">
+            <h2 className="filter-drawer__title">Filters</h2>
+            <button
+              type="button"
+              className="filter-drawer__close"
+              onClick={() => setFiltersOpen(false)}
+              aria-label="Close filters"
+            >
+              ×
+            </button>
+          </div>
+
+          <div className="filter-drawer__scroll" data-lenis-prevent>
+          <div className="filter-rail" aria-label="Filters">
           <div className="avail">
             <span className="avail__label">Availability</span>
             <button
@@ -322,12 +402,21 @@ export default function CollectionPage() {
               </div>
             )}
           </div>
+          </div>
+          </div>
+          <div className="filter-drawer__foot">
+            <button
+              type="button"
+              className="filter-drawer__apply"
+              onClick={() => setFiltersOpen(false)}
+            >
+              {isLoading ? "View results" : `View ${displayedProducts.length} result${displayedProducts.length === 1 ? "" : "s"}`}
+            </button>
+          </div>
         </aside>
+      </div>
 
-        <div className="collection__results">
-          <p className="collection__count" role="status">
-            {isLoading ? "Loading…" : `${displayedProducts.length} product${displayedProducts.length === 1 ? "" : "s"}`}
-          </p>
+      <div className="collection__results collection__results--full">
 
           {isLoading ? (
             <div className="catalog-grid skeleton-grid" aria-hidden="true">
@@ -335,8 +424,10 @@ export default function CollectionPage() {
             </div>
           ) : displayedProducts.length === 0 ? (
             <motion.div className="catalog-empty is-shown" role="status" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <svg className="catalog-empty__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true">
-                <circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" strokeLinecap="round" /><path d="M8.5 11h5" strokeLinecap="round" />
+              <svg className="catalog-empty__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="6" />
+                <path d="M21 21l-4.3-4.3" />
+                <path d="M3 3l18 18" />
               </svg>
               <h2 className="catalog-empty__title">Nothing matches those filters</h2>
               <p className="catalog-empty__text">Try removing one, or clear them all.</p>
@@ -352,7 +443,6 @@ export default function CollectionPage() {
             </section>
           )}
         </div>
-      </div>
     </div>
   );
 }

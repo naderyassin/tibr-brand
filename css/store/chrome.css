@@ -100,9 +100,9 @@
               background var(--dur) var(--ease-out),
               transform var(--dur) var(--ease-out);
 }
-.store-iconbtn:hover { color: var(--gold); transform: translateY(-2px); }
+.store-iconbtn:hover { color: var(--ink); transform: translateY(-2px); }
 .store-iconbtn svg { inline-size: 1.25rem; block-size: 1.25rem; }
-.store-iconbtn[aria-pressed="true"] { color: var(--gold); }
+.store-iconbtn[aria-pressed="true"] { color: var(--ink); }
 
 /* Cart count badge */
 .store-cart-count {
@@ -118,8 +118,8 @@
   font-size: 0.65rem;
   font-weight: var(--fw-bold);
   line-height: 1;
-  color: var(--on-gold);
-  background: var(--gold);
+  color: var(--bg);
+  background: var(--ink);
   border-radius: var(--r-xs);
   transform: scale(0);
   transition: transform var(--dur) var(--ease-out);

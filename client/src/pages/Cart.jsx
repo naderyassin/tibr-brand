@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/stores/cart";
+import { useAuth } from "@/stores/auth";
 
 const TrashIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -17,8 +18,8 @@ const PlusIcon = () => (
     <path d="M12 5v14M5 12h14" />
   </svg>
 );
-const BagIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+const BagIcon = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
     <path d="M8 8V6a4 4 0 0 1 8 0v2" /><rect width="16" height="14" x="4" y="8" rx="2" />
   </svg>
 );
@@ -27,6 +28,7 @@ export default function Cart() {
   const items = useCart((s) => s.items);
   const removeItem = useCart((s) => s.removeItem);
   const updateQty = useCart((s) => s.updateQty);
+  const token = useAuth((s) => s.token);
   const navigate = useNavigate();
 
   const subtotal = items.reduce(
@@ -37,19 +39,28 @@ export default function Cart() {
   if (items.length === 0) {
     return (
       <div className="store-container">
-        <header className="page-head">
-          <h1 className="page-head__title">Your cart</h1>
-        </header>
+        <div className="cart-breadcrumbs">
+          <Link to="/">Home</Link> &gt; <span>Your Shopping Cart</span>
+        </div>
         <motion.div
-          className="rb-empty"
+          className="cart-empty-panel"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
-          <BagIcon className="rb-empty__icon" />
-          <h2 className="rb-empty__title">Your cart is empty</h2>
-          <p className="rb-empty__text">Add something beautiful to get started.</p>
-          <Link className="btn btn--primary" to="/shop/perfumes">Browse the store</Link>
+          <h1 className="cart-empty-panel__heading">why your cart empty let's start shopping</h1>
+          <p className="cart-empty-panel__sub">Your cart is empty</p>
+          <Link className="btn-pill" to="/shop/perfumes">
+            Continue shopping <span className="btn-pill__arrow">&gt;</span>
+          </Link>
+          {!token && (
+            <div className="cart-empty-panel__login">
+              <h3 className="cart-empty-panel__login-title">Have an account?</h3>
+               <p className="cart-empty-panel__login-sub">
+                <Link to="/login">Log in</Link> to check out faster.
+              </p>
+            </div>
+          )}
         </motion.div>
       </div>
     );

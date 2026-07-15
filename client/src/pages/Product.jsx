@@ -4,6 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { getProduct, getProductReviews } from "@/lib/api";
 import { useCart } from "@/stores/cart";
+import { useAuth } from "@/stores/auth";
+import { useWishlist } from "@/stores/wishlist";
 import { useToast } from "@/components/ui/Toast";
 
 const HeartIcon = () => (
@@ -25,6 +27,9 @@ export default function Product() {
   const id = params.get("id");
   const navigate = useNavigate();
   const addItem = useCart((s) => s.addItem);
+  const token = useAuth((s) => s.token);
+  const savedIds = useWishlist((s) => s.ids);
+  const toggleWishlist = useWishlist((s) => s.toggle);
   const toast = useToast();
   const [selectedVariantId, setSelectedVariantId] = useState(null);
   const [activeImgIndex, setActiveImgIndex] = useState(0);
@@ -90,12 +95,28 @@ export default function Product() {
   const soldOut = activeVariant ? activeVariant.quantity < 1 : false;
 
   const catLabel = p.brands?.name_en || "TIBR";
+  const catPath = p.brands?.slug ? `/shop/perfumes?brand=${p.brands.slug}` : "/shop/perfumes";
 
   const images = p.images?.length ? p.images : (p.image ? [p.image] : []);
 
   const handleAddToCart = () => {
     addItem(p, activeVariant);
     toast(`<strong>${name}</strong>${activeVariant ? ` (${activeVariant.size_label})` : ""} added to cart`);
+  };
+
+  const isWishlisted = savedIds.has(p.id);
+  const handleToggleWishlist = async () => {
+    if (!token) {
+      toast("Sign in to save items to your wishlist");
+      navigate("/login");
+      return;
+    }
+    try {
+      const nowSaved = await toggleWishlist(p, token);
+      toast(nowSaved ? "Added to wishlist" : "Removed from wishlist");
+    } catch {
+      toast("Couldn't update your wishlist. Try again.");
+    }
   };
 
   const containerVariants = {
@@ -137,7 +158,13 @@ export default function Product() {
           ) : (
             <motion.div variants={itemVariants} className="pdp__gallery-item skeleton" />
           )}
-          <button className="pdp__wish" type="button" aria-pressed="false" aria-label="Add to wishlist">
+          <button
+            className="pdp__wish"
+            type="button"
+            aria-pressed={isWishlisted}
+            aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+            onClick={handleToggleWishlist}
+          >
             <HeartIcon />
           </button>
         </div>
@@ -161,7 +188,7 @@ export default function Product() {
                 {variants.map((v) => (
                   <label
                     key={v.id}
-                    className={`size-chip${v.quantity < 1 ? " is-sold-out" : ""}`}
+                    className={`size-chip${v.quantity < 1 ? " is-sold-out" : ""}${activeVariant?.id === v.id ? " is-selected" : ""}`}
                     title={v.quantity < 1 ? "Sold out" : `${v.price} EGP`}
                   >
                     <input

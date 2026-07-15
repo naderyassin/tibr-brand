@@ -109,63 +109,6 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* 4. HORIZONTAL PILLARS ROW (3 Pillars + 1 Image Card) */}
-        <section className="about-pillars" aria-label="Sourcing and Craftsmanship">
-          <h2 className="about-pillars__title">Sourcing & Craftsmanship</h2>
-          <div className="about-pillars__grid">
-            {/* Card 1: Alchemy */}
-            <div className="about-pillar-card">
-              <div className="about-pillar-card__icon-wrapper">
-                <Fingerprint />
-              </div>
-              <h3 className="about-pillar-card__title">Alchemy (الحِرفة)</h3>
-              <p className="about-pillar-card__text">
-                No shortcuts. Every extrait is blended in micro-batches, allowing the natural oils to age, 
-                mature, and settle to absolute perfection.
-              </p>
-              <div className="about-pillar-card__formula">
-                <span className="about-pillar-card__formula-badge">30% Extrait</span>
-              </div>
-            </div>
-
-            {/* Card 2: Nostalgia */}
-            <div className="about-pillar-card">
-              <div className="about-pillar-card__icon-wrapper">
-                <Sparkles />
-              </div>
-              <h3 className="about-pillar-card__title">Nostalgia (الحنين)</h3>
-              <p className="about-pillar-card__text">
-                Reminiscent of ancient gardens, coastal Alexandria, and the warm, spice-laden air of Cairo's old markets.
-              </p>
-            </div>
-
-            {/* Card 3: Sourcing */}
-            <div className="about-pillar-card">
-              <div className="about-pillar-card__icon-wrapper">
-                <Compass />
-              </div>
-              <h3 className="about-pillar-card__title">Sourcing (المصدر)</h3>
-              <p className="about-pillar-card__text">
-                We hunt the finest natural materials directly from historical fields.
-              </p>
-              <ul className="about-pillar-card__list">
-                <li><span>Nile Delta Jasmine</span> <span className="about-pillar-card__list-dot" /></li>
-                <li><span>Damask Rose</span> <span className="about-pillar-card__list-dot" /></li>
-                <li><span>Sinai Labdanum</span> <span className="about-pillar-card__list-dot" /></li>
-              </ul>
-            </div>
-
-            {/* Card 4: Brand/Product Image Card */}
-            <div className="about-pillar-image-card">
-              <img 
-                src="/categories/about_manifesto.png" 
-                alt="Tibr gold oil bottle" 
-                className="about-pillar-image-card__img" 
-              />
-              <div className="about-pillar-image-card__overlay" />
-            </div>
-          </div>
-        </section>
 
         {/* 5. BOTANICAL INGREDIENTS VIGNETTES (Luxury Apothecary Style) */}
         <section className="about-ingredients" aria-label="Ingredients Grid">

@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useAuth } from "@/stores/auth";
+import { useWishlist } from "@/stores/wishlist";
 import App from "./App";
 import "@/styles/index.css";
 
@@ -30,10 +31,18 @@ const queryClient = new QueryClient({
 
 function Root() {
   const initAuth = useAuth((s) => s.init);
+  const token = useAuth((s) => s.token);
+  const loading = useAuth((s) => s.loading);
+  const loadWishlist = useWishlist((s) => s.load);
 
   React.useEffect(() => {
     initAuth();
   }, [initAuth]);
+
+  // Re-sync whenever the session resolves or changes (sign in / sign out).
+  React.useEffect(() => {
+    if (!loading) loadWishlist(token);
+  }, [token, loading, loadWishlist]);
 
   React.useEffect(() => {
     // Initialize Lenis smooth scroll

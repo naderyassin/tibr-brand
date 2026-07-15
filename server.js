@@ -1810,6 +1810,51 @@ app.put("/api/profile/addresses/:id/default", requireUser, async (req, res) => {
   res.json({ data });
 });
 
+// ── Wishlist ─────────────────────────────────────────────────────────────────
+// Returns the saved product ids plus the full product graph for each, so the
+// Account page can render real cards without a second round-trip per item.
+
+app.get("/api/wishlist", requireUser, async (req, res) => {
+  const userClient = createAuthedClient(req.accessToken);
+  const { data, error } = await userClient
+    .from("wishlist_items")
+    .select(`created_at, products(${PRODUCT_GRAPH_SELECT}, brands(id, slug, name_en, name_ar))`)
+    .eq("user_id", req.user.id)
+    .order("created_at", { ascending: false });
+
+  if (error) return res.status(500).json({ error: "Failed to load wishlist." });
+
+  const items = (data || [])
+    .filter((row) => row.products)
+    .map((row) => normalizeProduct(row.products));
+  res.json({ data: items });
+});
+
+app.post("/api/wishlist/:productId", requireUser, async (req, res) => {
+  const userClient = createAuthedClient(req.accessToken);
+  const { error } = await userClient
+    .from("wishlist_items")
+    .upsert(
+      { user_id: req.user.id, product_id: req.params.productId },
+      { onConflict: "user_id,product_id", ignoreDuplicates: true }
+    );
+
+  if (error) return res.status(500).json({ error: "Failed to add to wishlist." });
+  res.status(201).json({ success: true });
+});
+
+app.delete("/api/wishlist/:productId", requireUser, async (req, res) => {
+  const userClient = createAuthedClient(req.accessToken);
+  const { error } = await userClient
+    .from("wishlist_items")
+    .delete()
+    .eq("user_id", req.user.id)
+    .eq("product_id", req.params.productId);
+
+  if (error) return res.status(500).json({ error: "Failed to remove from wishlist." });
+  res.json({ success: true });
+});
+
 // ── Reviews ──────────────────────────────────────────────────────────────────
 
 app.get("/api/reviews/summary", async (_req, res) => {

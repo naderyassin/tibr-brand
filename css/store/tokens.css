@@ -48,8 +48,9 @@
      The script fallback is automatic: Latin glyphs render in the
      first family, Arabic glyphs fall through to the script face.
      =========================================================== */
-  --font-display: "Bodoni Moda", "Reem Kufi", "Times New Roman", serif;
-  --font-body:    "Hanken Grotesk", "Tajawal", system-ui, sans-serif;
+  --font-display: "Jost", "Tajawal", system-ui, sans-serif;
+  --font-headline: "Jost", "Tajawal", system-ui, sans-serif;
+  --font-body:    "Jost", "Tajawal", system-ui, sans-serif;
 
   /* Type scale — fixed rem for UI (product register), one fluid display step. */
   --fs-display: clamp(2.5rem, 1.6rem + 4vw, 3.75rem); /* category title only */

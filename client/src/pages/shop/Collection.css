@@ -5,7 +5,7 @@
 /* Fonts loaded once, site-wide, via client/index.html. */
 
 .frontier-cinematic {
-  --font-serif: "Playfair Display", "Aref Ruqaa", serif;
+  --font-serif: "Jost", "Tajawal", sans-serif;
   --font-sans: "Jost", "Tajawal", sans-serif;
   --gold: #d4af37;
   --gold-line: rgba(212, 175, 55, 0.3);

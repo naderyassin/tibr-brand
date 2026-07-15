@@ -5,8 +5,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useAuth } from "@/stores/auth";
+import { useWishlist } from "@/stores/wishlist";
 import { useToast } from "@/components/ui/Toast";
 import { supabase } from "@/lib/supabase";
+import ProductCard from "@/components/catalog/ProductCard";
 import {
   getOrders, getProfile, updateProfile,
   getAddresses, addAddress, updateAddress, deleteAddress, setDefaultAddress,
@@ -227,6 +229,8 @@ export default function Account() {
   const [params, setParams] = useSearchParams();
   const tab = params.get("tab") || "orders";
   const { user, token, signOut, loading: authLoading } = useAuth();
+  const wishlistItems = useWishlist((s) => s.items);
+  const wishlistLoaded = useWishlist((s) => s.loaded);
   const navigate = useNavigate();
   const toast = useToast();
   const qc = useQueryClient();
@@ -940,16 +944,26 @@ export default function Account() {
               <div className="dash-panel__head">
                 <h2 className="dash-panel__title">Wishlist</h2>
               </div>
-              <div className="dash-empty">
-                <svg width="44" height="44" viewBox="0 0 44 44" fill="none" aria-hidden="true">
-                  <path d="M22 38s-18-10.5-18-21A10 10 0 0 1 22 9.4 10 10 0 0 1 40 17c0 10.5-18 21-18 21z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
-                </svg>
-                <p className="dash-empty__title">Nothing saved yet</p>
-                <p className="dash-empty__sub">Browse our collections and save the pieces that speak to you</p>
-                <div className="dash-empty__actions">
-                  <Link className="btn btn--primary" to="/shop/perfumes">Fragrances</Link>
+              {!wishlistLoaded ? (
+                <p className="dash-panel__loading">Loading…</p>
+              ) : wishlistItems.length === 0 ? (
+                <div className="dash-empty">
+                  <svg width="44" height="44" viewBox="0 0 44 44" fill="none" aria-hidden="true">
+                    <path d="M22 38s-18-10.5-18-21A10 10 0 0 1 22 9.4 10 10 0 0 1 40 17c0 10.5-18 21-18 21z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+                  </svg>
+                  <p className="dash-empty__title">Nothing saved yet</p>
+                  <p className="dash-empty__sub">Browse our collections and save the pieces that speak to you</p>
+                  <div className="dash-empty__actions">
+                    <Link className="btn btn--primary" to="/shop/perfumes">Fragrances</Link>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="catalog-grid dash-wishlist-grid">
+                  {wishlistItems.map((p, i) => (
+                    <ProductCard key={p.id} product={p} index={i} />
+                  ))}
+                </div>
+              )}
             </div>
           )}
 

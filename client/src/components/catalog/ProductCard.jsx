@@ -1,62 +1,80 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
-import { useCart } from "@/stores/cart";
+import { CONCENTRATIONS, FAMILIES, label } from "@/lib/taxonomy";
+import { useAuth } from "@/stores/auth";
+import { useWishlist } from "@/stores/wishlist";
 import { useToast } from "@/components/ui/Toast";
-import { getShippingDiscountThreshold } from "@/lib/api";
-import { FAMILIES, label } from "@/lib/taxonomy";
 import "./ProductCardNew.css";
 
 const HeartIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"
+      strokeLinecap="round" strokeLinejoin="round" stroke="currentColor" strokeWidth="1.5" fill="none" />
   </svg>
 );
 
-const TruckIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="14" height="14">
-    <rect x="3" y="4" width="18" height="12" rx="2" />
-    <path d="M3 10h18M8 10V4M16 10V4" />
-    <circle cx="7" cy="18" r="2" />
-    <circle cx="17" cy="18" r="2" />
-    <path d="M17 16H7" />
-    <path d="M5 18H2v-4h1" />
-    <path d="M19 18h3v-4h-1" />
-  </svg>
-);
+/* Dior-style "Intensity" meter — concentration is the honest driver of how
+   loud a fragrance reads, so it maps straight to the 5 dots. */
+const INTENSITY_BY_CONCENTRATION = {
+  parfum: 5,
+  attar: 5,
+  edp: 4,
+  edt: 3,
+  edc: 2,
+  mist: 2,
+};
+const INTENSITY_DOTS = 5;
 
-export default function ProductCard({ product, index = 0, showInspiredTag = false }) {
-  const addItem = useCart((s) => s.addItem);
+/* "Citrus", "Citrus and Vanilla", "Citrus, Vanilla, Amber" — mirrors the
+   reference's note phrasing. */
+function joinNotes(list) {
+  if (list.length <= 1) return list[0] || "";
+  if (list.length === 2) return `${list[0]} and ${list[1]}`;
+  return list.join(", ");
+}
+
+export default function ProductCard({ product, index = 0 }) {
+  const navigate = useNavigate();
+  const token = useAuth((s) => s.token);
+  const isSaved = useWishlist((s) => s.ids.has(product.id));
+  const toggleWishlist = useWishlist((s) => s.toggle);
   const toast = useToast();
 
   const name = product.en_name || product.ar_name;
 
-  // Price, size and the "was" price all come from the DEFAULT VARIANT now —
-  // they're per-size, not per-product. The legacy columns remain the fallback
-  // until step 5 of docs/DATA-MODEL.md drops them.
-  const defaultVariant =
-    product.variants?.find((v) => v.is_default) || product.variants?.[0] || null;
-  const price = product.price ?? defaultVariant?.price ?? product.ar_price ?? 0;
-  const oldPrice = defaultVariant?.compare_at_price ?? product.old_price ?? null;
-  const discount = oldPrice ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
+  // "From" price = the cheapest variant, so a range of sizes reads honestly.
+  const variants = product.product_variants || product.variants || [];
+  const cheapest = variants.length
+    ? variants.reduce((lo, v) => (v.price < lo.price ? v : lo), variants[0])
+    : null;
+  const fromPrice =
+    cheapest?.price ?? product.price ?? product.ar_price ?? 0;
+  const fromSize = cheapest?.size_label ?? product.sizes?.[0] ?? "";
 
-  // Shared cache key — one network request no matter how many cards render.
-  // Reflects whatever automatic "free shipping" discount is live in admin
-  // right now; hidden entirely when none is active.
-  const { data: shippingDiscount } = useQuery({
-    queryKey: ["shipping-discount-threshold"],
-    queryFn: getShippingDiscountThreshold,
-    staleTime: 60_000,
-  });
-  const shippingThreshold = shippingDiscount?.data;
-  const hasFreeShipping =
-    !!shippingThreshold &&
-    (shippingThreshold.min_purchase == null || price >= shippingThreshold.min_purchase);
+  // Descriptor line: "Eau de Parfum — Floral and Fruity Notes"
+  const concLabel = product.concentration
+    ? label(CONCENTRATIONS, product.concentration)
+    : null;
+  const noteLabels = (product.families || []).map((f) => label(FAMILIES, f));
+  const notesText = noteLabels.length ? `${joinNotes(noteLabels)} Notes` : null;
+  const descriptor = [concLabel, notesText].filter(Boolean).join(" — ");
 
-  const handleAddToCart = (e) => {
+  const intensity = INTENSITY_BY_CONCENTRATION[product.concentration] ?? 3;
+
+  const handleToggleWishlist = async (e) => {
     e.preventDefault();
-    addItem(product);
-    toast(`<strong>${name}</strong> added to cart`);
+    e.stopPropagation();
+    if (!token) {
+      toast("Sign in to save items to your wishlist");
+      navigate("/login");
+      return;
+    }
+    try {
+      const nowSaved = await toggleWishlist(product, token);
+      toast(nowSaved ? "Added to wishlist" : "Removed from wishlist");
+    } catch {
+      toast("Couldn't update your wishlist. Try again.");
+    }
   };
 
   return (
@@ -68,8 +86,18 @@ export default function ProductCard({ product, index = 0, showInspiredTag = fals
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
     >
-      <div className="product-new__media">
-        <Link className="product-new__link" to={`/product?id=${product.id}`} aria-label={name}>
+      <button
+        type="button"
+        className="product-new__wish"
+        aria-pressed={isSaved}
+        aria-label={isSaved ? "Remove from wishlist" : "Add to wishlist"}
+        onClick={handleToggleWishlist}
+      >
+        <HeartIcon />
+      </button>
+
+      <Link className="product-new__link" to={`/product?id=${product.id}`} aria-label={name}>
+        <div className="product-new__media">
           {product.image ? (
             <img
               className="product-new__img"
@@ -81,56 +109,38 @@ export default function ProductCard({ product, index = 0, showInspiredTag = fals
           ) : (
             <div className="product-new__img product-new__img--placeholder" />
           )}
-        </Link>
-        {product.classification && (
-          <span className="product-new__classification-tag">
-            {product.classification.charAt(0).toUpperCase() + product.classification.slice(1)}
-          </span>
-        )}
-      </div>
-
-      <div className="product-new__body">
-        <Link className="product-new__name" to={`/product?id=${product.id}`}>{name}</Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.25rem' }}>
-          <span className="product-new__size">{defaultVariant?.size_label || product.sizes?.[0] || "—"}</span>
-          <span style={{ width: '4px', height: '4px', backgroundColor: '#d1d1d6', borderRadius: '50%' }}></span>
-          <span className="product-new__brand">{product.brands?.name_en || "TIBR"}</span>
-        </div>
-        {product.families?.length > 0 && (
-          <p className="product-new__scent">
-            Scent: {product.families.map((f) => label(FAMILIES, f)).join(", ")}
-          </p>
-        )}
-        
-        <div className="product-new__price-row">
-          <span className="product-new__price">EGP {price}</span>
-          {oldPrice && discount > 0 && (
-            <>
-              <span className="product-new__old-price">EGP {oldPrice}</span>
-              <span className="product-new__discount-badge">%{discount}</span>
-            </>
-          )}
         </div>
 
-        {hasFreeShipping && (
-          <div className="product-new__shipping">
-            <TruckIcon />
-            <span>You've unlocked Free Shipping!</span>
+        <div className="product-new__body">
+          {concLabel && <span className="product-new__eyebrow">{concLabel}</span>}
+          <h3 className="product-new__name">{name}</h3>
+          {notesText && <p className="product-new__desc">{notesText}</p>}
+
+          <div className="product-new__intensity">
+            <span className="product-new__intensity-label">Intensity</span>
+            <span className="product-new__dots" aria-hidden="true">
+              {Array.from({ length: INTENSITY_DOTS }).map((_, i) => (
+                <span
+                  key={i}
+                  className={`product-new__dot${i < intensity ? " is-on" : ""}`}
+                />
+              ))}
+            </span>
           </div>
-        )}
-      </div>
 
-      <div className="product-new__footer">
-        {product.in_stock === false ? (
-          <button className="product-new__btn product-new__btn--disabled" disabled>
-            Sold out
-          </button>
-        ) : (
-          <button className="product-new__btn" type="button" onClick={handleAddToCart}>
-            Add to cart
-          </button>
-        )}
-      </div>
+          <div className="product-new__action-pill">
+            <span className="product-new__price-text">
+              From EGP {Number(fromPrice).toLocaleString()}
+              {fromSize && ` · ${fromSize}`}
+            </span>
+            <span className="product-new__arrow-wrap">
+              <svg className="product-new__arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </span>
+          </div>
+        </div>
+      </Link>
     </motion.article>
   );
 }
