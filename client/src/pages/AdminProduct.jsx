@@ -739,6 +739,12 @@ export default function AdminProduct() {
                   <span>Spotlight</span>
                 </label>
               </div>
+              <p className="field__hint">
+                These place the product in the matching rail on the shop home. Each
+                rail is hidden until at least one product is marked. The <strong>Offers</strong>{" "}
+                rail fills automatically from any size that has a “Compare at” price
+                above its price (set in Sizes, price &amp; stock above).
+              </p>
             </div>
 
             {/* 7 — Description */}

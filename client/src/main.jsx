@@ -52,6 +52,10 @@ function Root() {
       smoothWheel: true,
     });
 
+    // Expose the instance so route changes can reset scroll THROUGH Lenis —
+    // a native window.scrollTo(0,0) is overridden by Lenis on the next frame.
+    window.__lenis = lenis;
+
     // Notify GSAP ScrollTrigger of updates
     lenis.on("scroll", ScrollTrigger.update);
 
@@ -72,6 +76,7 @@ function Root() {
     return () => {
       lenis.destroy();
       gsap.ticker.remove(updateRaf);
+      delete window.__lenis;
     };
   }, []);
 

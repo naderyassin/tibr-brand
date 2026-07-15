@@ -1,15 +1,20 @@
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/stores/auth";
-import { adminGetCustomer } from "@/lib/api";
+import { supabase } from "@/lib/supabase";
+import { adminGetCustomer, adminSetCustomerRole, getProfile } from "@/lib/api";
 import { StatusBadge } from "@/components/admin/StatusBadge";
+import { useToast } from "@/components/ui/Toast";
 
 const fmtDate = (d) =>
   new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 
 export default function AdminCustomer() {
   const { id } = useParams();
-  const { token } = useAuth();
+  const { token, user } = useAuth();
+  const qc = useQueryClient();
+  const toast = useToast();
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["admin-customer", id, token],
@@ -19,6 +24,52 @@ export default function AdminCustomer() {
 
   const customer = data?.data?.customer;
   const orders = data?.data?.orders ?? [];
+
+  // Shares the ["profile", token] cache AdminLayout already populates — only
+  // a super_admin is allowed to grant admin access to someone else.
+  const { data: profileData } = useQuery({
+    queryKey: ["profile", token],
+    queryFn: () => getProfile(token),
+    enabled: !!token,
+  });
+  const viewerIsSuperAdmin = profileData?.data?.role === "super_admin";
+
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [password, setPassword] = useState("");
+  const [confirmError, setConfirmError] = useState(null);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+
+  const { mutate: promote } = useMutation({
+    mutationFn: () => adminSetCustomerRole(customer.id, "admin", token),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-customer", id] });
+      setConfirmOpen(false);
+      setPassword("");
+      toast?.(`${customer.name || "This customer"} is now an admin.`);
+    },
+    onError: (err) => setConfirmError(err.message || "Failed to update role."),
+    onSettled: () => setConfirmLoading(false),
+  });
+
+  const handleConfirmPassword = async (e) => {
+    e.preventDefault();
+    setConfirmError(null);
+    if (!password) { setConfirmError("Enter your password."); return; }
+
+    setConfirmLoading(true);
+    // Re-verify the acting admin's own password before granting admin —
+    // a speed bump against someone using an unattended admin session.
+    const { error: authError } = await supabase.auth.signInWithPassword({
+      email: user?.email,
+      password,
+    });
+    if (authError) {
+      setConfirmError("Incorrect password.");
+      setConfirmLoading(false);
+      return;
+    }
+    promote();
+  };
 
   return (
     <div className="admin-content">
@@ -93,7 +144,37 @@ export default function AdminCustomer() {
                   <dt>Type</dt>
                   <dd>{customer.is_registered ? "Registered account" : "Guest checkout"}</dd>
                 </div>
+                {customer.is_registered && customer.email && (
+                  <div className="admin-def-list__row">
+                    <dt>Email</dt>
+                    <dd>{customer.email}</dd>
+                  </div>
+                )}
+                {customer.is_registered && (
+                  <div className="admin-def-list__row">
+                    <dt>Role</dt>
+                    <dd>
+                      {customer.role === "super_admin" ? "Super Admin" : customer.role === "admin" ? "Admin" : "Customer"}
+                    </dd>
+                  </div>
+                )}
               </dl>
+
+              {customer.is_registered && customer.role === "customer" && viewerIsSuperAdmin && (
+                <button
+                  className="btn btn--secondary"
+                  type="button"
+                  style={{ marginBlockStart: "var(--sp-4)" }}
+                  onClick={() => setConfirmOpen(true)}
+                >
+                  Make admin
+                </button>
+              )}
+              {!customer.is_registered && (
+                <p style={{ color: "var(--muted)", fontSize: "var(--fs-sm)", marginBlockStart: "var(--sp-3)" }}>
+                  Guest checkout — no account to promote.
+                </p>
+              )}
             </div>
 
             {/* Order history */}
@@ -147,6 +228,53 @@ export default function AdminCustomer() {
           </div>
         </>
       )}
+
+      {/* ── Confirm-password modal: re-verify the acting admin before granting admin ── */}
+      <div
+        className={`pw-modal-backdrop${confirmOpen ? " is-open" : ""}`}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="confirm-admin-title"
+        onClick={(e) => { if (e.target === e.currentTarget) setConfirmOpen(false); }}
+      >
+        <div className="pw-modal__card">
+          <div className="pw-modal__head">
+            <h2 className="pw-modal__title" id="confirm-admin-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2" strokeLinejoin="round" /><path d="M8 11V7a4 4 0 0 1 8 0v4" strokeLinecap="round" /></svg>
+              Confirm your password
+            </h2>
+            <button className="btn btn--ghost" type="button" onClick={() => setConfirmOpen(false)} aria-label="Close">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ width: "1.2rem", height: "1.2rem" }}><path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" /></svg>
+            </button>
+          </div>
+          <form className="pw-modal__form" onSubmit={handleConfirmPassword} noValidate>
+            <p style={{ color: "var(--muted)", fontSize: "var(--fs-sm)", margin: 0 }}>
+              Enter your password to make <strong style={{ color: "var(--ink)" }}>{customer?.name || "this customer"}</strong>
+              {customer?.email ? ` (${customer.email})` : ""} an admin.
+            </p>
+            <div className={`field${confirmError ? " is-invalid" : ""}`}>
+              <label className="field__label" htmlFor="confirm-admin-password">Your password</label>
+              <input
+                id="confirm-admin-password"
+                className="input"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                required
+              />
+              {confirmError && <p className="field__error" role="alert">{confirmError}</p>}
+            </div>
+            <button
+              className={`btn btn--primary btn--block${confirmLoading ? " is-loading" : ""}`}
+              type="submit"
+              disabled={confirmLoading}
+            >
+              {confirmLoading ? "" : "Confirm & grant admin"}
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }

@@ -51,6 +51,14 @@ export default function ProductCard({ product, index = 0 }) {
     cheapest?.price ?? product.price ?? product.ar_price ?? 0;
   const fromSize = cheapest?.size_label ?? product.sizes?.[0] ?? "";
 
+  // Offer pricing: the "was" price is the struck-through compare-at on the same
+  // (cheapest) variant we quote the "From" price from, so the discount reads
+  // honestly. A product is "on offer" when that compare-at beats the price.
+  const compareAt =
+    cheapest?.compare_at_price != null ? Number(cheapest.compare_at_price) : null;
+  const onSale = compareAt != null && compareAt > Number(fromPrice);
+  const discountPct = onSale ? Math.round((1 - Number(fromPrice) / compareAt) * 100) : 0;
+
   // Descriptor line: "Eau de Parfum — Floral and Fruity Notes"
   const concLabel = product.concentration
     ? label(CONCENTRATIONS, product.concentration)
@@ -98,6 +106,16 @@ export default function ProductCard({ product, index = 0 }) {
 
       <Link className="product-new__link" to={`/product?id=${product.id}`} aria-label={name}>
         <div className="product-new__media">
+          {(product.is_bestseller || onSale) && (
+            <div className="product-new__badges">
+              {product.is_bestseller && (
+                <span className="product-new__badge product-new__badge--best">Best Seller</span>
+              )}
+              {onSale && (
+                <span className="product-new__badge product-new__badge--sale">-{discountPct}%</span>
+              )}
+            </div>
+          )}
           {product.image ? (
             <img
               className="product-new__img"
@@ -132,6 +150,11 @@ export default function ProductCard({ product, index = 0 }) {
             <span className="product-new__price-text">
               EGP {Number(fromPrice).toLocaleString()}
             </span>
+            {onSale && (
+              <span className="product-new__price-was">
+                EGP {compareAt.toLocaleString()}
+              </span>
+            )}
             <span className="product-new__arrow-wrap">
               <svg className="product-new__arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
                 <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />

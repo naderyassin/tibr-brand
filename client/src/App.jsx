@@ -13,9 +13,15 @@ function StartAtHomeAndScroll() {
     }
   }, []);
 
-  // Scroll to top on every navigation change
+  // Scroll to top on every navigation change. Lenis owns the scroll, so a plain
+  // window.scrollTo(0,0) gets overwritten on the next animation frame — reset
+  // THROUGH Lenis (immediate + force, so it wins even while the drawer has
+  // scrolling locked). Fall back to native for the first frames before Lenis
+  // initializes.
   useEffect(() => {
-    window.scrollTo(0, 0);
+    const lenis = window.__lenis;
+    if (lenis) lenis.scrollTo(0, { immediate: true, force: true });
+    else window.scrollTo(0, 0);
   }, [pathname]);
 
   return null;
@@ -74,6 +80,9 @@ export default function App() {
             <Route path="/shop/sets" element={<CollectionPage />} />
             <Route path="/shop/samples" element={<CollectionPage />} />
             <Route path="/shop/new-arrivals" element={<CollectionPage />} />
+            <Route path="/shop/spotlight" element={<CollectionPage />} />
+            <Route path="/shop/bestsellers" element={<CollectionPage />} />
+            <Route path="/shop/offers" element={<CollectionPage />} />
             <Route path="/shop/brands" element={<BrandDirectory />} />
             <Route path="/shop/brands/:brand" element={<BrandCollection />} />
           </Route>

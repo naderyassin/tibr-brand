@@ -39,7 +39,8 @@ export default function Header({ onMenuOpen }) {
     queryFn: () => getProfile(token),
     enabled: !!token,
   });
-  const isAdmin = profileData?.data?.role === "admin";
+  const role = profileData?.data?.role;
+  const isAdmin = role === "admin" || role === "super_admin";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 4);

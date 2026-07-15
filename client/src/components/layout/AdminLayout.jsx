@@ -70,7 +70,8 @@ export default function AdminLayout() {
     enabled: !!token,
     retry: false,
   });
-  const isAdmin = profileData?.data?.role === "admin";
+  const role = profileData?.data?.role;
+  const isAdmin = role === "admin" || role === "super_admin";
 
   useEffect(() => {
     if (profileLoading) return;
@@ -108,7 +109,7 @@ export default function AdminLayout() {
           <div className="admin-sidebar__footer">
             <div className="admin-sidebar__user">
               <span className="admin-sidebar__user-email">{user.email}</span>
-              <span className="admin-sidebar__user-role">Admin</span>
+              <span className="admin-sidebar__user-role">{role === "super_admin" ? "Super Admin" : "Admin"}</span>
             </div>
             <NavLink className="admin-sidebar__action" to="/shop">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">

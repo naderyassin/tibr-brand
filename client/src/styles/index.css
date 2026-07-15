@@ -358,6 +358,13 @@ body.header-hidden .store-header {
 body.header-hidden .shop-subnav {
   transform: translateY(calc(-100% - 4.75rem));
 }
+
+/* Remove dividing border line and shadow between store header and subnav when scrolled */
+body:has(.shop-subnav) .store-header {
+  border-block-end-color: transparent !important;
+  box-shadow: none !important;
+}
+
 .shop-subnav__list {
   display: flex;
   justify-content: center;

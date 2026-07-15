@@ -83,6 +83,46 @@
   background-color: #f3f3f5;
 }
 
+/* Merchandising badges (Best Seller / discount), stacked over the media's
+   top-left corner — the sale flag is what makes the Offers rail read at a
+   glance. */
+.product-new__badges {
+  position: absolute;
+  z-index: 2;
+  top: 0.7rem;
+  left: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+.product-new__badge {
+  font-family: 'Jost', var(--font-sans), sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  padding: 0.4rem 0.6rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.product-new__badge--best {
+  background: #1d1d1f;
+  color: #ffffff;
+}
+.product-new__badge--sale {
+  background: var(--gold, #d4af37);
+  color: #1d1d1f;
+}
+
+/* Struck-through "was" price, sitting beside the live price inside the pill. */
+.product-new__price-was {
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
 /* Save-to-wishlist heart, floated over the media's top-right corner. Sits
    outside the <Link> (siblings, not nested) so it isn't interactive content
    inside interactive content. */

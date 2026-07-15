@@ -91,6 +91,11 @@ export const ROUTE_PRESETS = {
   "/shop/sets":           { title: "Sets & Bundles",         filters: { type: "set" } },
   "/shop/samples":        { title: "Samples & Travel",       filters: { type: "sample" } },
   "/shop/new-arrivals":   { title: "New Arrivals",           filters: {}, sort: "newest" },
+
+  // Admin-curated merchandising — the "View All" targets of the shop-home rails.
+  "/shop/spotlight":      { title: "Spotlight",              filters: { spotlight: "1" } },
+  "/shop/bestsellers":    { title: "Best Sellers",           filters: { bestseller: "1" } },
+  "/shop/offers":         { title: "Offers",                 filters: { on_sale: "1" } },
 };
 
 /** Facet groups rendered in the filter sidebar, in order. */

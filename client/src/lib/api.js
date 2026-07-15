@@ -76,6 +76,8 @@ export const adminGetOrders = (token) => api.get("/api/admin/orders", token);
 export const adminGetCustomers = (token) => api.get("/api/admin/customers", token);
 export const adminGetCustomer = (id, token) =>
   api.get(`/api/admin/customers/${encodeURIComponent(id)}`, token);
+export const adminSetCustomerRole = (id, role, token) =>
+  api.patch(`/api/admin/customers/${encodeURIComponent(id)}/role`, { role }, token);
 export const adminUpdateOrderStatus = (id, status, token) =>
   api.patch(`/api/admin/orders/${id}`, { status }, token);
 export const adminCreateProduct = (body, token) =>

@@ -31,7 +31,8 @@ export default function MobileDrawer({ open, onClose }) {
     queryFn: () => getProfile(token),
     enabled: !!token,
   });
-  const isAdmin = profileData?.data?.role === "admin";
+  const mobileRole = profileData?.data?.role;
+  const isAdmin = mobileRole === "admin" || mobileRole === "super_admin";
   const navLinks = isAdmin
     ? [...BASE_NAV_LINKS, { to: "/admin", label: "Control Panel" }]
     : BASE_NAV_LINKS;

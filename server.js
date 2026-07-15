@@ -785,6 +785,8 @@ const requireUser = async (req, res, next) => {
   }
 };
 
+const ADMIN_ROLES = new Set(["admin", "super_admin"]);
+
 const requireAdmin = async (req, res, next) => {
   const userClient = createAuthedClient(req.accessToken);
 
@@ -798,10 +800,20 @@ const requireAdmin = async (req, res, next) => {
     return res.status(500).json({ error: "Failed to load user profile." });
   }
 
-  if (!profile || profile.role !== "admin") {
+  if (!profile || !ADMIN_ROLES.has(profile.role)) {
     return res.status(403).json({ error: "Admin access required." });
   }
 
+  req.role = profile.role;
+  next();
+};
+
+// Stricter than requireAdmin — only the super_admin tier can grant admin
+// access to someone else. Chain after requireAdmin so req.role is set.
+const requireSuperAdmin = (req, res, next) => {
+  if (req.role !== "super_admin") {
+    return res.status(403).json({ error: "Super admin access required." });
+  }
   next();
 };
 
@@ -869,6 +881,10 @@ app.get("/api/products", async (req, res) => {
   if (CLASSIFICATIONS.has(q.classification)) query = query.eq("classification", q.classification);
   if (CONCENTRATIONS.has(q.concentration)) query = query.eq("concentration", q.concentration);
 
+  // Merchandising flags — the admin-curated shop-home rails filter by these.
+  if (parseBool(q.spotlight)) query = query.eq("is_spotlight", true);
+  if (parseBool(q.bestseller)) query = query.eq("is_bestseller", true);
+
   // Array facets — `contains`, backed by the GIN indexes.
   if (FAMILIES.has(q.family)) query = query.contains("families", [q.family]);
   if (SEASONS.has(q.season)) query = query.contains("seasons", [q.season]);
@@ -895,6 +911,16 @@ app.get("/api/products", async (req, res) => {
   }
 
   let products = (data || []).map(normalizeProduct);
+
+  // "On offer" is a per-VARIANT fact (a size with a compare-at above its price),
+  // so it can't be a Postgres column filter — apply it after normalization.
+  if (parseBool(q.on_sale)) {
+    products = products.filter((p) =>
+      (p.variants || []).some(
+        (v) => v.compare_at_price != null && Number(v.compare_at_price) > Number(v.price)
+      )
+    );
+  }
 
   // Price sorts run here, not in Postgres: the price lives on the default
   // VARIANT, not on the product row, so the database can't order by it.
@@ -1334,7 +1360,63 @@ app.get("/api/admin/customers/:id", requireUser, requireAdmin, async (req, res) 
     if (!customer.address && o.customer_address) customer.address = o.customer_address;
   }
 
+  // Role/email live in auth.users + profiles, which RLS keeps admins out of
+  // for other people's rows — the service client bypasses that deliberately.
+  if (customer.is_registered) {
+    const serviceClient = createServiceClient();
+    const [{ data: profile }, { data: userRes }] = await Promise.all([
+      serviceClient.from("profiles").select("role").eq("id", customer.id).maybeSingle(),
+      serviceClient.auth.admin.getUserById(customer.id),
+    ]);
+    customer.role = profile?.role || "customer";
+    customer.email = userRes?.user?.email || null;
+  }
+
   res.json({ data: { customer, orders } });
+});
+
+// Promote a registered customer to admin. Only a super_admin may grant admin
+// access (requireSuperAdmin) — the client additionally re-confirms the
+// caller's own password immediately before this call, as a speed bump
+// against someone using an unattended admin session.
+app.patch("/api/admin/customers/:id/role", requireUser, requireAdmin, requireSuperAdmin, async (req, res) => {
+  const targetId = req.params.id;
+
+  if (!/^[0-9a-f-]{36}$/i.test(targetId)) {
+    return res.status(400).json({ error: "This customer has no account to promote." });
+  }
+  if (targetId === req.user.id) {
+    return res.status(400).json({ error: "You can't change your own role here." });
+  }
+  if (req.body.role !== "admin") {
+    return res.status(400).json({ error: "Invalid role." });
+  }
+
+  const serviceClient = createServiceClient();
+
+  // super_admin is protected: never overwritten by this endpoint, no matter
+  // who's calling or what role was requested.
+  const { data: existing } = await serviceClient
+    .from("profiles")
+    .select("role")
+    .eq("id", targetId)
+    .maybeSingle();
+  if (existing?.role === "super_admin") {
+    return res.status(400).json({ error: "This account's role can't be changed." });
+  }
+
+  const { data, error } = await serviceClient
+    .from("profiles")
+    .update({ role: "admin" })
+    .eq("id", targetId)
+    .select("id, role")
+    .maybeSingle();
+
+  if (error || !data) {
+    return res.status(500).json({ error: "Failed to update role." });
+  }
+
+  res.json({ data });
 });
 
 // ── Discounts (Admin) ────────────────────────────────────────────────────────
@@ -2115,6 +2197,7 @@ const STORE_ROUTES = [
   '/shop/arabian', '/shop/niche',
   '/shop/candles', '/shop/bakhoor', '/shop/home-fragrance', '/shop/body-splash',
   '/shop/sets', '/shop/samples', '/shop/new-arrivals',
+  '/shop/spotlight', '/shop/bestsellers', '/shop/offers',
   '/shop/brands', '/shop/brands/:brand',
   '/product', '/cart', '/checkout',
   '/login', '/signup',

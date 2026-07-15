@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Header from "./Header";
+import HomeHeader from "./HomeHeader";
 import MobileDrawer from "./MobileDrawer";
 import Footer from "./Footer";
 import { ToastProvider } from "@/components/ui/Toast";
 
 export default function AppShell() {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const location = useLocation();
+  const isHome = location.pathname === "/";
 
   useEffect(() => {
     // Lenis owns the scroll — window.scrollY can be stale when Lenis is active.
@@ -70,7 +73,11 @@ export default function AppShell() {
   return (
     <ToastProvider>
       <a className="skip-link" href="#main">Skip to content</a>
-      <Header onMenuOpen={() => setDrawerOpen(true)} />
+      {isHome ? (
+        <HomeHeader />
+      ) : (
+        <Header onMenuOpen={() => setDrawerOpen(true)} />
+      )}
       <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
       <main id="main">
         <Outlet />

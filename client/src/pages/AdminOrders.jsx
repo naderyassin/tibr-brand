@@ -74,14 +74,14 @@ export default function AdminOrders() {
       </div>
 
       <div className="admin-card">
-        <div className="order-toolbar">
-          <div className="order-search">
-            <svg className="order-search__icon" width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+        <div className="admin-search-toolbar">
+          <div className="admin-search">
+            <svg className="admin-search__icon" width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
               <circle cx="6.5" cy="6.5" r="4" stroke="currentColor" strokeWidth="1.4"/>
               <path d="M9.5 9.5L12.5 12.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
             </svg>
             <input
-              className="order-search__input"
+              className="admin-search__input"
               type="search"
               placeholder="Search name, phone, or order ID…"
               value={orderSearch}
@@ -89,7 +89,7 @@ export default function AdminOrders() {
             />
             {orderSearch && (
               <button
-                className="order-search__clear"
+                className="admin-search__clear"
                 type="button"
                 onClick={() => setOrderSearch("")}
                 aria-label="Clear search"

@@ -1,5 +1,6 @@
 import ShopHero from "./ShopHero";
 import CategoryTiles from "./home/CategoryTiles";
+import MerchandisingRails from "./home/MerchandisingRails";
 import PromoTiles from "./home/PromoTiles";
 import TrustBadges from "./home/TrustBadges";
 import BrandLogoStrip from "./home/BrandLogoStrip";
@@ -11,7 +12,9 @@ export default function ShopHome() {
     <>
       <ShopHero />
       <div className="store-container shop-home">
+        <MerchandisingRails filterKey="spotlight" />
         <CategoryTiles />
+        <MerchandisingRails filterKey="others" />
         <PromoTiles />
         
         <BrandLogoStrip />
