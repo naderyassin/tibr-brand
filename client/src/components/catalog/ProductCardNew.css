@@ -201,11 +201,11 @@
 
 /* Premium pill button for price/action matching the user's example image */
 .product-new__action-pill {
-  width: 100%;
+  width: fit-content;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0.55rem 1rem; /* Decreased size */
+  gap: 0.5rem;
+  padding: 0.55rem 1.15rem; /* Slightly more horizontal padding for balance */
   background: #1d1d1f; /* Black background before hover */
   border: 1px solid #1d1d1f;
   border-radius: 9999px;
