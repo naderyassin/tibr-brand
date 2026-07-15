@@ -202,6 +202,7 @@
 /* Premium pill button for price/action matching the user's example image */
 .product-new__action-pill {
   width: fit-content;
+  align-self: center;
   display: flex;
   align-items: center;
   gap: 0.5rem;
