@@ -20,6 +20,7 @@ body:has(.about-page) .store-header {
   background-color: #0d0a07;
   overflow: hidden;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
@@ -51,6 +52,7 @@ body:has(.about-page) .store-header {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: auto;
 }
 
 .about-hero__kicker {
@@ -93,10 +95,9 @@ body:has(.about-page) .store-header {
 }
 
 .about-hero__scroll {
-  position: absolute;
-  bottom: 3.5rem;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
+  margin-top: auto;
+  margin-bottom: 3.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -423,7 +424,7 @@ body:has(.about-page) .store-header {
     font-size: clamp(2.5rem, 1.8rem + 3.5vw, 4rem);
   }
   .about-hero__scroll {
-    bottom: 2.5rem;
+    margin-bottom: 2.5rem;
   }
   
   .about-philosophy__inner {
