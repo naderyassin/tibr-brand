@@ -825,6 +825,11 @@ const ADMIN_ORDER_STATUSES = new Set([
   "cancelled"
 ]);
 
+// Revenue only recognizes orders that actually completed — pending/confirmed/
+// shipped are still in flight and could still be cancelled, so counting them
+// would overstate revenue before the sale is final.
+const REVENUE_STATUSES = new Set(["delivered"]);
+
 app.get("/js/config.js", (_req, res) => {
   res.setHeader("Cache-Control", "no-cache");
   res.type("application/javascript");
@@ -1305,7 +1310,7 @@ app.get("/api/admin/customers", requireUser, requireAdmin, async (req, res) => {
       map.set(key, c);
     }
     c.order_count += 1;
-    if (o.total != null) c.total_spent += Number(o.total) || 0;
+    if (REVENUE_STATUSES.has(o.status) && o.total != null) c.total_spent += Number(o.total) || 0;
     if (o.created_at < c.first_order_at) c.first_order_at = o.created_at;
     if (o.created_at > c.last_order_at) c.last_order_at = o.created_at;
     // Fill in any details missing from the newest order using older ones.
@@ -1352,7 +1357,7 @@ app.get("/api/admin/customers/:id", requireUser, requireAdmin, async (req, res) 
     last_order_at: orders[0].created_at,
   };
   for (const o of orders) {
-    if (o.order_total != null) customer.total_spent += Number(o.order_total) || 0;
+    if (REVENUE_STATUSES.has(o.status) && o.total != null) customer.total_spent += Number(o.total) || 0;
     if (o.created_at < customer.first_order_at) customer.first_order_at = o.created_at;
     if (o.created_at > customer.last_order_at) customer.last_order_at = o.created_at;
     if (!customer.name && o.customer_name) customer.name = o.customer_name;
