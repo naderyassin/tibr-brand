@@ -82,7 +82,10 @@ export const ROUTE_PRESETS = {
   "/shop/unisex":         { title: "Unisex",                 filters: { audience: "unisex" } },
   "/shop/original":       { title: "Original",               filters: { line: "original" } },
   "/shop/inspired":       { title: "Inspired",               filters: { line: "inspired" } },
-  "/shop/signature":      { title: "Your Own Signature",     filters: { line: "signature" } },
+  // "/shop/signature" is NOT a filtered listing (line=signature has zero
+  // products, verified at build time) — it's the scent-finder quiz, its own
+  // component (pages/shop/Signature.jsx), routed directly in App.jsx. No
+  // preset needed here.
   "/shop/arabian":        { title: "Arabian & Gulf",         filters: { classification: "arabian" } },
   "/shop/niche":          { title: "Niche",                  filters: { classification: "niche" } },
   "/shop/candles":        { title: "Candles",                filters: { type: "candle" } },

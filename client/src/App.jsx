@@ -31,6 +31,7 @@ import ShopLayout from "@/components/layout/ShopLayout";
 import ShopHome from "@/pages/shop/ShopHome";
 import AboutPage from "@/pages/shop/AboutPage";
 import CollectionPage from "@/pages/shop/CollectionPage";
+import Signature from "@/pages/shop/Signature";
 import BrandDirectory from "@/pages/shop/BrandDirectory";
 import BrandCollection from "@/pages/shop/BrandCollection";
 import Blog from "@/pages/Blog";
@@ -71,7 +72,11 @@ export default function App() {
             <Route path="/shop/unisex" element={<CollectionPage />} />
             <Route path="/shop/original" element={<CollectionPage />} />
             <Route path="/shop/inspired" element={<CollectionPage />} />
-            <Route path="/shop/signature" element={<CollectionPage />} />
+            {/* Not a filtered listing — a 4-step quiz + ranked-match result.
+                See client/src/pages/shop/Signature.jsx. Still nested under
+                ShopLayout for the shared nav; ShopLayout itself has no
+                grid/listing assumptions (just <ShopNav/> + <Outlet/>). */}
+            <Route path="/shop/signature" element={<Signature />} />
             <Route path="/shop/arabian" element={<CollectionPage />} />
             <Route path="/shop/niche" element={<CollectionPage />} />
             <Route path="/shop/candles" element={<CollectionPage />} />

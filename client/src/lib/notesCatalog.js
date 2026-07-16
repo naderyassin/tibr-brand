@@ -3,6 +3,11 @@
 // Keys are the note family; they must be members of FAMILIES in ./taxonomy.js.
 // Extracted verbatim from AdminProduct.jsx, where it lived inline.
 
+// Explicit .js extension: this module is imported both by Vite (client bundle)
+// and directly by Node (scripts/seed-notes.mjs), and plain Node ESM requires
+// a full specifier.
+import { slugify } from "./taxonomy.js";
+
 export const NOTES_CATALOG = {
   citrus: [
     { en: "Bergamot",              ar: "برغموت" },
@@ -665,6 +670,38 @@ export const NOTES_CATALOG = {
     { en: "White Flowers", ar: "زهور بيضاء" },
     { en: "White Tobacco", ar: "التبغ الأبيض" },
   ],
+  gourmand: [
+    { en: "Vanilla", ar: "فانيليا" },
+    { en: "Tonka Bean", ar: "حبوب التونكا" },
+    { en: "Caramel", ar: "كراميل" },
+    { en: "Praline", ar: "برالين" },
+    { en: "Chocolate", ar: "شوكولاتة" },
+    { en: "Dark Chocolate", ar: "شوكولاتة داكنة" },
+    { en: "White Chocolate", ar: "شوكولاتة بيضاء" },
+    { en: "Honey", ar: "عسل" },
+    { en: "Cream", ar: "كريمة" },
+    { en: "Milk", ar: "حليب" },
+    { en: "Marshmallow", ar: "مارشميلو" },
+    { en: "Cotton Candy", ar: "غزل البنات" },
+    { en: "Toffee", ar: "توفي" },
+    { en: "Butterscotch", ar: "باتر سكوتش" },
+    { en: "Brown Sugar", ar: "سكر بني" },
+    { en: "Sugar", ar: "سكر" },
+    { en: "Almond Milk", ar: "حليب اللوز" },
+    { en: "Coconut Milk", ar: "حليب جوز الهند" },
+    { en: "Whipped Cream", ar: "كريمة مخفوقة" },
+    { en: "Vanilla Absolute", ar: "مطلق الفانيليا" },
+    { en: "Maple Syrup", ar: "شراب القيقب" },
+    { en: "Hazelnut Praline", ar: "برالين البندق" },
+    { en: "Marzipan", ar: "مرزبان" },
+    { en: "Meringue", ar: "ميرانج" },
+    { en: "Custard", ar: "كاسترد" },
+    { en: "Biscuit", ar: "بسكويت" },
+    { en: "Cookie", ar: "كوكيز" },
+    { en: "Gingerbread", ar: "خبز الزنجبيل" },
+    { en: "Rum", ar: "رم" },
+    { en: "Cognac", ar: "كونياك" },
+  ],
   spicy: [
     { en: "Allspice", ar: "بهار حلو" },
     { en: "Anise", ar: "يانسون" },
@@ -730,12 +767,282 @@ export const NOTES_CATALOG = {
     { en: "Sumac", ar: "سماق" },
     { en: "Tamarind", ar: "تمر هندي" },
     { en: "Timur", ar: "تيمور" },
-    { en: "Tonka Bean", ar: "حبوب التونكا" },
     { en: "Toscanol", ar: "توسكانول" },
     { en: "Ultravanil", ar: "ألترافانيل" },
-    { en: "Vanilla", ar: "فانيليا" },
     { en: "Wan Sao Lhong", ar: "وان ساو لونغ" },
     { en: "Wasabi", ar: "واسابي" },
     { en: "Water Pepper", ar: "فلفل الماء" },
     { en: "West Indian Bay", ar: "ورق غار هندي" },
-  ],};
+  ],
+  woody: [
+    { en: "Sandalwood", ar: "خشب الصندل" },
+    { en: "Sandalwood Mysore", ar: "صندل ميسور" },
+    { en: "Cedarwood", ar: "خشب الأرز" },
+    { en: "Virginia Cedar", ar: "أرز فرجينيا" },
+    { en: "Atlas Cedar", ar: "أرز الأطلس" },
+    { en: "Vetiver", ar: "نجيل الخيزران (فيتيفر)" },
+    { en: "Vetiver Bourbon", ar: "فيتيفر بوربون" },
+    { en: "Vetiver Haiti", ar: "فيتيفر هايتي" },
+    { en: "Patchouli", ar: "باتشولي" },
+    { en: "Oakmoss", ar: "طحلب البلوط" },
+    { en: "Guaiac Wood", ar: "خشب الغاياك" },
+    { en: "Cashmere Wood", ar: "خشب الكشمير" },
+    { en: "Cashmeran", ar: "كاشميران" },
+    { en: "Ebony", ar: "آبنوس" },
+    { en: "Birch", ar: "بتولا" },
+    { en: "Cypress", ar: "سرو" },
+    { en: "Pine", ar: "صنوبر" },
+    { en: "Fir Balsam", ar: "بلسم التنوب" },
+    { en: "Driftwood", ar: "خشب الطفو" },
+    { en: "Mahogany", ar: "ماهوجني" },
+    { en: "Teakwood", ar: "خشب الساج" },
+    { en: "Rosewood", ar: "خشب الورد" },
+    { en: "Brazilian Rosewood", ar: "خشب الورد البرازيلي" },
+    { en: "Bamboo Wood", ar: "خشب الخيزران" },
+    { en: "Sequoia", ar: "سيكويا" },
+    { en: "Papyrus", ar: "بردي" },
+    { en: "Cade Oil", ar: "زيت القطران (كاد)" },
+    { en: "Juniper Wood", ar: "خشب العرعر" },
+    { en: "Amyris", ar: "أميريس" },
+    { en: "Timber Accord", ar: "أكورد الأخشاب" },
+    { en: "Dry Woods", ar: "أخشاب جافة" },
+    { en: "Woody Notes", ar: "نوتات خشبية" },
+  ],
+  oriental: [
+    { en: "Amber", ar: "عنبر" },
+    { en: "Labdanum", ar: "لادانوم" },
+    { en: "Benzoin", ar: "بنزوين" },
+    { en: "Myrrh", ar: "مر" },
+    { en: "Frankincense", ar: "لبان" },
+    { en: "Olibanum", ar: "لبان ذكر" },
+    { en: "Opoponax", ar: "أوبوبوناكس (صمغ مر حلو)" },
+    { en: "Tolu Balsam", ar: "بلسم تولو" },
+    { en: "Peru Balsam", ar: "بلسم بيرو" },
+    { en: "Styrax", ar: "ستوراكس (ميعة سائلة)" },
+    { en: "Amber Resin", ar: "راتنج العنبر" },
+    { en: "Ambergris", ar: "عنبر بحري" },
+    { en: "Ambroxan", ar: "أمبروكسان" },
+    { en: "Ambrette Seed", ar: "بذور المسك النباتي" },
+    { en: "Civet", ar: "زباد" },
+    { en: "Castoreum", ar: "كاستوريوم" },
+    { en: "Tobacco Leaf", ar: "ورق التبغ" },
+    { en: "Tobacco Absolute", ar: "مطلق التبغ" },
+    { en: "Bakhoor", ar: "بخور" },
+    { en: "Church Incense", ar: "بخور الكنيسة" },
+    { en: "Copal", ar: "كوبال" },
+    { en: "Elemi", ar: "إليمي" },
+    { en: "Golden Amber", ar: "عنبر ذهبي" },
+    { en: "Black Amber", ar: "عنبر أسود" },
+    { en: "White Amber", ar: "عنبر أبيض" },
+    { en: "Honeyed Amber", ar: "عنبر معسل" },
+    { en: "Amber Accord", ar: "أكورد العنبر" },
+    { en: "Resins", ar: "راتنجات" },
+    { en: "Oriental Spices", ar: "توابل شرقية" },
+    { en: "Balsamic Notes", ar: "نوتات بلسمية" },
+    { en: "Sacred Wood", ar: "خشب مقدس" },
+  ],
+  fresh: [
+    { en: "Green Tea", ar: "شاي أخضر" },
+    { en: "Mint", ar: "نعناع" },
+    { en: "Spearmint", ar: "نعناع أخضر" },
+    { en: "Peppermint", ar: "نعناع فلفلي" },
+    { en: "Eucalyptus", ar: "أوكاليبتوس" },
+    { en: "Aldehydes", ar: "ألدهيدات" },
+    { en: "Ozone", ar: "أوزون" },
+    { en: "Bamboo Leaf", ar: "ورق الخيزران" },
+    { en: "Fresh Cut Grass", ar: "عشب مقصوص طازج" },
+    { en: "Green Leaves", ar: "أوراق خضراء" },
+    { en: "Basil", ar: "ريحان" },
+    { en: "Sage", ar: "مريمية" },
+    { en: "Rosemary", ar: "إكليل الجبل" },
+    { en: "Thyme", ar: "زعتر" },
+    { en: "Fresh Cotton", ar: "قطن منعش" },
+    { en: "Clean Musk", ar: "مسك نظيف" },
+    { en: "Rain Accord", ar: "أكورد المطر" },
+    { en: "Petrichor", ar: "رائحة المطر (بترايكور)" },
+    { en: "Wet Stone", ar: "حجر مبلل" },
+    { en: "Fresh Linen", ar: "كتان نظيف" },
+    { en: "Soap Notes", ar: "نوتات الصابون" },
+    { en: "Air Notes", ar: "نوتات الهواء" },
+    { en: "Fresh Air", ar: "هواء منعش" },
+    { en: "Chilled Vodka", ar: "فودكا مثلجة" },
+    { en: "Ice Accord", ar: "أكورد الثلج" },
+    { en: "Zesty Notes", ar: "نوتات منعشة حمضية" },
+    { en: "Green Accord", ar: "أكورد أخضر" },
+    { en: "Watery Notes", ar: "نوتات مائية" },
+    { en: "Calone", ar: "كالون" },
+    { en: "Aquozone", ar: "أكوازون" },
+  ],
+  aquatic: [
+    { en: "Sea Water", ar: "ماء البحر" },
+    { en: "Sea Breeze", ar: "نسيم البحر" },
+    { en: "Sea Salt", ar: "ملح البحر" },
+    { en: "Marine Accord", ar: "أكورد بحري" },
+    { en: "Algae", ar: "طحالب" },
+    { en: "Seaweed", ar: "عشب بحري" },
+    { en: "Sea Spray", ar: "رذاذ البحر" },
+    { en: "Oceanic Notes", ar: "نوتات محيطية" },
+    { en: "Deep Sea", ar: "أعماق البحر" },
+    { en: "Salt Air", ar: "هواء مالح" },
+    { en: "Kelp", ar: "عشب البحر الكبير" },
+    { en: "Sea Foam", ar: "زبد البحر" },
+    { en: "Aquatic Notes", ar: "نوتات مائية بحرية" },
+    { en: "Mineral Notes", ar: "نوتات معدنية" },
+    { en: "Sea Mist", ar: "ضباب البحر" },
+    { en: "Turquoise Water", ar: "مياه فيروزية" },
+    { en: "Lagoon", ar: "بحيرة ساحلية" },
+    { en: "Rain Water", ar: "مياه الأمطار" },
+    { en: "Waterfall", ar: "شلال" },
+    { en: "Blue Lotus", ar: "لوتس أزرق" },
+    { en: "Coral Reef", ar: "شعاب مرجانية" },
+    { en: "Fresh Water", ar: "مياه عذبة" },
+    { en: "River Water", ar: "مياه النهر" },
+    { en: "Wave Accord", ar: "أكورد الأمواج" },
+    { en: "Sea Wind", ar: "رياح بحرية" },
+    { en: "Blue Water Notes", ar: "نوتات مائية زرقاء" },
+  ],
+  leather: [
+    { en: "Leather", ar: "جلد" },
+    { en: "Suede", ar: "سويدي" },
+    { en: "Birch Tar", ar: "قطران البتولا" },
+    { en: "Smoked Leather", ar: "جلد مدخن" },
+    { en: "Black Leather", ar: "جلد أسود" },
+    { en: "Cordovan Leather", ar: "جلد قرطبي" },
+    { en: "Vintage Leather", ar: "جلد عتيق" },
+    { en: "Suede Musk", ar: "مسك سويدي" },
+    { en: "Tanned Leather", ar: "جلد مدبوغ" },
+    { en: "Chamois Leather", ar: "جلد شمواه" },
+    { en: "Nubuck", ar: "نوبوك" },
+    { en: "Whiskey Leather", ar: "جلد بنكهة الويسكي" },
+    { en: "Leather Wood", ar: "خشب جلدي" },
+    { en: "Isobutyl Quinoline", ar: "إيزوبوتيل كينولين" },
+    { en: "Cade", ar: "قطران العرعر" },
+    { en: "Tarry Notes", ar: "نوتات قطرانية" },
+    { en: "Smoky Leather", ar: "جلد دخاني" },
+    { en: "Antique Leather", ar: "جلد أثري" },
+    { en: "Patent Leather", ar: "جلد لامع" },
+    { en: "Leather Gloves", ar: "قفازات جلدية" },
+    { en: "Rugged Leather", ar: "جلد خشن" },
+    { en: "Saddle Leather", ar: "جلد السروج" },
+    { en: "Leather Accord", ar: "أكورد الجلد" },
+    { en: "Dry Leather", ar: "جلد جاف" },
+    { en: "Tobacco Leather", ar: "جلد بنكهة التبغ" },
+    { en: "Oud Leather", ar: "جلد بالعود" },
+  ],
+  musk: [
+    { en: "White Musk", ar: "مسك أبيض" },
+    { en: "Musk", ar: "مسك" },
+    { en: "Egyptian Musk", ar: "مسك مصري" },
+    { en: "Red Musk", ar: "مسك أحمر" },
+    { en: "Black Musk", ar: "مسك أسود" },
+    { en: "Musk Ambrette", ar: "مسك أمبريت" },
+    { en: "Skin Musk", ar: "مسك الجلد" },
+    { en: "Cashmere Musk", ar: "مسك الكشمير" },
+    { en: "Powdery Musk", ar: "مسك بودرة" },
+    { en: "Animalic Musk", ar: "مسك حيواني" },
+    { en: "Musky Notes", ar: "نوتات مسكية" },
+    { en: "Muscone", ar: "موسكون" },
+    { en: "Nitro Musk", ar: "مسك نيترو" },
+    { en: "Saudi Musk", ar: "مسك سعودي" },
+    { en: "Sweet Musk", ar: "مسك حلو" },
+    { en: "Vanilla Musk", ar: "مسك بالفانيليا" },
+    { en: "Cotton Musk", ar: "مسك القطن" },
+    { en: "Baby Powder Musk", ar: "مسك بودرة الأطفال" },
+    { en: "Musk Mallow", ar: "خطمية مسكية" },
+    { en: "Tonkin Musk", ar: "مسك تونكيني" },
+    { en: "Deer Musk", ar: "مسك الغزال" },
+    { en: "White Musk Accord", ar: "أكورد المسك الأبيض" },
+    { en: "Golden Musk", ar: "مسك ذهبي" },
+    { en: "Silk Musk", ar: "مسك حريري" },
+    { en: "Warm Musk", ar: "مسك دافئ" },
+    { en: "Soft Musk", ar: "مسك ناعم" },
+  ],
+  oud: [
+    { en: "Oud", ar: "عود" },
+    { en: "Cambodian Oud", ar: "عود كمبودي" },
+    { en: "Indian Oud", ar: "عود هندي" },
+    { en: "Malaysian Oud", ar: "عود ماليزي" },
+    { en: "Laotian Oud", ar: "عود لاوسي" },
+    { en: "Hindi Oud", ar: "عود هندي أصلي" },
+    { en: "Cambodi Oud", ar: "عود كمبودي أصيل" },
+    { en: "Oud Wood", ar: "خشب العود" },
+    { en: "Agarwood", ar: "خشب العود (أغروود)" },
+    { en: "Oud Oil", ar: "زيت العود" },
+    { en: "Dahn Al Oud", ar: "دهن العود" },
+    { en: "Oud Chips", ar: "رقائق العود" },
+    { en: "Royal Oud", ar: "عود ملكي" },
+    { en: "Sheikh Oud", ar: "عود شيخي" },
+    { en: "Assam Oud", ar: "عود آسامي" },
+    { en: "Burmese Oud", ar: "عود بورمي" },
+    { en: "Vietnamese Oud", ar: "عود فيتنامي" },
+    { en: "Trat Oud", ar: "عود ترات" },
+    { en: "Taif Oud", ar: "عود الطائف" },
+    { en: "Aged Oud", ar: "عود معتق" },
+    { en: "Smoky Oud", ar: "عود دخاني" },
+    { en: "Sweet Oud", ar: "عود حلو" },
+    { en: "Spicy Oud", ar: "عود توابلي" },
+    { en: "White Oud", ar: "عود أبيض" },
+    { en: "Black Oud", ar: "عود أسود" },
+    { en: "Bakhoor Oud", ar: "بخور العود" },
+    { en: "Oud Resin", ar: "راتنج العود" },
+  ],
+};
+
+// Flattened, deduped lookup — mirrors the first-family-wins dedupe in
+// scripts/seed-notes.mjs, so a slug here resolves to the same family the DB
+// would assign it. Built once at module load.
+export const NOTES_BY_SLUG = (() => {
+  const map = new Map();
+  for (const [family, notes] of Object.entries(NOTES_CATALOG)) {
+    for (const n of notes) {
+      const slug = slugify(n.en);
+      if (!slug || map.has(slug)) continue;
+      map.set(slug, { slug, en: n.en, ar: n.ar, family });
+    }
+  }
+  return map;
+})();
+
+export const getNoteBySlug = (slug) => NOTES_BY_SLUG.get(slug) || null;
+
+// Curated picker set for the scent-finder quiz — ~40 notes spanning all 12
+// families, chosen for recognizability to an Arabic-speaking Egyptian/Gulf
+// buyer aged 20-45. The full NOTES_CATALOG (~950 notes) stays admin-only for
+// product tagging; shoppers choose from this shortlist instead. Every slug
+// here is verified (see notesCatalog.test pattern below) to resolve via
+// NOTES_BY_SLUG — a slug that doesn't match a real catalog entry is a bug.
+export const HERO_NOTES = [
+  // citrus
+  "bergamot", "lemon", "orange", "mandarin-orange",
+  // floral
+  "rose", "jasmine", "lavender", "orange-blossom",
+  // fruity
+  "apple", "peach", "coconut",
+  // spicy
+  "cinnamon", "cardamom", "saffron",
+  // woody
+  "sandalwood", "cedarwood", "vetiver", "patchouli",
+  // oriental / amber
+  "amber", "frankincense", "bakhoor",
+  // fresh
+  "mint", "green-tea", "ozone",
+  // gourmand
+  "vanilla", "caramel", "honey", "tonka-bean",
+  // aquatic
+  "sea-salt", "sea-breeze", "blue-lotus",
+  // leather
+  "leather", "suede", "tobacco-leather",
+  // musk
+  "white-musk", "musk", "egyptian-musk", "powdery-musk",
+  // oud
+  "oud", "cambodian-oud", "dahn-al-oud", "bakhoor-oud",
+];
+
+// Fail loudly in dev if a curated slug drifts from the catalog (e.g. an `en`
+// label gets edited and slugify() no longer matches).
+if (import.meta.env?.DEV) {
+  const missing = HERO_NOTES.filter((slug) => !NOTES_BY_SLUG.has(slug));
+  if (missing.length) {
+    console.error(`HERO_NOTES has ${missing.length} slug(s) with no catalog match:`, missing);
+  }
+}

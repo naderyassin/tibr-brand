@@ -6,6 +6,7 @@ import TrustBadges from "./home/TrustBadges";
 import BrandLogoStrip from "./home/BrandLogoStrip";
 import ReviewsBanner from "./home/ReviewsBanner";
 import AboutBlurb from "./home/AboutBlurb";
+import PersonalityBanner from "./home/PersonalityBanner";
 
 export default function ShopHome() {
   return (
@@ -14,6 +15,9 @@ export default function ShopHome() {
       <div className="store-container shop-home">
         <MerchandisingRails filterKey="spotlight" />
         <CategoryTiles />
+        
+        <PersonalityBanner />
+        
         <MerchandisingRails filterKey="others" />
         <PromoTiles />
         
