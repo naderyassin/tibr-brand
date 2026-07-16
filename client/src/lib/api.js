@@ -6,8 +6,21 @@ const req = async (method, path, body, token) => {
     headers,
     body: body ? JSON.stringify(body) : undefined,
   });
-  const json = await res.json();
-  if (!res.ok) throw new Error(json.error || "Request failed");
+
+  // A dropped connection or a route that errors before sending a body still
+  // resolves as a Response — res.json() on an empty body throws a cryptic
+  // "Unexpected end of JSON input" that hides the real (network/server) failure.
+  const text = await res.text();
+  let json = null;
+  if (text) {
+    try {
+      json = JSON.parse(text);
+    } catch {
+      throw new Error(`Server returned an invalid response (${res.status}).`);
+    }
+  }
+
+  if (!res.ok) throw new Error(json?.error || `Request failed (${res.status}).`);
   return json;
 };
 

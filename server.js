@@ -855,6 +855,64 @@ const SORTS = {
   alpha: { column: "en_name", ascending: true },
 };
 
+// Automatic product-class discounts read as a live "sale price" on the
+// storefront: computed into the same compare_at_price/price pair ProductCard
+// and the PDP already render for a manual markdown, instead of a new display
+// path. Public (no auth) — mirrors /api/discounts/shipping, which reads the
+// discounts table (admin-only via RLS) through the service client for the
+// same reason: shoppers need to see the effect of a live discount without
+// being able to read the discounts table directly.
+const getActiveAutomaticProductDiscounts = async (serviceClient) => {
+  const { data, error } = await serviceClient
+    .from("discounts")
+    .select("id, type, value, applies_to, product_ids, starts_at, ends_at")
+    .eq("method", "automatic")
+    .eq("discount_class", "product")
+    .eq("active", true)
+    .eq("eligibility", "all");
+
+  if (error) return [];
+
+  const now = new Date();
+  return (data || []).filter((d) => {
+    if (d.starts_at && new Date(d.starts_at) > now) return false;
+    if (d.ends_at && new Date(d.ends_at) < now) return false;
+    return true;
+  });
+};
+
+// Mutates each product's raw product_variants in place, before normalizeProduct
+// runs, so the derived top-level `price` picks up the discounted amount for
+// free. A variant that already carries its own compare_at_price (a manual
+// sale set on the product form) is left alone — the manual price wins rather
+// than stacking with an automatic discount.
+const applyAutomaticProductDiscounts = (products, discounts) => {
+  if (!discounts.length) return products;
+
+  for (const product of products) {
+    for (const variant of product.product_variants || []) {
+      if (variant.compare_at_price != null || variant.price == null) continue;
+
+      const price = Number(variant.price);
+      let best = null;
+      for (const d of discounts) {
+        if (d.applies_to !== "all" && !(d.product_ids || []).includes(String(product.id))) continue;
+        const discounted = d.type === "percentage"
+          ? Math.round(price * (1 - d.value / 100))
+          : Math.max(0, price - d.value);
+        if (discounted < price && (best == null || discounted < best)) best = discounted;
+      }
+
+      if (best != null) {
+        variant.compare_at_price = price;
+        variant.price = best;
+      }
+    }
+  }
+
+  return products;
+};
+
 app.get("/api/products", async (req, res) => {
   const q = req.query || {};
 
@@ -915,7 +973,8 @@ app.get("/api/products", async (req, res) => {
     return res.status(500).json({ error: "Failed to load products." });
   }
 
-  let products = (data || []).map(normalizeProduct);
+  const activeDiscounts = await getActiveAutomaticProductDiscounts(createServiceClient());
+  let products = applyAutomaticProductDiscounts(data || [], activeDiscounts).map(normalizeProduct);
 
   // "On offer" is a per-VARIANT fact (a size with a compare-at above its price),
   // so it can't be a Postgres column filter — apply it after normalization.
@@ -985,6 +1044,9 @@ app.get("/api/products/:id", async (req, res) => {
 
   if (error) return res.status(500).json({ error: "Failed to load product." });
   if (!data) return res.status(404).json({ error: "Product not found." });
+
+  const activeDiscounts = await getActiveAutomaticProductDiscounts(createServiceClient());
+  applyAutomaticProductDiscounts([data], activeDiscounts);
 
   res.json({ data: normalizeProduct(data) });
 });
@@ -1582,58 +1644,66 @@ app.get("/api/admin/discounts/:id", requireUser, requireAdmin, async (req, res) 
 });
 
 app.post("/api/admin/discounts", requireUser, requireAdmin, async (req, res) => {
-  const userClient = createAuthedClient(req.accessToken);
-  const discount = sanitizeDiscountPayload(req.body || {});
-  const validationError = validateDiscountPayload(discount);
+  try {
+    const userClient = createAuthedClient(req.accessToken);
+    const discount = sanitizeDiscountPayload(req.body || {});
+    const validationError = validateDiscountPayload(discount);
 
-  if (validationError) {
-    return res.status(400).json({ error: validationError });
-  }
-
-  const { data, error } = await userClient
-    .from("discounts")
-    .insert(discount)
-    .select()
-    .single();
-
-  if (error) {
-    if (error.code === "23505") {
-      return res.status(400).json({ error: `Discount code "${discount.code}" already exists.` });
+    if (validationError) {
+      return res.status(400).json({ error: validationError });
     }
-    return res.status(500).json({ error: error.message || "Failed to create discount." });
-  }
 
-  res.status(201).json({ data });
+    const { data, error } = await userClient
+      .from("discounts")
+      .insert(discount)
+      .select()
+      .single();
+
+    if (error) {
+      if (error.code === "23505") {
+        return res.status(400).json({ error: `Discount code "${discount.code}" already exists.` });
+      }
+      return res.status(500).json({ error: error.message || "Failed to create discount." });
+    }
+
+    res.status(201).json({ data });
+  } catch (err) {
+    res.status(500).json({ error: err.message || "Failed to create discount." });
+  }
 });
 
 app.patch("/api/admin/discounts/:id", requireUser, requireAdmin, async (req, res) => {
-  const userClient = createAuthedClient(req.accessToken);
-  const discount = sanitizeDiscountPayload(req.body || {});
-  const validationError = validateDiscountPayload(discount);
+  try {
+    const userClient = createAuthedClient(req.accessToken);
+    const discount = sanitizeDiscountPayload(req.body || {});
+    const validationError = validateDiscountPayload(discount);
 
-  if (validationError) {
-    return res.status(400).json({ error: validationError });
-  }
-
-  // discount_class is immutable after creation — never part of an update,
-  // regardless of what the request body claims it is.
-  delete discount.discount_class;
-
-  const { data, error } = await userClient
-    .from("discounts")
-    .update(discount)
-    .eq("id", req.params.id)
-    .select()
-    .single();
-
-  if (error) {
-    if (error.code === "23505") {
-      return res.status(400).json({ error: `Discount code "${discount.code}" already exists.` });
+    if (validationError) {
+      return res.status(400).json({ error: validationError });
     }
-    return res.status(500).json({ error: error.message || "Failed to update discount." });
-  }
 
-  res.json({ data });
+    // discount_class is immutable after creation — never part of an update,
+    // regardless of what the request body claims it is.
+    delete discount.discount_class;
+
+    const { data, error } = await userClient
+      .from("discounts")
+      .update(discount)
+      .eq("id", req.params.id)
+      .select()
+      .single();
+
+    if (error) {
+      if (error.code === "23505") {
+        return res.status(400).json({ error: `Discount code "${discount.code}" already exists.` });
+      }
+      return res.status(500).json({ error: error.message || "Failed to update discount." });
+    }
+
+    res.json({ data });
+  } catch (err) {
+    res.status(500).json({ error: err.message || "Failed to update discount." });
+  }
 });
 
 app.delete("/api/admin/discounts/:id", requireUser, requireAdmin, async (req, res) => {
