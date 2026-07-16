@@ -116,7 +116,10 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 4rem 8%;
+  /* Outer padding tracks the page gutter so the text lines up with the
+     --container column even though the section itself is full-bleed. */
+  padding-block: 4rem;
+  padding-inline: max(8%, calc((100vw - var(--container)) / 2)) 8%;
   position: relative;
   z-index: 2;
   text-align: center;

@@ -83,7 +83,7 @@
 
   --section-pad: clamp(2.5rem, 1.5rem + 4vw, 5rem);
   --gutter:      clamp(1.25rem, 0.75rem + 2vw, 2.5rem);
-  --container:   72rem;       /* 1152px max content width */
+  --container:   90rem;       /* 1440px max content width */
   --container-narrow: 34rem;  /* auth / forms */
 
   /* ===========================================================
