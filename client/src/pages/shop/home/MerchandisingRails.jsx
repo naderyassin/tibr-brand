@@ -75,7 +75,15 @@ export default function MerchandisingRails({ filterKey }) {
             <h2 className="product-rail__title">{rail.title}</h2>
             <Link className="product-rail__view-all" to={rail.to}>View All</Link>
           </div>
-          <div className="product-rail__track" data-lenis-prevent>
+          {/* Prevent horizontal gestures only, so the rail's own left-right
+              scroll-snap still works. Excluding vertical gestures too (the
+              old data-lenis-prevent / data-lenis-prevent-touch) let native
+              scroll move the page here without Lenis knowing, desyncing its
+              internal scroll position from the real one — the next Lenis
+              scroll anywhere else on the page then "corrects" to that stale
+              position, jumping the viewport somewhere unrelated (e.g. straight
+              to the footer). */}
+          <div className="product-rail__track" data-lenis-prevent-horizontal>
             {rail.items.slice(0, MAX_PER_RAIL).map((p, i) => (
               <div className="product-rail__item" key={p.id}>
                 <ProductCard product={p} index={i} />
