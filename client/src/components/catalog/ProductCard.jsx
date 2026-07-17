@@ -87,7 +87,7 @@ export default function ProductCard({ product, index = 0 }) {
 
   return (
     <motion.article
-      className="product-new is-visible"
+      className={`product-new is-visible${product.is_bestseller ? " product-new--bestseller" : ""}`}
       data-product
       data-id={product.id}
       initial={{ opacity: 0, y: 18 }}
@@ -106,14 +106,9 @@ export default function ProductCard({ product, index = 0 }) {
 
       <Link className="product-new__link" to={`/product?id=${product.id}`} aria-label={name}>
         <div className="product-new__media">
-          {(product.is_bestseller || onSale) && (
+          {onSale && (
             <div className="product-new__badges">
-              {product.is_bestseller && (
-                <span className="product-new__badge product-new__badge--best">Best Seller</span>
-              )}
-              {onSale && (
-                <span className="product-new__badge product-new__badge--sale">-{discountPct}%</span>
-              )}
+              <span className="product-new__badge product-new__badge--sale">-{discountPct}%</span>
             </div>
           )}
           {product.image ? (
@@ -146,8 +141,8 @@ export default function ProductCard({ product, index = 0 }) {
             </span>
           </div>
 
-          <div className="product-new__action-pill">
-            <span className="product-new__price-text">
+          <div className="product-new__price-row">
+            <span className="product-new__price">
               EGP {Number(fromPrice).toLocaleString()}
             </span>
             {onSale && (
@@ -155,6 +150,10 @@ export default function ProductCard({ product, index = 0 }) {
                 EGP {compareAt.toLocaleString()}
               </span>
             )}
+          </div>
+
+          <div className="product-new__action-pill">
+            <span className="product-new__action-text">Add to cart</span>
             <span className="product-new__arrow-wrap">
               <svg className="product-new__arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
                 <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />

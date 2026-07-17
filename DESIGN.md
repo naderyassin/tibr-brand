@@ -277,10 +277,41 @@ Components are tactile and direct. Every element has a clear affordance. Hover a
 
 The catalog's primary merchandising unit. Rules:
 - 4:5 aspect-ratio product image with a spot-vignette radial gradient (same as the PDP, no glassmorphism).
-- Title in the store display face, price in `--ink` (tabular nums, semibold), collection/meta in `--muted`.
+- Title in the store display face, collection/meta in `--muted`.
+- Price display sits in a dedicated row (`.product-new__price-row`) above the action button, showing the current price in semibold ink and the struck-through comparative price (`.product-new__price-was`) side-by-side if on sale.
+- Action button is a stretched pill (`.product-new__action-pill`) that says "Add to cart" with a right arrow. On hover: shifts background to charcoal (`#2c2c2e`), adds a soft gold border tint (`rgba(212,175,55,0.45)`), and slides the arrow right (`translateX(4px)`).
 - Wishlist heart reveals on hover; its background is semi-transparent dark (`oklch(0.13 0.005 75 / 0.55)`) — not glass.
-- Zero resting shadow. On hover: Lifted shadow applies.
+- Zero resting shadow. On hover: Hover effect is focused solely on the product image zooming (`transform: scale(1.06)`); the outer card remains completely static (no translateY shift, no border highlight change, no outer shadow lift).
 - No outer border at rest. The dark product image against Ink Chamber creates natural separation without a border.
+
+**Best Seller — gold frame.** Products flagged `is_bestseller` receive the `.product-new--bestseller` modifier class. No badge is shown inside the card; the card itself becomes the signal:
+- Border: `#d4af37` — Hammered Brass all the way around the card, hardcoded.
+- Outer glow: `0 0 0 1px rgba(212,175,55,0.35)` + `0 4px 24px rgba(212,175,55,0.12)` — a soft halo that reads even on white backgrounds.
+- Top shimmer line: a 2px `::before` pseudo-element with a `transparent → #d4af37 → #f5df9e → #d4af37 → transparent` gradient, suggesting a lit edge.
+- Hover: The gold border frame and glow remain completely static (no glow intensity shift, no scale change) keeping the focus on the product image zoom.
+
+**Discount — gold ghost badge.** Products on sale show a small pill badge (`.product-new__badge--sale`) over the product image. Its style matches the footer newsletter arrow:
+- Background: `rgba(255,255,255,0.06)` — near-invisible.
+- Border: `1px solid #d4af37`.
+- Text: `#d4af37`.
+This is a deliberate departure from a solid-fill badge. The ghost treatment keeps the badge legible without competing with the product photography or introducing a solid color block.
+
+### Footer
+
+The store footer renders only on three surfaces: **Home** (`/`), **About** (`/about`), and any **Shop** route (`/shop/*`). It is hidden on Product detail, Cart, Checkout, Blog, Auth, and Account pages — those pages have focused tasks that the footer would interrupt.
+
+**Newsletter form — arrow button.** The submit arrow (`→`) inside the newsletter email field is the single deliberate gold accent in the store footer. Its treatment:
+- Background: `rgba(255,255,255,0.06)` — near-invisible; the arrow reads as floating.
+- Border: `1px solid #d4af37` — gold hairline; frames the button without a filled-gold slab.
+- Arrow color: `#d4af37` — the brand's Hammered Brass, hardcoded to survive the store's `--gold → ink` remap that would otherwise neutralize it.
+- Hover: `rgba(212,175,55,0.15)` fill, border and arrow advance to `#f5df9e` (bright gold), +scale(1.05).
+
+**Sanctioned gold uses in the store.** Hammered Brass (`#d4af37`) appears in exactly three places in the store register, all deliberate:
+1. **Newsletter arrow button** — brand touchpoint, not a transactional input.
+2. **Bestseller card frame** — a permanent border + glow marking editorial curation.
+3. **Discount badge** — a ghost pill (transparent fill, gold border, gold text) over the product image.
+
+Do not propagate this treatment to other form buttons, CTAs, navigation elements, or card types. These three are the ceiling, not a precedent.
 
 ### Order Summary / Cart
 
@@ -300,7 +331,7 @@ All four are desaturated enough to sit in the dim store room; bright enough to r
 
 ### Do:
 
-- **Do** keep the store monochrome: black (ink) is its only accent — on prices, primary CTA buttons, active navigation states, and focus rings. Gold belongs to the landing, never the store content.
+- **Do** keep the store nearly monochrome: black (ink) is its primary accent — on prices, primary CTA buttons, active navigation states, and focus rings. Gold (`#d4af37`) appears in exactly three sanctioned locations: the newsletter arrow, bestseller card frames, and the discount badge. Nowhere else.
 - **Do** keep the store layer dark. Every new section, page, and panel inherits from `--bg` (Ink Chamber). A light or cream section in the store is a register violation.
 - **Do** verify contrast before shipping any new text color. The minimum is 4.5:1 against the nearest background token. Graphite Dust (`oklch(0.688 0.013 78)`) is the absolute floor for informational text.
 - **Do** use RTL-aware logical CSS properties (`inset-inline-start`, `padding-block`, `margin-inline-end`, `border-inline-start`) throughout the store. `left` and `right` directional properties are prohibited.
@@ -317,7 +348,7 @@ All four are desaturated enough to sit in the dim store room; bright enough to r
 - **Don't** recreate generic Arabic e-commerce aesthetics (Noon.com / Jumia): cluttered layouts, price-forward hierarchy, utility-over-atmosphere. Per PRODUCT.md: "dark, calm, and product-led, the opposite of a marketplace."
 - **Don't** bleed Egyptian ornamental theming (Cinzel Decorative, gold filigree, Cormorant Garamond, arabesque motifs) into the store layer. The landing and store connect through the gold accent and the name alone; not through shared ornament.
 - **Don't** touch the landing page's visual identity. Per PRODUCT.md: "Work here is additive only: animation and motion." The Rakkas / Cinzel / Cormorant type, the gold-on-near-black palette, and the ornamental detail are locked.
-- **Don't** introduce a second accent color in the store. There is one accent — black. Adding even a "warm" or gold accent dilutes the monochrome authority.
+- **Don't** introduce unsanctioned gold into the store. The three approved gold uses (newsletter arrow, bestseller frame, discount badge) are the ceiling. Any new gold element requires an explicit decision — it is not a pattern to extend freely.
 - **Don't** use `border-left` or `border-right` greater than 1px as a colored stripe on cards or list items. Rewrite with full borders, background tints, or nothing.
 - **Don't** use gradient text (`background-clip: text` + any gradient). Emphasis is communicated through weight, size, or `--ink` solid color — never a gradient.
 - **Don't** repeat small uppercase tracked eyebrow labels above every section heading. The catalog uses one hairline `<hr>` rule beneath the display heading. That is the store's only section-identity device. AI scaffolding eyebrows are prohibited.

@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { getProduct, getProductReviews } from "@/lib/api";
+import { getProduct, getProductReviews, getProducts } from "@/lib/api";
+import ProductCard from "@/components/catalog/ProductCard";
 import { useCart } from "@/stores/cart";
 import { useAuth } from "@/stores/auth";
 import { useWishlist } from "@/stores/wishlist";
@@ -33,6 +34,11 @@ export default function Product() {
   const toast = useToast();
   const [selectedVariantId, setSelectedVariantId] = useState(null);
   const [activeImgIndex, setActiveImgIndex] = useState(0);
+  const [qty, setQty] = useState(1);
+
+  useEffect(() => {
+    setQty(1);
+  }, [id, selectedVariantId]);
 
   const { data: productData, isLoading, isError } = useQuery({
     queryKey: ["product", id],
@@ -44,6 +50,12 @@ export default function Product() {
     queryKey: ["reviews", id],
     queryFn: () => getProductReviews(id),
     enabled: !!id,
+  });
+
+  const { data: recommendedData } = useQuery({
+    queryKey: ["products-recommended", id],
+    queryFn: () => getProducts({}),
+    enabled: !!productData?.data,
   });
 
   if (!id) {
@@ -99,9 +111,21 @@ export default function Product() {
 
   const images = p.images?.length ? p.images : (p.image ? [p.image] : []);
 
+  const relatedProducts = (() => {
+    const all = recommendedData?.data || [];
+    const candidates = all.filter((item) => item.id !== p.id);
+    return [...candidates]
+      .sort((a, b) => {
+        const aSameBrand = a.brands?.slug === p.brands?.slug ? 1 : 0;
+        const bSameBrand = b.brands?.slug === p.brands?.slug ? 1 : 0;
+        return bSameBrand - aSameBrand;
+      })
+      .slice(0, 4);
+  })();
+
   const handleAddToCart = () => {
-    addItem(p, activeVariant);
-    toast(`<strong>${name}</strong>${activeVariant ? ` (${activeVariant.size_label})` : ""} added to cart`);
+    addItem(p, activeVariant, qty);
+    toast(`<strong>${name}</strong>${activeVariant ? ` (${activeVariant.size_label})` : ""} x${qty} added to cart`);
   };
 
   const isWishlisted = savedIds.has(p.id);
@@ -173,11 +197,11 @@ export default function Product() {
           <motion.div variants={itemVariants}>
             <p className="pdp__collection">{catLabel}</p>
             <h1 className="pdp__title">{name}</h1>
+            {compareAt && Number(compareAt) > price && (
+              <p className="pdp__price-was">EGP {Number(compareAt).toLocaleString()}</p>
+            )}
             <p className="pdp__price">
-              {price} EGP
-              {compareAt && Number(compareAt) > price && (
-                <span className="pdp__price-was"> {compareAt} EGP</span>
-              )}
+              EGP {Number(price).toLocaleString()}
             </p>
           </motion.div>
 
@@ -207,21 +231,48 @@ export default function Product() {
           )}
 
           <motion.div variants={itemVariants} className="pdp__actions">
+            <div className="pdp__qty-wrapper">
+              <span className="pdp__field-label pdp__qty-label">Quantity</span>
+              <div className="pdp__qty-selector">
+                <button
+                  type="button"
+                  className="pdp__qty-btn"
+                  onClick={() => setQty((q) => Math.max(1, q - 1))}
+                  disabled={qty <= 1 || soldOut}
+                >
+                  —
+                </button>
+                <span className="pdp__qty-value">{qty}</span>
+                <button
+                  type="button"
+                  className="pdp__qty-btn"
+                  onClick={() => setQty((q) => q + 1)}
+                  disabled={soldOut}
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
             <button
               className="btn btn--primary btn--lg pdp__add-cart"
               type="button"
               onClick={handleAddToCart}
               disabled={!activeVariant || soldOut}
             >
-              {soldOut ? "Sold out" : "Add to cart"}
+              {soldOut ? "SOLD OUT" : "ADD TO CART"}
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true" style={{flexShrink:0}}>
+                <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </button>
-            <div className="pdp__trust">
-              <span className="pdp__trust-item"><TruckIcon /> Cash on delivery across Egypt</span>
-              <span className="pdp__trust-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> 
-                100% Authentic Guarantee
-              </span>
-            </div>
+          </motion.div>
+
+          <motion.div variants={itemVariants} className="pdp__trust">
+            <span className="pdp__trust-item"><TruckIcon /> Cash on delivery across Egypt</span>
+            <span className="pdp__trust-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> 
+              100% Authentic Guarantee
+            </span>
           </motion.div>
 
           <motion.div variants={itemVariants} className="pdp__accordions">
@@ -263,6 +314,19 @@ export default function Product() {
           </motion.div>
         </div>
       </motion.article>
+
+      {relatedProducts.length > 0 && (
+        <section className="product-rail pdp__recommended">
+          <h2 className="product-rail__title pdp__recommended-title">You May Also Like</h2>
+          <div className="product-rail__track" data-lenis-prevent-horizontal>
+            {relatedProducts.map((prod, idx) => (
+              <div className="product-rail__item" key={prod.id}>
+                <ProductCard product={prod} index={idx} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

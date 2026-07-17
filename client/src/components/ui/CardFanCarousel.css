@@ -65,9 +65,9 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  object-position: center 36%;
-  padding: 3rem 2.25rem 4.5rem; /* Large padding to make the bottle look further away */
+  object-fit: cover;
+  object-position: center;
+  padding: 0;
   display: block;
   transition: transform 0.4s ease;
 }

@@ -2,13 +2,13 @@ import CardFanCarousel from "../../components/ui/CardFanCarousel";
 import "./Perfumes.css";
 
 const FEATURED = [
-  { id: "feat-1",  en_name: "TOM FORD",       image: "/brands/tomford_noir.jpg" },
-  { id: "feat-2",  en_name: "DIOR",           image: "/brands/dior_homme_intense.jpg" },
-  { id: "feat-3",  en_name: "CHANEL",         image: "/brands/bleu_de_chanel.jpg" },
-  { id: "feat-4",  en_name: "GUCCI",          image: "/brands/gucci_guilty_black.jpg" },
-  { id: "feat-5",  en_name: "GIORGIO ARMANI", image: "/brands/armani_stronger_with_you.jpg" },
-  { id: "feat-6",  en_name: "VERSACE",        image: "/brands/tomford_noir.jpg" },
-  { id: "feat-7",  en_name: "CREED",          image: "/brands/dior_homme_intense.jpg" },
+  { id: "feat-1",  en_name: "TOM FORD",       image: "/brands/tomford_noir.png" },
+  { id: "feat-2",  en_name: "DIOR",           image: "/brands/dior_homme_intense.png" },
+  { id: "feat-3",  en_name: "CHANEL",         image: "/brands/bleu_de_chanel.png" },
+  { id: "feat-4",  en_name: "GUCCI",          image: "/brands/gucci_guilty_black.png" },
+  { id: "feat-5",  en_name: "GIORGIO ARMANI", image: "/brands/si_passione.png" },
+  { id: "feat-6",  en_name: "VERSACE",        image: "/brands/tomford_noir.png" },
+  { id: "feat-7",  en_name: "CREED",          image: "/brands/dior_homme_intense.png" },
 ];
 
 const CAROUSEL_CARDS = FEATURED.map((item) => ({

@@ -11,6 +11,13 @@ export default function AppShell() {
   const location = useLocation();
   const isHome = location.pathname === "/";
 
+  const showFooter =
+    (location.pathname === "/" ||
+    location.pathname === "/about" ||
+    location.pathname === "/product" ||
+    location.pathname.startsWith("/shop")) &&
+    location.pathname !== "/shop/signature";
+
   useEffect(() => {
     // Lenis owns the scroll — window.scrollY can be stale when Lenis is active.
     // We read window.__lenisScrollY which main.jsx keeps in sync via lenis.on("scroll").
@@ -82,7 +89,7 @@ export default function AppShell() {
       <main id="main">
         <Outlet />
       </main>
-      <Footer />
+      {showFooter && <Footer />}
     </ToastProvider>
   );
 }
