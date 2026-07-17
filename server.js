@@ -6,6 +6,7 @@ const compression = require("compression");
 const dotenv = require("dotenv");
 const multer = require("multer");
 const { createClient } = require("@supabase/supabase-js");
+const paymob = require("./paymob");
 
 dotenv.config();
 
@@ -1307,6 +1308,231 @@ app.post("/api/checkout", requireUser, async (req, res) => {
   });
 });
 
+// Public runtime config the storefront reads — e.g. whether to offer card
+// payments at all (Paymob configured) so the checkout doesn't show a dead option.
+app.get("/api/config", (req, res) => {
+  res.json({ data: { cardPayments: paymob.isConfigured() } });
+});
+
+// ── Card payments (Paymob) ───────────────────────────────────────────────────
+// Creates a PENDING, UNPAID order, then a Paymob intention, and returns the
+// hosted-checkout URL to redirect to. Stock decrement and discount-usage counting
+// happen only after the webhook confirms payment — never here. Card data never
+// touches this server (Paymob hosts the form).
+
+app.post("/api/checkout/card", requireUser, async (req, res) => {
+  if (!paymob.isConfigured()) {
+    return res.status(503).json({ error: "Card payments are not available right now." });
+  }
+
+  const userClient = createAuthedClient(req.accessToken);
+  const {
+    items,
+    customer_name: customerName,
+    customer_phone: customerPhone,
+    customer_address: customerAddress,
+    customer_email: customerEmail,
+    discount_code: discountCode
+  } = req.body || {};
+
+  if (!Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({ error: "At least one cart item is required." });
+  }
+  if (!customerName || !customerPhone || !customerAddress) {
+    return res.status(400).json({ error: "customer_name, customer_phone, and customer_address are required." });
+  }
+
+  const { lines, error: lineError } = await buildOrderLines(items);
+  if (lineError) return res.status(400).json({ error: lineError });
+
+  const checkoutReference = randomUUID();
+  const orderRows = lines.map((line) => ({
+    product_id: line.product_id,
+    variant_id: line.variant_id,
+    qty: line.qty,
+    unit_price: line.unit_price,
+    order_total: line.unit_price * line.qty,
+    customer_name: customerName,
+    customer_phone: customerPhone,
+    customer_address: customerAddress
+  }));
+
+  // Server-side discount re-validation — identical policy to COD checkout: a
+  // valid typed code wins, else the single best active automatic discount.
+  const cart = {
+    lines: orderRows.map((row) => ({ productId: row.product_id, qty: row.qty, unitPrice: row.unit_price, lineTotal: row.order_total })),
+    subtotal: orderRows.reduce((sum, row) => sum + row.order_total, 0)
+  };
+  const serviceClient = createServiceClient();
+  const evalCtx = { userId: req.user.id, customerPhone, serviceClient };
+
+  let appliedDiscount = null;
+  const code = String(discountCode || "").trim().toUpperCase();
+  if (code) {
+    const { data: discount } = await serviceClient
+      .from("discounts").select("*").eq("code", code).eq("method", "code").single();
+    const outcome = discount ? await evaluateCartDiscount(discount, cart, evalCtx) : null;
+    if (!outcome || outcome.error) {
+      return res.status(400).json({ error: outcome?.error || "This discount code isn't valid." });
+    }
+    appliedDiscount = outcome.result;
+  } else {
+    const { data: candidates } = await serviceClient
+      .from("discounts").select("*").eq("method", "automatic").eq("active", true);
+    appliedDiscount = await pickBestDiscount(candidates || [], cart, evalCtx);
+  }
+
+  if (appliedDiscount) {
+    applyLineAdjustments(orderRows, appliedDiscount.line_adjustments);
+    orderRows.forEach((row) => {
+      row.discount_id = appliedDiscount.id;
+      row.discount_title = appliedDiscount.title ?? appliedDiscount.code;
+      row.discount_code = appliedDiscount.method === "code" ? appliedDiscount.code : null;
+    });
+  }
+
+  const subtotal = lines.reduce((sum, l) => sum + l.unit_price * l.qty, 0);
+  const discountAmount = orderRows.reduce((sum, r) => sum + (r.discount_amount || 0), 0);
+  const total = Math.max(0, subtotal - discountAmount);
+
+  const { data: order, error } = await saveOrder(userClient, {
+    order: {
+      user_id: req.user.id,
+      status: "pending",
+      payment_method: "card",
+      payment_provider: "paymob",
+      payment_status: "unpaid",
+      checkout_reference: checkoutReference,
+      subtotal,
+      shipping: 0,
+      discount_amount: discountAmount,
+      discount_code: appliedDiscount?.method === "code" ? appliedDiscount.code : null,
+      total,
+      customer_name: customerName,
+      customer_phone: customerPhone,
+      customer_address: customerAddress
+    },
+    lines
+  });
+  if (error) return res.status(500).json({ error: error.message || "Failed to start checkout." });
+
+  // Paymob rejects an intention whose items don't sum to `amount`; when a
+  // discount applies we can't itemise cleanly, so send one summarised line.
+  const items_payload = discountAmount > 0
+    ? [{ name: "TIBR order", amount: Math.round(total * 100), description: `${lines.length} item(s)`, quantity: 1 }]
+    : lines.map((l) => ({
+        name: (l.name_snapshot || "Item").slice(0, 50),
+        amount: Math.round(l.unit_price * 100),
+        description: (l.size_snapshot || "TIBR").slice(0, 50),
+        quantity: l.qty
+      }));
+
+  const [firstName, ...rest] = String(customerName).trim().split(/\s+/);
+  const lastName = rest.join(" ") || firstName || "Customer";
+  const appBase = process.env.APP_BASE_URL || `${req.protocol}://${req.get("host")}`;
+  const email = customerEmail || req.user.email || "NA";
+
+  try {
+    const intention = await paymob.createIntention({
+      amountPiasters: Math.round(total * 100),
+      items: items_payload,
+      billingData: {
+        first_name: firstName || "Customer", last_name: lastName,
+        phone_number: customerPhone, email,
+        apartment: "NA", floor: "NA", street: customerAddress || "NA",
+        building: "NA", shipping_method: "NA", postal_code: "NA",
+        city: "NA", country: "EG", state: "NA"
+      },
+      customer: { first_name: firstName || "Customer", last_name: lastName, email },
+      specialReference: checkoutReference,
+      redirectionUrl: `${appBase}/checkout/callback`
+    });
+
+    res.status(201).json({
+      data: {
+        order_id: order.id,
+        checkout_reference: checkoutReference,
+        checkout_url: intention.checkoutUrl,
+        total_amount: total
+      }
+    });
+  } catch (err) {
+    // Couldn't start the payment — don't leave a live unpaid order dangling.
+    await userClient.from("orders").update({ payment_status: "failed" }).eq("id", order.id);
+    res.status(502).json({ error: err.message || "Could not start the card payment." });
+  }
+});
+
+// Public — Paymob calls this server-to-server. Trust the payload ONLY after the
+// HMAC verifies. Idempotent: a repeat callback for a paid order is a no-op.
+app.post("/api/payments/paymob/webhook", async (req, res) => {
+  const receivedHmac = req.query.hmac || (req.body && req.body.hmac);
+  const obj = req.body && req.body.obj;
+  const type = req.body && req.body.type;
+
+  if (!obj || !paymob.verifyHmac(obj, receivedHmac)) {
+    return res.status(401).json({ error: "Invalid signature." });
+  }
+  if (type && type !== "TRANSACTION") {
+    return res.json({ received: true });
+  }
+
+  const reference = obj.order && obj.order.merchant_order_id;
+  const success = obj.success === true || obj.success === "true";
+  const pending = obj.pending === true || obj.pending === "true";
+  if (!reference) return res.json({ received: true });
+
+  const serviceClient = createServiceClient();
+  const { data: order } = await serviceClient
+    .from("orders").select("*, order_items(*)").eq("checkout_reference", reference).single();
+  if (!order || order.payment_status === "paid") return res.json({ received: true });
+
+  if (success && !pending) {
+    // The lookup key (order.merchant_order_id) is NOT part of Paymob's signed HMAC
+    // field set, so a genuine-but-cheap signature could otherwise be retargeted or
+    // replayed onto a different/expensive order. Bind the authentic, signed values
+    // to THIS order before trusting them: the signed amount + currency must match,
+    // and a given Paymob transaction id (signed) may settle only one order.
+    const amountMatches = Number(obj.amount_cents) === Math.round(Number(order.total) * 100);
+    const currencyOk = String(obj.currency || "EGP").toUpperCase() === "EGP";
+    const txnRef = String(obj.id);
+    const { data: sameTxn } = await serviceClient
+      .from("orders").select("id").eq("transaction_ref", txnRef);
+    const txnReused = (sameTxn || []).some((o) => o.id !== order.id);
+    if (!amountMatches || !currencyOk || txnReused) {
+      return res.status(400).json({ error: "Payment does not match this order." });
+    }
+
+    await serviceClient.from("orders").update({
+      payment_status: "paid",
+      status: "confirmed",
+      transaction_ref: txnRef,
+      paid_at: new Date().toISOString()
+    }).eq("id", order.id);
+
+    // Money is in — now decrement variant stock (best-effort, mirrors COD).
+    for (const line of order.order_items || []) {
+      if (!line.variant_id) continue;
+      const { data: v } = await serviceClient
+        .from("product_variants").select("quantity").eq("id", line.variant_id).single();
+      if (v) {
+        await serviceClient.from("product_variants")
+          .update({ quantity: Math.max(0, v.quantity - line.qty) }).eq("id", line.variant_id);
+      }
+    }
+    // Count a typed discount code's usage once, on the confirmed payment.
+    if (order.discount_code) {
+      const { data: d } = await serviceClient
+        .from("discounts").select("id, used_count").eq("code", order.discount_code).single();
+      if (d) await serviceClient.from("discounts").update({ used_count: d.used_count + 1 }).eq("id", d.id);
+    }
+  } else if (!pending) {
+    await serviceClient.from("orders").update({ payment_status: "failed" }).eq("id", order.id);
+  }
+
+  res.json({ received: true });
+});
+
 app.get("/api/orders", requireUser, async (req, res) => {
   const userClient = createAuthedClient(req.accessToken);
 
@@ -1964,6 +2190,154 @@ app.put("/api/profile/addresses/:id/default", requireUser, async (req, res) => {
     .single();
 
   if (error) return res.status(500).json({ error: "Failed to update default address." });
+  res.json({ data });
+});
+
+// ── Payment methods ──────────────────────────────────────────────────────────
+// Saved mobile-wallet handles (Vodafone Cash number / InstaPay address) for
+// faster checkout. NO card data. Mirrors the addresses routes' shape; RLS keeps
+// each user to their own rows.
+
+const PAYMENT_METHOD_TYPES = ["vodafone_cash", "instapay"];
+
+app.get("/api/profile/payment-methods", requireUser, async (req, res) => {
+  const userClient = createAuthedClient(req.accessToken);
+  const { data, error } = await userClient
+    .from("payment_methods")
+    .select("*")
+    .eq("user_id", req.user.id)
+    .order("is_default", { ascending: false })
+    .order("created_at", { ascending: true });
+
+  if (error) return res.status(500).json({ error: "Failed to load payment methods." });
+  res.json({ data });
+});
+
+app.post("/api/profile/payment-methods", requireUser, async (req, res) => {
+  const userClient = createAuthedClient(req.accessToken);
+  const { type, handle, label, is_default } = req.body || {};
+
+  if (!PAYMENT_METHOD_TYPES.includes(type)) {
+    return res.status(400).json({ error: "Unsupported payment type." });
+  }
+  if (!handle || !String(handle).trim()) {
+    return res.status(400).json({ error: "handle is required." });
+  }
+
+  if (is_default) {
+    await userClient.from("payment_methods").update({ is_default: false }).eq("user_id", req.user.id);
+  }
+
+  const { data, error } = await userClient
+    .from("payment_methods")
+    .insert({
+      user_id:    req.user.id,
+      type,
+      handle:     String(handle).trim(),
+      label:      label ? String(label).trim() : null,
+      is_default: !!is_default,
+    })
+    .select()
+    .single();
+
+  if (error) return res.status(500).json({ error: "Failed to add payment method." });
+  res.status(201).json({ data });
+});
+
+app.put("/api/profile/payment-methods/:id", requireUser, async (req, res) => {
+  const userClient = createAuthedClient(req.accessToken);
+  const { type, handle, label, is_default } = req.body || {};
+
+  if (!PAYMENT_METHOD_TYPES.includes(type)) {
+    return res.status(400).json({ error: "Unsupported payment type." });
+  }
+  if (!handle || !String(handle).trim()) {
+    return res.status(400).json({ error: "handle is required." });
+  }
+
+  if (is_default) {
+    await userClient.from("payment_methods").update({ is_default: false }).eq("user_id", req.user.id);
+  }
+
+  const { error } = await userClient
+    .from("payment_methods")
+    .update({
+      type,
+      handle:     String(handle).trim(),
+      label:      label ? String(label).trim() : null,
+      is_default: !!is_default,
+    })
+    .eq("id", req.params.id)
+    .eq("user_id", req.user.id);
+
+  if (error) return res.status(500).json({ error: error.message || "Failed to update payment method." });
+  res.json({ success: true });
+});
+
+app.delete("/api/profile/payment-methods/:id", requireUser, async (req, res) => {
+  const userClient = createAuthedClient(req.accessToken);
+  const { error } = await userClient
+    .from("payment_methods")
+    .delete()
+    .eq("id", req.params.id)
+    .eq("user_id", req.user.id);
+
+  if (error) return res.status(500).json({ error: "Failed to delete payment method." });
+  res.json({ success: true });
+});
+
+app.put("/api/profile/payment-methods/:id/default", requireUser, async (req, res) => {
+  const userClient = createAuthedClient(req.accessToken);
+  await userClient.from("payment_methods").update({ is_default: false }).eq("user_id", req.user.id);
+
+  const { data, error } = await userClient
+    .from("payment_methods")
+    .update({ is_default: true })
+    .eq("id", req.params.id)
+    .eq("user_id", req.user.id)
+    .select()
+    .single();
+
+  if (error) return res.status(500).json({ error: "Failed to update default payment method." });
+  res.json({ data });
+});
+
+// ── Billing details ──────────────────────────────────────────────────────────
+// One row per user (PK = user_id), so writes are an upsert. Used to prefill an
+// invoice's billed-to / tax section.
+
+app.get("/api/profile/billing", requireUser, async (req, res) => {
+  const userClient = createAuthedClient(req.accessToken);
+  const { data, error } = await userClient
+    .from("billing_details")
+    .select("*")
+    .eq("user_id", req.user.id)
+    .maybeSingle();
+
+  if (error) return res.status(500).json({ error: "Failed to load billing details." });
+  res.json({ data: data || null });
+});
+
+app.put("/api/profile/billing", requireUser, async (req, res) => {
+  const userClient = createAuthedClient(req.accessToken);
+  const { full_name, company, tax_id, governorate, city, street } = req.body || {};
+
+  const { data, error } = await userClient
+    .from("billing_details")
+    .upsert({
+      user_id:     req.user.id,
+      full_name:   full_name ? String(full_name).trim() : null,
+      company:     company ? String(company).trim() : null,
+      tax_id:      tax_id ? String(tax_id).trim() : null,
+      governorate: governorate || null,
+      city:        city ? String(city).trim() : null,
+      street:      street ? String(street).trim() : null,
+      updated_at:  new Date().toISOString(),
+    })
+    .select()
+    .single();
+
+  if (error) return res.status(500).json({ error: error.message || "Failed to save billing details." });
   res.json({ data });
 });
 

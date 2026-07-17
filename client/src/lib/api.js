@@ -32,6 +32,9 @@ export const api = {
   delete: (path, token) => req("DELETE", path, null, token),
 };
 
+// Runtime config (e.g. whether card payments are enabled)
+export const getConfig = () => api.get("/api/config");
+
 // Products
 // Facet counts for the filter sidebar — which values actually have stock behind
 // them, so we never render a filter that leads nowhere.
@@ -67,6 +70,20 @@ export const deleteAddress = (id, token) => api.delete(`/api/profile/addresses/$
 export const setDefaultAddress = (id, token) =>
   api.put(`/api/profile/addresses/${id}/default`, {}, token);
 
+// Payment methods (saved wallet handles — Vodafone Cash / InstaPay). No cards.
+export const getPaymentMethods = (token) => api.get("/api/profile/payment-methods", token);
+export const addPaymentMethod = (body, token) => api.post("/api/profile/payment-methods", body, token);
+export const updatePaymentMethod = (id, body, token) =>
+  api.put(`/api/profile/payment-methods/${id}`, body, token);
+export const deletePaymentMethod = (id, token) =>
+  api.delete(`/api/profile/payment-methods/${id}`, token);
+export const setDefaultPaymentMethod = (id, token) =>
+  api.put(`/api/profile/payment-methods/${id}/default`, {}, token);
+
+// Billing details (one per user; PUT upserts)
+export const getBillingDetails = (token) => api.get("/api/profile/billing", token);
+export const saveBillingDetails = (body, token) => api.put("/api/profile/billing", body, token);
+
 // Wishlist
 export const getWishlist = (token) => api.get("/api/wishlist", token);
 export const addToWishlist = (productId, token) => api.post(`/api/wishlist/${productId}`, {}, token);
@@ -75,6 +92,8 @@ export const removeFromWishlist = (productId, token) => api.delete(`/api/wishlis
 // Orders
 export const getOrders = (token) => api.get("/api/orders", token);
 export const checkout = (body, token) => api.post("/api/checkout", body, token);
+// Card payment: returns { checkout_url } to redirect to Paymob's hosted checkout.
+export const checkoutCard = (body, token) => api.post("/api/checkout/card", body, token);
 
 // Discounts (shop-facing)
 export const validateDiscount = (code, items, token) =>

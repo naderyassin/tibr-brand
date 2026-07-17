@@ -39,6 +39,7 @@ import BlogPost from "@/pages/BlogPost";
 import Product from "@/pages/Product";
 import Cart from "@/pages/Cart";
 import Checkout from "@/pages/Checkout";
+import CheckoutCallback from "@/pages/CheckoutCallback";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import Account from "@/pages/Account";
@@ -123,6 +124,7 @@ export default function App() {
           {/* Cart & checkout */}
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/checkout/callback" element={<CheckoutCallback />} />
 
           {/* Auth */}
           <Route path="/login" element={<Login />} />

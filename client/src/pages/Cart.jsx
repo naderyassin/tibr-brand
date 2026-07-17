@@ -18,11 +18,33 @@ const PlusIcon = () => (
     <path d="M12 5v14M5 12h14" />
   </svg>
 );
-const BagIcon = (props) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
-    <path d="M8 8V6a4 4 0 0 1 8 0v2" /><rect width="16" height="14" x="4" y="8" rx="2" />
+const BagIcon = () => (
+  <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M16 16v-2a8 8 0 0 1 16 0v2" /><rect width="30" height="24" x="9" y="16" rx="3" />
   </svg>
 );
+
+// Trust row shared with checkout — cash on delivery, free shipping, private.
+const TRUST = [
+  { t: "Cash on delivery across Egypt", i: <path d="M2 7h20v10H2zM6 12h.01M18 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0z" strokeLinecap="round" strokeLinejoin="round" /> },
+  { t: "Free shipping, always", i: <path d="M3 7h11v8H3zM14 10h4l3 3v2h-7M7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" strokeLinecap="round" strokeLinejoin="round" /> },
+  { t: "Your details stay private", i: <path d="M12 3l7 3v5c0 4.4-3 8.3-7 10-4-1.7-7-5.6-7-10V6l7-3zM9.5 12l1.8 1.8L15 10" strokeLinecap="round" strokeLinejoin="round" /> },
+];
+
+function TrustList() {
+  return (
+    <ul className="osum__trust">
+      {TRUST.map((x) => (
+        <li key={x.t}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">{x.i}</svg>
+          {x.t}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+const fmt = (v) => `${Number(v ?? 0).toLocaleString()} EGP`;
 
 export default function Cart() {
   const items = useCart((s) => s.items);
@@ -35,152 +57,152 @@ export default function Cart() {
     (sum, i) => sum + (i.price ?? i.product.price ?? 0) * i.qty,
     0
   );
+  const count = items.reduce((n, i) => n + i.qty, 0);
 
   if (items.length === 0) {
     return (
       <div className="store-container">
-        <div className="cart-breadcrumbs">
-          <Link to="/">Home</Link> &gt; <span>Your Shopping Cart</span>
-        </div>
-        <motion.div
-          className="cart-empty-panel"
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <h1 className="cart-empty-panel__heading">why your cart empty let's start shopping</h1>
-          <p className="cart-empty-panel__sub">Your cart is empty</p>
-          <Link className="btn-pill" to="/shop/perfumes">
-            Continue shopping <span className="btn-pill__arrow">&gt;</span>
-          </Link>
-          {!token && (
-            <div className="cart-empty-panel__login">
-              <h3 className="cart-empty-panel__login-title">Have an account?</h3>
-               <p className="cart-empty-panel__login-sub">
-                <Link to="/login">Log in</Link> to check out faster.
-              </p>
+        <div className="co-layout" style={{ gridTemplateColumns: "1fr" }}>
+          <motion.div
+            className="acct-empty"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            style={{ maxInlineSize: "38rem", marginInline: "auto" }}
+          >
+            <span className="acct-empty__mark" aria-hidden="true"><BagIcon /></span>
+            <h1 className="acct-empty__title">Your cart is empty</h1>
+            <p className="acct-empty__sub">
+              Nothing here yet. Explore the collection and add the fragrances that speak to you —
+              they&apos;ll be ready when you are.
+            </p>
+            <div className="acct-empty__actions">
+              <Link className="btn btn--primary" to="/shop/perfumes">Explore fragrances</Link>
+              {!token && <Link className="btn btn--secondary" to="/login">Log in to check out faster</Link>}
             </div>
-          )}
-        </motion.div>
+          </motion.div>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="store-container">
-      <header className="page-head">
-        <h1 className="page-head__title">Your cart</h1>
-      </header>
+      <div className="co-layout">
+        <div className="co-main">
+          <header className="co-head">
+            <h1 className="co-head__title">Your cart</h1>
+            <p className="co-head__sub">{count} item{count !== 1 ? "s" : ""} · free shipping across Egypt</p>
+          </header>
 
-      <div className="cart">
-        <div className="cart-lines">
-          <AnimatePresence initial={false}>
-            {items.map((item) => {
-              const name = item.product.en_name || item.product.ar_name;
-              const price = item.price ?? item.product.price ?? 0;
+          <div className="panel cart-items">
+            <AnimatePresence initial={false}>
+              {items.map((item) => {
+                const name = item.product.en_name || item.product.ar_name;
+                const price = item.price ?? item.product.price ?? 0;
+                return (
+                  <motion.div
+                    key={item.key}
+                    className="cartline"
+                    layout
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, height: 0, marginBlock: 0, paddingBlock: 0 }}
+                    transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    {item.product.image ? (
+                      <img className="cartline__thumb" src={item.product.image} alt={name} />
+                    ) : (
+                      <div className="cartline__thumb" />
+                    )}
 
-              return (
-                <motion.div
-                  key={item.key}
-                  className="cart-line"
-                  layout
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20, height: 0, marginBlock: 0 }}
-                  transition={{ duration: 0.28 }}
-                >
-                  {item.product.image ? (
-                    <img className="cart-line__thumb" src={item.product.image} alt={name} />
-                  ) : (
-                    <div className="cart-line__thumb" style={{ background: "var(--surface)" }} />
-                  )}
-
-                  <div>
-                    <Link className="cart-line__name" to={`/product?id=${item.product.id}`}>{name}</Link>
-                    {item.size && <p className="cart-line__attr">Size: {item.size}</p>}
-                    <button
-                      className="cart-line__remove"
-                      type="button"
-                      onClick={() => removeItem(item.key)}
-                    >
-                      <TrashIcon /> Remove
-                    </button>
-                  </div>
-
-                  <div className="cart-line__end">
-                    <p className="cart-line__price">{price * item.qty} EGP</p>
-                    <div className="stepper">
-                      <button
-                        className="stepper__btn"
-                        type="button"
-                        disabled={item.qty <= 1}
-                        onClick={() => updateQty(item.key, item.qty - 1)}
-                        aria-label="Decrease quantity"
-                      >
-                        <MinusIcon />
-                      </button>
-                      <span className="stepper__value">{item.qty}</span>
-                      <button
-                        className="stepper__btn"
-                        type="button"
-                        onClick={() => updateQty(item.key, item.qty + 1)}
-                        aria-label="Increase quantity"
-                      >
-                        <PlusIcon />
+                    <div className="cartline__info">
+                      <Link className="cartline__name" to={`/product?id=${item.product.id}`}>{name}</Link>
+                      {item.size && <p className="cartline__attr">Size: {item.size}</p>}
+                      <button className="cartline__remove" type="button" onClick={() => removeItem(item.key)}>
+                        <TrashIcon /> Remove
                       </button>
                     </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
+
+                    <div className="cartline__end">
+                      <p className="cartline__price">{fmt(price * item.qty)}</p>
+                      <div className="stepper">
+                        <button
+                          className="stepper__btn"
+                          type="button"
+                          disabled={item.qty <= 1}
+                          onClick={() => updateQty(item.key, item.qty - 1)}
+                          aria-label="Decrease quantity"
+                        >
+                          <MinusIcon />
+                        </button>
+                        <span className="stepper__value">{item.qty}</span>
+                        <button
+                          className="stepper__btn"
+                          type="button"
+                          onClick={() => updateQty(item.key, item.qty + 1)}
+                          aria-label="Increase quantity"
+                        >
+                          <PlusIcon />
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          </div>
+
+          <Link className="cartline__remove" to="/shop/perfumes" style={{ marginBlockStart: "var(--sp-4)", color: "var(--ink-2)" }}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true" style={{ width: "0.9rem", height: "0.9rem" }}><path d="M15 5l-7 7 7 7" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            Continue shopping
+          </Link>
         </div>
 
-        <div className="summary">
-          <h2 className="summary__title">Order summary</h2>
-          <div className="summary__items">
-            {items.map((item) => {
-              const name = item.product.en_name || item.product.ar_name;
-              const price = item.price ?? item.product.price ?? 0;
-              return (
-                <div key={item.key} className="summary__item">
-                  {item.product.image ? (
-                    <img className="summary__item-img" src={item.product.image} alt={name} />
-                  ) : (
-                    <div className="summary__item-img summary__item-img--empty" />
-                  )}
-                  <div className="summary__item-info">
-                    <span className="summary__item-name">{name}</span>
-                    <span className="summary__item-meta">Qty: {item.qty}{item.size ? ` · ${item.size}` : ""}</span>
+        <aside className="panel osum" aria-label="Order summary">
+          <div className="osum__body">
+            <h2 className="osum__title">Order summary</h2>
+
+            <div className="osum__items">
+              {items.map((item) => {
+                const name = item.product.en_name || item.product.ar_name;
+                const price = item.price ?? item.product.price ?? 0;
+                return (
+                  <div key={item.key} className="osum__item">
+                    {item.product.image ? (
+                      <img className="osum__thumb" src={item.product.image} alt={name} />
+                    ) : (
+                      <div className="osum__thumb" />
+                    )}
+                    <div className="osum__iinfo">
+                      <span className="osum__iname">{name}</span>
+                      <span className="osum__imeta">{[item.size, `Qty ${item.qty}`].filter(Boolean).join(" · ")}</span>
+                    </div>
+                    <span className="osum__iprice">{fmt(price * item.qty)}</span>
                   </div>
-                  <span className="summary__item-price">{price * item.qty} EGP</span>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
+
+            <div className="osum__rule" />
+
+            <dl className="osum__totals">
+              <div className="osum__row"><dt>Subtotal</dt><dd>{fmt(subtotal)}</dd></div>
+              <div className="osum__row"><dt>Shipping</dt><dd className="osum__free">Free</dd></div>
+              <div className="osum__row osum__row--total"><dt>Total</dt><dd>{fmt(subtotal)}</dd></div>
+            </dl>
+
+            <button
+              className="btn btn--primary btn--block btn--lg osum__cta"
+              type="button"
+              onClick={() => navigate("/checkout")}
+            >
+              Proceed to checkout
+            </button>
+
+            <TrustList />
           </div>
-          <div className="summary__divider" />
-          <div className="summary__row">
-            <span>Subtotal</span>
-            <span className="val">{subtotal} EGP</span>
-          </div>
-          <div className="summary__row">
-            <span>Shipping</span>
-            <span className="val summary__free">Free</span>
-          </div>
-          <div className="summary__row summary__row--total">
-            <span>Total</span>
-            <span className="val">{subtotal} EGP</span>
-          </div>
-          <button
-            className="btn btn--primary btn--block btn--lg"
-            type="button"
-            style={{ marginTop: "1.5rem" }}
-            onClick={() => navigate("/checkout")}
-          >
-            Checkout
-          </button>
-          <p className="summary__note">Cash on delivery · Free shipping across Egypt</p>
-        </div>
+        </aside>
       </div>
     </div>
   );
