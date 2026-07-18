@@ -11,7 +11,7 @@ process.env.SKIP_LISTEN = "1";
 require("dotenv").config();
 
 const { createClient } = require("@supabase/supabase-js");
-const { catalog } = require("../server.js");
+const { catalog } = require("../server/index.js");
 const { sanitizeProductPayload, validateProductPayload, saveProductGraph, normalizeProduct, PRODUCT_GRAPH_SELECT } = catalog;
 
 const db = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);

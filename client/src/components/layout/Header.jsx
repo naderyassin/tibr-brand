@@ -59,14 +59,8 @@ export default function Header({ onMenuOpen }) {
           <ul className="store-nav__list">
             {NAVIGATION.map((item) => (
               <li key={item.label} className="store-nav__item group">
-                <NavLink
-                  className={({ isActive }) => `store-nav__link${isActive ? "" : ""}`}
-                  to={item.to}
-                  aria-current={({ isActive }) => (isActive ? "page" : undefined)}
-                >
-                  {({ isActive }) => (
-                    <span aria-current={isActive ? "page" : undefined}>{item.label}</span>
-                  )}
+                <NavLink className="store-nav__link" to={item.to} end={item.to === "/"}>
+                  {item.label}
                 </NavLink>
                 {item.subItems && (
                   <div className="store-nav__dropdown">

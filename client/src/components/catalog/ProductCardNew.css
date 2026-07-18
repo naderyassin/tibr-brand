@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Jost:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap');
+/* Fonts (Inter / Jost / Playfair Display) load once from client/index.html —
+   a CSS @import here would render-block every page on slow mobile networks. */
 
 /* ============================ CATALOG GRID OVERRIDE ============================ */
 /* Adjust catalog grid columns to decrease card size (4 columns on desktop) and apply spacing */
@@ -519,4 +520,53 @@
   font-size: 0.9rem !important;
   color: #86868b !important;
   margin: 0 0 0.5rem 0 !important;
+}
+
+/* ============================ TOUCH / COARSE POINTER ============================ */
+/* On touch, :hover applies on tap and sticks — the black↔white inversions on
+   the toolbar controls would stay inverted after every tap. Neutralize them
+   and give press feedback via :active instead. */
+@media (hover: none) {
+  .product-new:hover .product-new__img { transform: none; }
+  .product-new:hover .product-new__media { background-color: #fafafa; }
+  .product-new:hover .product-new__action-pill { background: #1d1d1f; border-color: #1d1d1f; }
+  .product-new:hover .product-new__arrow-wrap { transform: none; }
+  .product-new__action-pill:active { background: #2c2c2e; }
+  .product-new__link:active .product-new__img { transform: scale(0.98); }
+
+  .filter-trigger:hover {
+    background: #ffffff !important;
+    border-color: #1d1d1f !important;
+    color: #1d1d1f !important;
+  }
+  .filter-trigger:active {
+    background: #1d1d1f !important;
+    color: #ffffff !important;
+    transform: scale(0.97);
+  }
+  .sort__select:hover {
+    background-color: #ffffff !important;
+    border-color: #1d1d1f !important;
+    color: #1d1d1f !important;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%231d1d1f' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='m3 5 3 3 3-3'/></svg>") !important;
+  }
+  .chip:hover { background: #ffffff !important; border-color: rgba(0, 0, 0, 0.08) !important; }
+  .chip:active { background: #f5f5f7 !important; border-color: rgba(0, 0, 0, 0.15) !important; }
+  .breadcrumb a:hover { color: inherit; }
+}
+
+@media (pointer: coarse) {
+  /* 44px-class tap targets for the small toolbar controls */
+  .product-new__wish { width: 2.75rem; height: 2.75rem; }
+  .filter-trigger { min-height: 2.75rem; padding: 10px 18px !important; }
+  .sort__select {
+    min-height: 2.75rem;
+    padding: 8px 32px 8px 16px !important;
+    font-size: 16px !important; /* under 16px, iOS zooms the page on focus */
+  }
+  .chip { min-height: 2.25rem; padding: 6px 14px !important; font-size: 12px !important; }
+  .collection-toolbar__chips { gap: 10px !important; }
+  .clear-all { min-height: 2.25rem; padding: 6px 8px; }
+  /* extend the breadcrumb links' tap area without shifting layout */
+  .breadcrumb a { padding: 10px 4px; margin: -10px -4px; }
 }

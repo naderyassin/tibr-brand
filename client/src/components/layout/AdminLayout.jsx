@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/stores/auth";
 import { getProfile } from "@/lib/api";
 import { ToastProvider } from "@/components/ui/Toast";
-import "../../../../css/store/admin.css";
+import "../../styles/store/admin.css";
 
 const NAV_ITEMS = [
   {

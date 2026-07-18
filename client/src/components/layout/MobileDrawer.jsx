@@ -25,6 +25,10 @@ const BASE_NAV_LINKS = [
 ];
 
 export default function MobileDrawer({ open, onClose }) {
+  // The drawer anchors at inset-inline-end: in RTL (the default) that's the
+  // LEFT edge, so its off-screen position flips sign with the direction.
+  const isRtl = typeof document !== "undefined" && document.documentElement.dir === "rtl";
+  const offscreenX = isRtl ? "-100%" : "100%";
   const token = useAuth((s) => s.token);
   const { data: profileData } = useQuery({
     queryKey: ["profile", token],
@@ -62,9 +66,9 @@ export default function MobileDrawer({ open, onClose }) {
             className="store-drawer is-open"
             id="drawer"
             aria-label="Menu"
-            initial={{ x: "100%" }}
+            initial={{ x: offscreenX }}
             animate={{ x: 0 }}
-            exit={{ x: "100%" }}
+            exit={{ x: offscreenX }}
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           >
             <div className="store-drawer__head">
@@ -80,7 +84,6 @@ export default function MobileDrawer({ open, onClose }) {
                   className="store-drawer__link"
                   to={to}
                   onClick={onClose}
-                  aria-current={undefined}
                 >
                   {label}
                 </NavLink>
