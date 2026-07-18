@@ -756,3 +756,24 @@
   transform: rotate(180deg);
   color: var(--ink);
 }
+
+/* ── Product CSV/paste import grid ──────────────────────────────────────── */
+.import-paste { display: flex; flex-direction: column; gap: var(--sp-2); }
+.import-paste__area { resize: vertical; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: var(--fs-xs); }
+
+.import-grid-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  margin-block-start: var(--sp-3);
+}
+.import-grid { min-inline-size: max-content; }
+.import-grid th, .import-grid td { white-space: nowrap; }
+.import-grid__cell { min-inline-size: 8rem; padding: 6px 8px; font-size: var(--fs-xs); }
+.import-grid__status { font-size: var(--fs-xs); font-weight: 600; cursor: default; }
+.import-grid__remove {
+  inline-size: 1.75rem; block-size: 1.75rem; padding: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  line-height: 1; font-size: var(--fs-base);
+}

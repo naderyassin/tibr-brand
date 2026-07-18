@@ -111,6 +111,7 @@ export default function AdminProducts() {
                 </svg>
               </button>
             )}
+            <Link className="btn btn--secondary" to="/admin/products/import">Import CSV</Link>
             <Link className="btn btn--primary" to="/admin/product">Add product</Link>
           </div>
         </div>

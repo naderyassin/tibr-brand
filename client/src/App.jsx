@@ -50,6 +50,7 @@ import AdminCustomer from "@/pages/AdminCustomer";
 import AdminDiscounts from "@/pages/AdminDiscounts";
 import AdminDiscount from "@/pages/AdminDiscount";
 import AdminProduct from "@/pages/AdminProduct";
+import AdminProductImport from "@/pages/AdminProductImport";
 
 export default function App() {
   return (
@@ -149,6 +150,7 @@ export default function App() {
           <Route path="/admin/discounts/new" element={<AdminDiscount />} />
           <Route path="/admin/discounts/:id" element={<AdminDiscount />} />
           <Route path="/admin/product" element={<AdminProduct />} />
+          <Route path="/admin/products/import" element={<AdminProductImport />} />
         </Route>
       </Routes>
     </BrowserRouter>
