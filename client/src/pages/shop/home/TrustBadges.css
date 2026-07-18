@@ -33,42 +33,15 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 2.25rem 1.75rem;
-  background: var(--surface, #ffffff);
-  border: 1px solid var(--line, rgba(0, 0, 0, 0.05));
-  border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
-  transition: 
-    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 1.5rem 1rem;
+  background: transparent;
+  border: none;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
-  overflow: hidden;
-}
-
-/* Subtle gold gradient hover overlay indicator */
-.trust-badge-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, transparent, var(--gold, #d4af37), transparent);
-  opacity: 0;
-  transition: opacity 0.4s ease;
 }
 
 .trust-badge-card:hover {
   transform: translateY(-6px);
-  border-color: var(--gold, #d4af37);
-  box-shadow: 
-    0 20px 40px -10px rgba(0, 0, 0, 0.08),
-    0 4px 15px -2px rgba(212, 175, 55, 0.06);
-}
-
-.trust-badge-card:hover::before {
-  opacity: 1;
 }
 
 .trust-badge-card__icon-wrapper {

@@ -26,11 +26,11 @@
   --muted-faint:  oklch(0.70 0.000 0);   /* decorative only, never body */
 
   /* The single accent. Restraint keeps its authority. */
-  --gold:         oklch(0.800 0.090 86);   /* default accent (~8.7:1 on bg) */
-  --gold-bright:  oklch(0.864 0.086 88);   /* hover */
-  --gold-deep:    oklch(0.706 0.094 82);   /* pressed */
-  --gold-ghost:   oklch(0.800 0.090 86 / 0.12); /* tint fills */
-  --gold-line:    oklch(0.800 0.090 86 / 0.38); /* accent hairlines */
+  --gold:         oklch(0.770 0.150 83);   /* default accent (~8.7:1 on bg) */
+  --gold-bright:  oklch(0.830 0.140 85);   /* hover */
+  --gold-deep:    oklch(0.680 0.155 79);   /* pressed */
+  --gold-ghost:   oklch(0.770 0.150 83 / 0.12); /* tint fills */
+  --gold-line:    oklch(0.770 0.150 83 / 0.38); /* accent hairlines */
   --on-gold:      oklch(0.180 0.010 75);   /* text on gold fills (~6.8:1) */
 
   /* Semantic — desaturated to sit in the dim room, bright enough on dark. */

@@ -13,21 +13,17 @@ export default function ShopHome() {
     <>
       <ShopHero />
       <div className="store-container">
-        <MerchandisingRails filterKey="spotlight" />
         <CategoryTiles />
+        <MerchandisingRails filterKey="spotlight" />
       </div>
-
-      {/* Full-bleed: the banner's background and image run edge-to-edge, while
-          its text stays aligned to the --container column (see Perfumes.css). */}
-      <PersonalityBanner />
 
       <div className="store-container shop-home">
         <MerchandisingRails filterKey="others" />
         <PromoTiles />
         
+        <PersonalityBanner />
         <BrandLogoStrip />
         <ReviewsBanner />
-        <TrustBadges />
         <AboutBlurb />
       </div>
     </>

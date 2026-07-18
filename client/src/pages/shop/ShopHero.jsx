@@ -1,4 +1,5 @@
 import CardFanCarousel from "../../components/ui/CardFanCarousel";
+import TrustBadges from "./home/TrustBadges";
 import "./Perfumes.css";
 
 // Each entry is a real brand in the catalog (slug matches brands.slug) — the
@@ -58,6 +59,7 @@ export default function ShopHero() {
       <section id="collection" className="perfume-collection">
         <h2 className="perfume-collection__title">Original Brands</h2>
         <CardFanCarousel cards={CAROUSEL_CARDS} />
+        <TrustBadges />
       </section>
     </>
   );

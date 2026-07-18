@@ -14,9 +14,7 @@ export default function PersonalityBanner() {
       <div className="perfume-personality-banner__left">
         <div className="perfume-personality-banner__content">
           <h2 className="perfume-personality-banner__title">
-            {t("Design a fragrance", "صمّم عطرًا")}
-            <br className="desktop-only" />
-            {t(" as unique as your story", " فريدًا كقصّتك")}
+            {t("Explore your perfumes that suit your personality", "استكشف العطور التي تناسب شخصيتك")}
           </h2>
           <div className="perfume-personality-banner__btn-wrapper">
             <Link to="/shop/signature" className="cta-start-now">
