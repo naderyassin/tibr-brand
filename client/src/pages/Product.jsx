@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
+import DOMPurify from "dompurify";
 import { getProduct, getProductReviews, getProducts } from "@/lib/api";
 import ProductCard from "@/components/catalog/ProductCard";
 import { useDraggableScroll } from "@/hooks/useDraggableScroll";
@@ -127,7 +128,7 @@ export default function Product() {
 
   const handleAddToCart = () => {
     addItem(p, activeVariant, qty);
-    toast(`<strong>${name}</strong>${activeVariant ? ` (${activeVariant.size_label})` : ""} x${qty} added to cart`);
+    toast(<><strong>{name}</strong>{activeVariant ? ` (${activeVariant.size_label})` : ""} x{qty} added to cart</>);
   };
 
   const isWishlisted = savedIds.has(p.id);
@@ -282,7 +283,7 @@ export default function Product() {
               <details className="pdp-accordion" open>
                 <summary className="pdp-accordion__title">Description <span className="pdp-accordion__icon">+</span></summary>
                 <div className="pdp-accordion__content">
-                  <div className="pdp__desc pdp__desc--rich" dangerouslySetInnerHTML={{ __html: desc }} />
+                  <div className="pdp__desc pdp__desc--rich" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(desc) }} />
                 </div>
               </details>
             )}

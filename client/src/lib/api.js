@@ -60,7 +60,17 @@ export const getReviewsSummary = () => api.get("/api/reviews/summary");
 
 // Profile
 export const getProfile = (token) => api.get("/api/profile", token);
+// Note: this saves name/gender/dob/address only. Phone, email and password are
+// sensitive changes that go through the OTP-gated security flow below.
 export const updateProfile = (body, token) => api.put("/api/profile", body, token);
+
+// Account security — OTP-gated changes to password / email / phone.
+//   action: "password" | "email" | "phone"; newValue is the requested new value.
+// requestSecurityOtp sends a code; verifySecurityOtp confirms it and applies it.
+export const requestSecurityOtp = (action, newValue, lang, token) =>
+  api.post("/api/account/security/challenge", { action, new_value: newValue, lang }, token);
+export const verifySecurityOtp = (challengeId, code, newValue, token) =>
+  api.post("/api/account/security/verify", { challenge_id: challengeId, code, new_value: newValue }, token);
 
 // Addresses
 export const getAddresses = (token) => api.get("/api/profile/addresses", token);

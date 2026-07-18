@@ -4,6 +4,7 @@ const express = require("express");
 const { randomUUID } = require("crypto");
 const { supabase, createAuthedClient, createServiceClient } = require("../db");
 const { requireUser } = require("../middleware/auth");
+const { checkoutLimiter } = require("../middleware/rateLimit");
 const { PAYMENT_METHODS, buildOrderLines, saveOrder } = require("../services/orders");
 const {
   evaluateCartDiscount,
@@ -14,7 +15,7 @@ const paymob = require("../paymob");
 
 const router = express.Router();
 
-router.post("/api/checkout", requireUser, async (req, res) => {
+router.post("/api/checkout", checkoutLimiter, requireUser, async (req, res) => {
   const userClient = createAuthedClient(req.accessToken);
   const {
     items,
@@ -196,7 +197,7 @@ router.post("/api/checkout", requireUser, async (req, res) => {
 // happen only after the webhook confirms payment — never here. Card data never
 // touches this server (Paymob hosts the form).
 
-router.post("/api/checkout/card", requireUser, async (req, res) => {
+router.post("/api/checkout/card", checkoutLimiter, requireUser, async (req, res) => {
   if (!paymob.isConfigured()) {
     return res.status(503).json({ error: "Card payments are not available right now." });
   }

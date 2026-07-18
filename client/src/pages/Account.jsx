@@ -7,7 +7,7 @@ import "leaflet/dist/leaflet.css";
 import { useAuth } from "@/stores/auth";
 import { useWishlist } from "@/stores/wishlist";
 import { useToast } from "@/components/ui/Toast";
-import { supabase } from "@/lib/supabase";
+import SecurityCenter from "@/components/account/SecurityCenter";
 import ProductCard from "@/components/catalog/ProductCard";
 import {
   getOrders, getProfile, updateProfile, getProducts,
@@ -450,11 +450,6 @@ export default function Account() {
   const [pmSaving, setPmSaving] = useState(false);
   const [billingForm, setBillingForm] = useState(EMPTY_BILLING);
 
-  const [pwOpen, setPwOpen] = useState(false);
-  const [pwForm, setPwForm] = useState({ current: "", next: "", confirm: "" });
-  const [pwError, setPwError] = useState(null);
-  const [pwLoading, setPwLoading] = useState(false);
-
   const [addrFormOpen, setAddrFormOpen] = useState(false);
   const [addrForm, setAddrForm] = useState(EMPTY_ADDR);
   const [addrSaving, setAddrSaving] = useState(false);
@@ -655,13 +650,12 @@ export default function Account() {
   });
   const recoProducts = (recoData?.data ?? []).slice(0, 3);
 
-  const [profileForm, setProfileForm] = useState({ full_name: "", phone: "", gender: "", date_of_birth: "" });
+  const [profileForm, setProfileForm] = useState({ full_name: "", gender: "", date_of_birth: "" });
   useEffect(() => {
     if (profileData?.data) {
       const p = profileData.data;
       setProfileForm({
         full_name: p.full_name || "",
-        phone: p.phone || "",
         gender: p.gender || "",
         date_of_birth: p.date_of_birth || "",
       });
@@ -792,25 +786,6 @@ export default function Account() {
       toast(err.message || "Failed to save address");
     } finally {
       setAddrSaving(false);
-    }
-  };
-
-  const handleChangePassword = async (e) => {
-    e.preventDefault();
-    setPwError(null);
-    if (pwForm.next.length < 8) { setPwError("Password must be at least 8 characters."); return; }
-    if (pwForm.next !== pwForm.confirm) { setPwError("Passwords do not match."); return; }
-    setPwLoading(true);
-    try {
-      const { error } = await supabase.auth.updateUser({ password: pwForm.next });
-      if (error) throw error;
-      toast("Password updated!");
-      setPwOpen(false);
-      setPwForm({ current: "", next: "", confirm: "" });
-    } catch (err) {
-      setPwError(err.message || "Failed to update password.");
-    } finally {
-      setPwLoading(false);
     }
   };
 
@@ -1302,19 +1277,6 @@ export default function Account() {
                     />
                   </div>
                   <div className="field">
-                    <label className="field__label" htmlFor="pf-phone">Phone</label>
-                    <input
-                      id="pf-phone"
-                      className="input"
-                      type="tel"
-                      inputMode="numeric"
-                      value={profileForm.phone}
-                      onChange={(e) => setProfileForm((f) => ({ ...f, phone: e.target.value }))}
-                      autoComplete="tel"
-                      placeholder="01XXXXXXXXX"
-                    />
-                  </div>
-                  <div className="field">
                     <label className="field__label" htmlFor="pf-gender">Gender</label>
                     <div className="select-field">
                       <select
@@ -1354,36 +1316,8 @@ export default function Account() {
                 </form>
               </div>
 
-              {/* Sign-in & security */}
-              <div className="acct-section">
-                <div className="acct-section__head">
-                  <div>
-                    <h2 className="acct-section__title acct-section__sub-title">Sign-in &amp; security</h2>
-                    <p className="acct-section__desc">The email and password you use to sign in to TIBR.</p>
-                  </div>
-                </div>
-                <div className="panel">
-                  <div className="acct-rows">
-                    <div className="acct-row">
-                      <div className="acct-row__info">
-                        <p className="acct-row__label">Email address</p>
-                        <p className="acct-row__value">{user.email}</p>
-                        <p className="acct-row__hint">Your email can&apos;t be changed here — reach out to us to update it.</p>
-                      </div>
-                    </div>
-                    <div className="acct-row">
-                      <div className="acct-row__info">
-                        <p className="acct-row__label">Password</p>
-                        <p className="acct-row__value acct-row__value--dots" aria-hidden="true">••••••••••</p>
-                        <p className="acct-row__hint">Choose a strong password you don&apos;t reuse elsewhere.</p>
-                      </div>
-                      <button className="btn btn--secondary" type="button" onClick={() => setPwOpen(true)}>
-                        Change password
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              {/* Sign-in & security — OTP-gated email / password / phone changes */}
+              <SecurityCenter phone={profileData?.data?.phone_number} />
             </div>
           )}
 
@@ -1740,67 +1674,6 @@ export default function Account() {
           )}
 
         </motion.div>
-      </div>
-
-      {/* ── Password modal ── */}
-      <div
-        className={`pw-modal-backdrop${pwOpen ? " is-open" : ""}`}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="pw-modal-title"
-        onClick={(e) => { if (e.target === e.currentTarget) setPwOpen(false); }}
-      >
-        <div className="pw-modal__card">
-          <div className="pw-modal__head">
-            <div className="pw-modal__heading">
-              <span className="pw-modal__badge" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="5" y="11" width="14" height="10" rx="2" strokeLinejoin="round" /><path d="M8 11V7a4 4 0 0 1 8 0v4" strokeLinecap="round" /></svg>
-              </span>
-              <div>
-                <h2 className="pw-modal__title" id="pw-modal-title">Change password</h2>
-                <p className="pw-modal__sub">Set a new password for signing in.</p>
-              </div>
-            </div>
-            <button className="acct-icon-btn" type="button" onClick={() => setPwOpen(false)} aria-label="Close">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ width: "1.1rem", height: "1.1rem" }}><path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" /></svg>
-            </button>
-          </div>
-          <form className="pw-modal__form" onSubmit={handleChangePassword} noValidate>
-            <div className="field">
-              <label className="field__label" htmlFor="pw-new">New password</label>
-              <input
-                id="pw-new"
-                className="input"
-                type="password"
-                value={pwForm.next}
-                onChange={(e) => setPwForm((f) => ({ ...f, next: e.target.value }))}
-                autoComplete="new-password"
-                required
-              />
-              <p className="field__hint">At least 8 characters.</p>
-            </div>
-            <div className={`field${pwError ? " is-invalid" : ""}`}>
-              <label className="field__label" htmlFor="pw-confirm">Confirm new password</label>
-              <input
-                id="pw-confirm"
-                className="input"
-                type="password"
-                value={pwForm.confirm}
-                onChange={(e) => setPwForm((f) => ({ ...f, confirm: e.target.value }))}
-                autoComplete="new-password"
-                required
-              />
-              {pwError && <p className="field__error" role="alert">{pwError}</p>}
-            </div>
-            <button
-              className={`btn btn--primary btn--block${pwLoading ? " is-loading" : ""}`}
-              type="submit"
-              disabled={pwLoading}
-            >
-              {pwLoading ? "" : "Update password"}
-            </button>
-          </form>
-        </div>
       </div>
 
       {/* ── Invoice modal ── */}

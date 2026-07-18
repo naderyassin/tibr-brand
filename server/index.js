@@ -9,10 +9,20 @@ const path = require("path");
 const fs = require("fs");
 const express = require("express");
 const compression = require("compression");
+const helmet = require("helmet");
 
 const { rootDir, host, port, CACHE_IMMUTABLE } = require("./config");
+const { apiLimiter } = require("./middleware/rateLimit");
 
 const app = express();
+
+// One hop in front of us in production (Vercel) — needed so req.ip reflects
+// the real client for rate limiting, not the proxy.
+app.set("trust proxy", 1);
+
+// CSP is off for now: the SPA loads images/fonts and calls Supabase cross-origin,
+// so a real policy needs an allowlist built for those origins first.
+app.use(helmet({ contentSecurityPolicy: false }));
 
 app.use(compression());
 
@@ -27,6 +37,8 @@ app.use("/assets", express.static(path.join(rootDir, "assets"), {
 
 app.use(express.json());
 
+app.use("/api", apiLimiter);
+
 // ── API + storefront-config routes ───────────────────────────────────────────
 // All use full paths internally, so mount order among them is not significant
 // (no route shadows another). They must all be registered BEFORE the SPA
@@ -38,6 +50,7 @@ app.use(require("./routes/orders"));
 app.use(require("./routes/checkout"));
 app.use(require("./routes/discounts"));
 app.use(require("./routes/profile"));
+app.use(require("./routes/account-security"));
 app.use(require("./routes/wishlist"));
 app.use(require("./routes/admin"));
 
@@ -48,47 +61,31 @@ app.use(require("./routes/admin"));
 const clientDist = path.join(rootDir, "dist", "client");
 const clientDistExists = fs.existsSync(path.join(clientDist, "index.html"));
 
-// Store routes — all handled by the React SPA. "/" is the home/hero page
-// (Collection.jsx) and is included here so a fresh load lands on the hero
-// instead of falling through to the "/shop" catch-all below.
-const STORE_ROUTES = [
-  '/',
-  '/shop',
-  '/shop/all',
-  '/shop/perfumes',
-  '/shop/perfumes/original', '/shop/perfumes/inspired', '/shop/perfumes/signature',
-  '/shop/men', '/shop/women', '/shop/unisex',
-  '/shop/original', '/shop/inspired', '/shop/signature',
-  '/shop/arabian', '/shop/niche',
-  '/shop/candles', '/shop/bakhoor', '/shop/home-fragrance', '/shop/body-splash',
-  '/shop/sets', '/shop/samples', '/shop/new-arrivals',
-  '/shop/spotlight', '/shop/bestsellers', '/shop/offers',
-  '/shop/brands', '/shop/brands/:brand',
-  '/product', '/cart', '/checkout',
-  '/login', '/signup',
-  '/account', '/admin', '/admin/product', '/wishlist',
-];
-
 if (clientDistExists) {
-  // Serve Vite build assets with long-lived cache. index:false so this
-  // static middleware doesn't auto-serve index.html at "/" itself — the
-  // explicit STORE_ROUTES handler below does that instead.
+  // index:false so this static middleware doesn't auto-serve index.html at
+  // "/" itself — the SPA fallback below does that with explicit no-cache.
   app.use(express.static(clientDist, {
     index: false,
     setHeaders: (res, filePath) => {
-      const ext = path.extname(filePath);
-      if (/\.(js|css|mjs)$/i.test(ext)) {
+      // Everything Vite emits under assets/ is content-hashed → cache forever.
+      if (filePath.includes(`${path.sep}assets${path.sep}`)) {
+        res.setHeader("Cache-Control", CACHE_IMMUTABLE);
+      } else if (/\.(js|css|mjs)$/i.test(path.extname(filePath))) {
         res.setHeader("Cache-Control", "no-cache");
-      } else if (/\.(png|jpg|jpeg|gif|ico|svg|webp|avif|woff2?|ttf)$/i.test(ext)) {
+      } else if (/\.(png|jpg|jpeg|gif|ico|svg|webp|avif|woff2?|ttf)$/i.test(path.extname(filePath))) {
         res.setHeader("Cache-Control", CACHE_IMMUTABLE);
       }
     }
   }));
 
-  STORE_ROUTES.forEach(route => {
-    app.get(route, (_req, res) =>
-      res.sendFile(path.join(clientDist, "index.html"))
-    );
+  // SPA fallback: every non-API, non-file GET gets the shell, and React Router
+  // owns the path (its "*" route redirects unknowns to /shop). A hand-kept
+  // route list here drifts from App.jsx — it had already lost /blog, /about,
+  // /checkout/callback and most /admin pages, 301ing them to /shop on refresh.
+  app.get("*", (req, res, next) => {
+    if (req.path.startsWith("/api/") || path.extname(req.path)) return next();
+    res.setHeader("Cache-Control", "no-cache");
+    res.sendFile(path.join(clientDist, "index.html"));
   });
 } else {
   // No build present. In dev, Vite serves the store on :5173 (`npm run client:dev`).

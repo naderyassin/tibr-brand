@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import AppShell from "@/components/layout/AppShell";
-import AdminLayout from "@/components/layout/AdminLayout";
 
 function StartAtHomeAndScroll() {
   const { pathname } = useLocation();
@@ -26,36 +25,45 @@ function StartAtHomeAndScroll() {
 
   return null;
 }
+// Eager: the landing at "/" (first paint) and the shop shell + listing page
+// (the SPA fallback target and the most common entry). Everything else is
+// code-split per route so storefront visitors never download the admin
+// surface, the Jodit editor, Leaflet, or the notes catalog.
 import Collection from "@/pages/shop/Collection";
 import ShopLayout from "@/components/layout/ShopLayout";
 import ShopHome from "@/pages/shop/ShopHome";
-import AboutPage from "@/pages/shop/AboutPage";
 import CollectionPage from "@/pages/shop/CollectionPage";
-import Signature from "@/pages/shop/Signature";
-import BrandDirectory from "@/pages/shop/BrandDirectory";
-import BrandCollection from "@/pages/shop/BrandCollection";
-import Blog from "@/pages/Blog";
-import BlogPost from "@/pages/BlogPost";
-import Product from "@/pages/Product";
-import Cart from "@/pages/Cart";
-import Checkout from "@/pages/Checkout";
-import CheckoutCallback from "@/pages/CheckoutCallback";
-import Login from "@/pages/Login";
-import Signup from "@/pages/Signup";
-import Account from "@/pages/Account";
-import AdminOrders from "@/pages/AdminOrders";
-import AdminProducts from "@/pages/AdminProducts";
-import AdminCustomers from "@/pages/AdminCustomers";
-import AdminCustomer from "@/pages/AdminCustomer";
-import AdminDiscounts from "@/pages/AdminDiscounts";
-import AdminDiscount from "@/pages/AdminDiscount";
-import AdminProduct from "@/pages/AdminProduct";
-import AdminProductImport from "@/pages/AdminProductImport";
+
+const AboutPage = lazy(() => import("@/pages/shop/AboutPage"));
+const Signature = lazy(() => import("@/pages/shop/Signature"));
+const BrandDirectory = lazy(() => import("@/pages/shop/BrandDirectory"));
+const BrandCollection = lazy(() => import("@/pages/shop/BrandCollection"));
+const Blog = lazy(() => import("@/pages/Blog"));
+const BlogPost = lazy(() => import("@/pages/BlogPost"));
+const Product = lazy(() => import("@/pages/Product"));
+const Cart = lazy(() => import("@/pages/Cart"));
+const Checkout = lazy(() => import("@/pages/Checkout"));
+const CheckoutCallback = lazy(() => import("@/pages/CheckoutCallback"));
+const Login = lazy(() => import("@/pages/Login"));
+const Signup = lazy(() => import("@/pages/Signup"));
+const Account = lazy(() => import("@/pages/Account"));
+const AdminLayout = lazy(() => import("@/components/layout/AdminLayout"));
+const AdminOrders = lazy(() => import("@/pages/AdminOrders"));
+const AdminProducts = lazy(() => import("@/pages/AdminProducts"));
+const AdminCustomers = lazy(() => import("@/pages/AdminCustomers"));
+const AdminCustomer = lazy(() => import("@/pages/AdminCustomer"));
+const AdminDiscounts = lazy(() => import("@/pages/AdminDiscounts"));
+const AdminDiscount = lazy(() => import("@/pages/AdminDiscount"));
+const AdminProduct = lazy(() => import("@/pages/AdminProduct"));
+const AdminProductImport = lazy(() => import("@/pages/AdminProductImport"));
 
 export default function App() {
   return (
     <BrowserRouter>
       <StartAtHomeAndScroll />
+      {/* Route chunks resolve in well under a frame on repeat visits; the
+          fallback stays blank rather than flashing a spinner. */}
+      <Suspense fallback={null}>
       <Routes>
         <Route element={<AppShell />}>
           {/* Landing */}
@@ -153,6 +161,7 @@ export default function App() {
           <Route path="/admin/products/import" element={<AdminProductImport />} />
         </Route>
       </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

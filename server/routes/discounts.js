@@ -5,6 +5,7 @@
 const express = require("express");
 const { createServiceClient } = require("../db");
 const { requireUser } = require("../middleware/auth");
+const { discountCodeLimiter } = require("../middleware/rateLimit");
 const {
   buildCartLines,
   evaluateCartDiscount,
@@ -52,7 +53,7 @@ router.get("/api/discounts/shipping", async (_req, res) => {
 // the order is placed, so the shopper sees the applied discount immediately.
 // Builds cart lines from real DB prices, same as /api/checkout, so the two
 // can never disagree about the amount.
-router.post("/api/discounts/validate", requireUser, async (req, res) => {
+router.post("/api/discounts/validate", discountCodeLimiter, requireUser, async (req, res) => {
   const code = String(req.body?.code || "").trim().toUpperCase();
   const items = Array.isArray(req.body?.items) ? req.body.items : [];
 

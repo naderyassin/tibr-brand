@@ -32,10 +32,7 @@ export function ToastProvider({ children }) {
                 <path d="M5 12.5l4.5 4.5L19 7.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </span>
-            <span
-              className="store-toast__msg"
-              dangerouslySetInnerHTML={{ __html: msg }}
-            />
+            <span className="store-toast__msg">{msg}</span>
           </motion.div>
         )}
       </AnimatePresence>

@@ -483,19 +483,32 @@ router.delete("/api/admin/products/:id", requireUser, requireAdmin, async (req, 
 const STORAGE_BUCKET = "brand-assets";
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
+// Extension + mimetype whitelist. Notably NO svg: SVGs can carry scripts, and
+// the bucket is public — an uploaded SVG would be a stored-XSS vector.
+const ALLOWED_IMAGE_TYPES = new Map([
+  [".png", "image/png"],
+  [".jpg", "image/jpeg"],
+  [".jpeg", "image/jpeg"],
+  [".webp", "image/webp"],
+  [".avif", "image/avif"],
+  [".gif", "image/gif"],
+]);
+
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: function (_req, file, cb) {
-    if (/^image\//.test(file.mimetype)) cb(null, true);
-    else cb(new Error("Only image files are allowed"));
+    const ext = path.extname(file.originalname).toLowerCase();
+    const expected = ALLOWED_IMAGE_TYPES.get(ext);
+    if (expected && file.mimetype === expected) cb(null, true);
+    else cb(new Error("Only png, jpg, webp, avif, or gif images are allowed"));
   }
 });
 
 router.post("/api/admin/upload", requireUser, requireAdmin, upload.single("file"), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: "No file received" });
 
-  const ext = path.extname(req.file.originalname).toLowerCase() || ".jpg";
+  const ext = path.extname(req.file.originalname).toLowerCase();
   const filename = "product-" + Date.now() + "-" + randomUUID().slice(0, 8) + ext;
   const storagePath = "images/products/" + filename;
 

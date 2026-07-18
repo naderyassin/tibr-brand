@@ -3,6 +3,7 @@
 const express = require("express");
 const { supabase, createAuthedClient } = require("../db");
 const { requireUser } = require("../middleware/auth");
+const { reviewLimiter } = require("../middleware/rateLimit");
 
 const router = express.Router();
 
@@ -34,7 +35,7 @@ router.get("/api/products/:id/reviews", async (req, res) => {
   res.json({ data });
 });
 
-router.post("/api/products/:id/reviews", requireUser, async (req, res) => {
+router.post("/api/products/:id/reviews", reviewLimiter, requireUser, async (req, res) => {
   const userClient = createAuthedClient(req.accessToken);
   const { rating, body } = req.body || {};
 

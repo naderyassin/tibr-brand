@@ -3481,6 +3481,12 @@ p, li { max-width: 68ch; }     /* readable measure */
 .pw-modal__title svg { inline-size: 1.2rem; block-size: 1.2rem; color: var(--gold); flex-shrink: 0; }
 .pw-modal__form { display: flex; flex-direction: column; gap: var(--sp-4); }
 
+/* Secondary actions under the OTP step (Back / Resend). */
+.pw-modal__foot-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--sp-3); margin-block-start: calc(-1 * var(--sp-1));
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pw-modal-backdrop, .pw-modal__card { transition: none; }
   .pw-modal-backdrop.is-open .pw-modal__card { opacity: 1; transform: none; }

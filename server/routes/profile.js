@@ -25,12 +25,15 @@ router.get("/api/profile", requireUser, async (req, res) => {
 
 router.put("/api/profile", requireUser, async (req, res) => {
   const userClient = createAuthedClient(req.accessToken);
-  const { full_name, phone_number, address, governorate, latitude, longitude, gender, date_of_birth } = req.body || {};
+  // Note: phone_number is intentionally NOT updatable here. Changing the phone
+  // number is a sensitive action that goes through the OTP-gated security flow
+  // (POST /api/account/security/*), so this general profile save never touches it.
+  const { full_name, address, governorate, latitude, longitude, gender, date_of_birth } = req.body || {};
 
   const { data, error } = await userClient
     .from("profiles")
     .update({
-      full_name, phone_number, address,
+      full_name, address,
       governorate: governorate || null,
       latitude:  latitude  != null ? Number(latitude)  : null,
       longitude: longitude != null ? Number(longitude) : null,

@@ -4,6 +4,7 @@ const express = require("express");
 const { randomUUID } = require("crypto");
 const { supabase, createAuthedClient } = require("../db");
 const { requireUser } = require("../middleware/auth");
+const { checkoutLimiter } = require("../middleware/rateLimit");
 const {
   PAYMENT_METHODS,
   ORDER_SELECT,
@@ -13,7 +14,7 @@ const {
 
 const router = express.Router();
 
-router.post("/api/orders", requireUser, async (req, res) => {
+router.post("/api/orders", checkoutLimiter, requireUser, async (req, res) => {
   const userClient = createAuthedClient(req.accessToken);
   const {
     product_id: productId,
