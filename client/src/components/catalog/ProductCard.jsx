@@ -13,17 +13,7 @@ const HeartIcon = () => (
   </svg>
 );
 
-/* Dior-style "Intensity" meter — concentration is the honest driver of how
-   loud a fragrance reads, so it maps straight to the 5 dots. */
-const INTENSITY_BY_CONCENTRATION = {
-  parfum: 5,
-  attar: 5,
-  edp: 4,
-  edt: 3,
-  edc: 2,
-  mist: 2,
-};
-const INTENSITY_DOTS = 5;
+
 
 /* "Citrus", "Citrus and Vanilla", "Citrus, Vanilla, Amber" — mirrors the
    reference's note phrasing. */
@@ -67,7 +57,7 @@ export default function ProductCard({ product, index = 0 }) {
   const notesText = noteLabels.length ? `${joinNotes(noteLabels)} Notes` : null;
   const descriptor = [concLabel, notesText].filter(Boolean).join(" — ");
 
-  const intensity = INTENSITY_BY_CONCENTRATION[product.concentration] ?? 3;
+
 
   const handleToggleWishlist = async (e) => {
     e.preventDefault();
@@ -106,9 +96,14 @@ export default function ProductCard({ product, index = 0 }) {
 
       <Link className="product-new__link" to={`/product?id=${product.id}`} aria-label={name}>
         <div className="product-new__media">
-          {onSale && (
+          {(onSale || product.is_bestseller) && (
             <div className="product-new__badges">
-              <span className="product-new__badge product-new__badge--sale">-{discountPct}%</span>
+              {product.is_bestseller && (
+                <span className="product-new__badge product-new__badge--bestseller">Best Seller</span>
+              )}
+              {onSale && (
+                <span className="product-new__badge product-new__badge--sale">-{discountPct}%</span>
+              )}
             </div>
           )}
           {product.image ? (
@@ -129,17 +124,7 @@ export default function ProductCard({ product, index = 0 }) {
           <h3 className="product-new__name">{name}</h3>
           {notesText && <p className="product-new__desc">{notesText}</p>}
 
-          <div className="product-new__intensity">
-            <span className="product-new__intensity-label">Intensity</span>
-            <span className="product-new__dots" aria-hidden="true">
-              {Array.from({ length: INTENSITY_DOTS }).map((_, i) => (
-                <span
-                  key={i}
-                  className={`product-new__dot${i < intensity ? " is-on" : ""}`}
-                />
-              ))}
-            </span>
-          </div>
+
 
           <div className="product-new__price-row">
             <span className="product-new__price">

@@ -2,9 +2,14 @@
 // each, so the Account page can render real cards without a second round-trip
 // per item.
 const express = require("express");
-const { createAuthedClient } = require("../db");
+const { createAuthedClient, createServiceClient } = require("../db");
 const { requireUser } = require("../middleware/auth");
-const { PRODUCT_GRAPH_SELECT, normalizeProduct } = require("../services/products");
+const {
+  PRODUCT_GRAPH_SELECT,
+  normalizeProduct,
+  getActiveAutomaticProductDiscounts,
+  applyAutomaticProductDiscounts,
+} = require("../services/products");
 
 const router = express.Router();
 
@@ -18,9 +23,9 @@ router.get("/api/wishlist", requireUser, async (req, res) => {
 
   if (error) return res.status(500).json({ error: "Failed to load wishlist." });
 
-  const items = (data || [])
-    .filter((row) => row.products)
-    .map((row) => normalizeProduct(row.products));
+  const products = (data || []).map((row) => row.products).filter(Boolean);
+  const activeDiscounts = await getActiveAutomaticProductDiscounts(createServiceClient());
+  const items = applyAutomaticProductDiscounts(products, activeDiscounts).map(normalizeProduct);
   res.json({ data: items });
 });
 

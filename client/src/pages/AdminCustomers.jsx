@@ -66,22 +66,16 @@ export default function AdminCustomers() {
             <input
               className="admin-search__input"
               type="search"
-              placeholder="Search by name or phone…"
+              placeholder="Search name, phone, email…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
             {search && (
-              <button
-                className="admin-search__clear"
-                type="button"
-                onClick={() => setSearch("")}
-                aria-label="Clear search"
-              >
-                ×
-              </button>
+              <button className="admin-search__clear" type="button" onClick={() => setSearch("")} aria-label="Clear search">×</button>
             )}
           </div>
         </div>
+
         {isLoading ? (
           <div className="table-wrap">
             <table className="table" aria-label="Customers loading">

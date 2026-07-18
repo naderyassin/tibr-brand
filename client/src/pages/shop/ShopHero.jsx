@@ -1,20 +1,23 @@
 import CardFanCarousel from "../../components/ui/CardFanCarousel";
 import "./Perfumes.css";
 
+// Each entry is a real brand in the catalog (slug matches brands.slug) — the
+// card image is that brand's own product photo, and the card links to every
+// product carried under that brand, per docs/DATA-MODEL.md §5's brand facet.
 const FEATURED = [
-  { id: "feat-1",  en_name: "TOM FORD",       image: "/brands/tomford_noir.png" },
-  { id: "feat-2",  en_name: "DIOR",           image: "/brands/dior_homme_intense.png" },
-  { id: "feat-3",  en_name: "CHANEL",         image: "/brands/bleu_de_chanel.png" },
-  { id: "feat-4",  en_name: "GUCCI",          image: "/brands/gucci_guilty_black.png" },
-  { id: "feat-5",  en_name: "GIORGIO ARMANI", image: "/brands/si_passione.png" },
-  { id: "feat-6",  en_name: "VERSACE",        image: "/brands/tomford_noir.png" },
-  { id: "feat-7",  en_name: "CREED",          image: "/brands/dior_homme_intense.png" },
+  { slug: "tom-ford",       en_name: "TOM FORD",        image: "/brands/tomford_noir.jpg" },
+  { slug: "dior",           en_name: "DIOR",            image: "/brands/dior_homme_intense.jpg" },
+  { slug: "chanel",         en_name: "CHANEL",          image: "/brands/bleu_de_chanel.jpg" },
+  { slug: "gucci",          en_name: "GUCCI",           image: "/brands/gucci_guilty_black.jpg" },
+  { slug: "yves-saint-laurent", en_name: "YVES SAINT LAURENT", image: "/brands/yves_saint_laurent.jpg" },
+  { slug: "emporio-armani", en_name: "EMPORIO ARMANI",  image: "/brands/emporio_armani_stronger_with_you.jpg" },
+  { slug: "creed",          en_name: "CREED",           image: "/brands/creed_aventus.jpg" },
 ];
 
 const CAROUSEL_CARDS = FEATURED.map((item) => ({
   imgUrl: item.image,
   alt: item.en_name,
-  linkUrl: `/product?id=${item.id}`,
+  linkUrl: `/shop/all?brand=${item.slug}`,
 }));
 
 export default function ShopHero() {
@@ -53,7 +56,7 @@ export default function ShopHero() {
 
       {/* COLLECTION CAROUSEL */}
       <section id="collection" className="perfume-collection">
-        <h2 className="perfume-collection__title">Our Collection</h2>
+        <h2 className="perfume-collection__title">Original Brands</h2>
         <CardFanCarousel cards={CAROUSEL_CARDS} />
       </section>
     </>

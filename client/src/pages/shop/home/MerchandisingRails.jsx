@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { getProducts } from "@/lib/api";
+import { useDraggableScroll } from "@/hooks/useDraggableScroll";
 import ProductCard from "@/components/catalog/ProductCard";
 
 /* A product is "on offer" when any of its sizes carries a compare-at price
@@ -13,6 +14,51 @@ const isOffer = (p) =>
   );
 
 const MAX_PER_RAIL = 12;
+
+function ProductRailTrack({ items }) {
+  const { ref, onMouseDown, showLeftArrow, showRightArrow, scroll } = useDraggableScroll();
+
+  return (
+    <div className="slider-wrapper">
+      {showLeftArrow && (
+        <button
+          className="slider-arrow slider-arrow--left"
+          onClick={() => scroll("left")}
+          aria-label="Previous products"
+          type="button"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
+      )}
+      <div
+        ref={ref}
+        onMouseDown={onMouseDown}
+        className="product-rail__track"
+        data-lenis-prevent-horizontal
+      >
+        {items.slice(0, MAX_PER_RAIL).map((p, i) => (
+          <div className="product-rail__item" key={p.id} draggable="false">
+            <ProductCard product={p} index={i} />
+          </div>
+        ))}
+      </div>
+      {showRightArrow && (
+        <button
+          className="slider-arrow slider-arrow--right"
+          onClick={() => scroll("right")}
+          aria-label="Next products"
+          type="button"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </button>
+      )}
+    </div>
+  );
+}
 
 /**
  * Admin-curated merchandising carousels on the shop home. Each rail is driven
@@ -75,21 +121,7 @@ export default function MerchandisingRails({ filterKey }) {
             <h2 className="product-rail__title">{rail.title}</h2>
             <Link className="product-rail__view-all" to={rail.to}>View All</Link>
           </div>
-          {/* Prevent horizontal gestures only, so the rail's own left-right
-              scroll-snap still works. Excluding vertical gestures too (the
-              old data-lenis-prevent / data-lenis-prevent-touch) let native
-              scroll move the page here without Lenis knowing, desyncing its
-              internal scroll position from the real one — the next Lenis
-              scroll anywhere else on the page then "corrects" to that stale
-              position, jumping the viewport somewhere unrelated (e.g. straight
-              to the footer). */}
-          <div className="product-rail__track" data-lenis-prevent-horizontal>
-            {rail.items.slice(0, MAX_PER_RAIL).map((p, i) => (
-              <div className="product-rail__item" key={p.id}>
-                <ProductCard product={p} index={i} />
-              </div>
-            ))}
-          </div>
+          <ProductRailTrack items={rail.items} />
         </motion.section>
       ))}
     </>

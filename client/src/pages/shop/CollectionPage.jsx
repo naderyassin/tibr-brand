@@ -154,14 +154,32 @@ export default function CollectionPage() {
   }, [filtersOpen]);
 
   const displayTitle = useMemo(() => {
+    const brandSlug = params.get("brand");
+    if (brandSlug) {
+      const b = (facets.brand || []).find((x) => x.slug === brandSlug);
+      return b ? b.name_en : brandSlug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+    }
+
     const audience = params.get("audience");
-    const classification = params.get("classification");
     if (audience === "men") return "Men Fragrances";
     if (audience === "women") return "Women Fragrances";
     if (audience === "unisex") return "Unisex Fragrances";
+
+    const classification = params.get("classification");
     if (classification === "arabian") return "Gulf Fragrances";
+
+    for (const group of FILTER_GROUPS) {
+      const val = params.get(group.key);
+      if (val) {
+        return label(group.vocab, val);
+      }
+    }
+
+    const q = params.get("q");
+    if (q) return `Search: “${q}”`;
+
     return preset.title;
-  }, [preset, params]);
+  }, [preset, params, facets]);
 
   return (
     <div className="store-container collection">

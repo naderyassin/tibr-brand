@@ -81,14 +81,7 @@ export default function AdminProducts() {
               onChange={(e) => setSearch(e.target.value)}
             />
             {search && (
-              <button
-                className="admin-search__clear"
-                type="button"
-                onClick={() => setSearch("")}
-                aria-label="Clear search"
-              >
-                ×
-              </button>
+              <button className="admin-search__clear" type="button" onClick={() => setSearch("")} aria-label="Clear search">×</button>
             )}
           </div>
         </div>
@@ -115,43 +108,6 @@ export default function AdminProducts() {
             <Link className="btn btn--primary" to="/admin/product">Add product</Link>
           </div>
         </div>
-
-        {filterOpen && filterRect && createPortal(
-          <div className="admin-theme" style={{ display: "contents" }}>
-            <div className="status-overlay" onClick={() => setFilterOpen(false)} aria-hidden="true" />
-            <div
-              className="status-dropdown"
-              role="listbox"
-              aria-label="Filter by category"
-              style={{
-                top: `${filterRect.bottom + 4}px`,
-                left: `${filterRect.left}px`,
-                minWidth: `${Math.max(filterRect.width, 160)}px`,
-              }}
-            >
-              {filterOptions.map((o) => {
-                const isActive = o.slug === category;
-                return (
-                  <button
-                    key={o.slug}
-                    role="option"
-                    aria-selected={isActive}
-                    className={`status-dropdown__option${isActive ? " is-current" : ""}`}
-                    onClick={() => { setCategory(o.slug); setFilterOpen(false); }}
-                  >
-                    <span>{o.label} ({o.count})</span>
-                    {isActive && (
-                      <svg className="status-dropdown__check" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                        <path d="M2 6L5 9L10 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>,
-          document.body
-        )}
 
         {isLoading ? (
           <p style={{ color: "var(--muted)" }}>Loading products…</p>
@@ -194,19 +150,18 @@ export default function AdminProducts() {
                     <td className="num">
                       {p.variants?.length
                         ? (() => {
-                            const prices = p.variants.map((v) => Number(v.price));
-                            const lo = Math.min(...prices), hi = Math.max(...prices);
-                            return lo === hi ? `${lo} EGP` : `${lo}–${hi} EGP`;
+                            const prices = p.variants.map((v) => Number(v.price) || 0);
+                            const min = Math.min(...prices);
+                            const max = Math.max(...prices);
+                            if (min === max) return `${min.toLocaleString()} EGP`;
+                            return `${min.toLocaleString()} – ${max.toLocaleString()} EGP`;
                           })()
-                        : `${p.en_price ?? 0} EGP`}
+                        : "—"}
                     </td>
                     <td className="num">
                       {p.variants?.length
-                        ? p.variants.reduce((sum, v) => sum + (v.quantity || 0), 0)
-                        : p.quantity}
-                      {p.variants?.length > 1 && (
-                        <span className="admin-product-meta__sizes"> ({p.variants.length} sizes)</span>
-                      )}
+                        ? `${p.variants.reduce((sum, v) => sum + (v.stock || 0), 0)} units`
+                        : "0 units"}
                     </td>
                     <td>
                       <div className="product-actions">
@@ -234,6 +189,43 @@ export default function AdminProducts() {
           </div>
         )}
       </div>
+
+      {filterOpen && filterRect && createPortal(
+        <>
+          <div className="admin-popover-scrim" onClick={() => setFilterOpen(false)} />
+          <ul
+            className="admin-popover"
+            style={{
+              position: "fixed",
+              top: `${filterRect.bottom + window.scrollY + 6}px`,
+              left: `${filterRect.left + window.scrollX}px`,
+              minWidth: `${filterRect.width}px`,
+              zIndex: 1000,
+            }}
+            role="listbox"
+            aria-label="Filter products"
+          >
+            {filterOptions.map((o) => (
+              <li key={o.slug} role="presentation">
+                <button
+                  type="button"
+                  className={`admin-popover__opt${category === o.slug ? " is-active" : ""}`}
+                  role="option"
+                  aria-selected={category === o.slug}
+                  onClick={() => {
+                    setCategory(o.slug);
+                    setFilterOpen(false);
+                  }}
+                >
+                  <span>{o.label}</span>
+                  <span className="count">{o.count}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </>,
+        document.body
+      )}
     </div>
   );
 }

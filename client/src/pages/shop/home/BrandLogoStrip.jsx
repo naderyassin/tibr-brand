@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 // now; drop a `logo` (image path) into any entry below to swap in a real
 // logo with no other code changes.
 const BRANDS = [
-  { name: "Giorgio Armani", logo: "/brands/armani.png", large: true },
+  { name: "Yves Saint Laurent", logo: null, large: true },
   { name: "BOSS", logo: "/brands/boss.png" },
   { name: "Burberry", logo: "/brands/burberry.png" },
   { name: "Dior", logo: "/brands/dior.png", large: true },

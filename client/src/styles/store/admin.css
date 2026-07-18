@@ -763,6 +763,11 @@
 
 .import-grid-wrap {
   overflow-x: auto;
+}
+
+
+
+.import-grid-wrap {
   border: 1px solid var(--line);
   border-radius: var(--r-md);
   background: var(--surface);

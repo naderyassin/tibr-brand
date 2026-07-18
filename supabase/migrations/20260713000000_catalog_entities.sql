@@ -197,7 +197,8 @@ ON CONFLICT (slug) DO NOTHING;
 INSERT INTO public.brands (slug, name_en, name_ar, country) VALUES
   ('giorgio-armani',     'Giorgio Armani',     'جورجيو أرماني',  'IT'),
   ('dior',               'Dior',               'ديور',           'FR'),
-  ('jean-paul-gaultier', 'Jean Paul Gaultier', 'جان بول غوتييه', 'FR')
+  ('jean-paul-gaultier', 'Jean Paul Gaultier', 'جان بول غوتييه', 'FR'),
+  ('yves-saint-laurent', 'Yves Saint Laurent', 'إيف سان لوران',  'FR')
 ON CONFLICT (slug) DO NOTHING;
 
 -- ═══════════════════════════════════════════════════════════════════════════

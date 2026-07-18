@@ -32,12 +32,15 @@
   position: absolute;
   width: 14rem;
   height: 21rem;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.07);
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
-  background: #ffffff;
-  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+  border: 1px solid rgba(212, 175, 55, 0.15); /* Gold hairline */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
+  background: #FAF9F6; /* Alabaster / warm paper outer bezel */
+  padding: 0.5rem; /* Outer shell padding for Double-Bezel */
+  transition: border-color 0.4s var(--ease-out-soft, ease), 
+              box-shadow 0.4s var(--ease-out-soft, ease),
+              background-color 0.4s var(--ease-out-soft, ease);
   will-change: transform, opacity;
 }
 
@@ -49,7 +52,8 @@
 
 .fan-card:hover {
   border-color: var(--gold, #d6b074);
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 20px 40px rgba(212, 175, 55, 0.08), 0 15px 35px rgba(0, 0, 0, 0.08);
+  background: #fdfdfc;
 }
 
 .fan-card-inner {
@@ -57,7 +61,10 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #ffffff;
+  background: #ffffff; /* Inner core */
+  border-radius: 8px; /* Concentric radius */
+  border: 1px solid rgba(0, 0, 0, 0.02);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.02); /* Inner depth */
 }
 
 .fan-card-img {
@@ -65,15 +72,15 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain; /* Prevent bottle cropping */
   object-position: center;
-  padding: 0;
+  padding: 2.25rem 1.5rem 4.5rem; /* Padded display for luxury bottle presentation */
   display: block;
-  transition: transform 0.4s ease;
+  transition: transform 0.5s var(--ease-out-soft, ease);
 }
 
 .fan-card:hover .fan-card-img {
-  transform: translateY(-4px) scale(1.02);
+  transform: scale(1.06);
 }
 
 .fan-card-overlay {
@@ -81,25 +88,53 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 4.5rem;
-  background: linear-gradient(to top, #ffffff 75%, rgba(255, 255, 255, 0) 100%);
+  height: 4.25rem;
+  background: #ffffff;
+  border-top: 1px solid rgba(212, 175, 55, 0.12); /* Delicate divider line */
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
-  padding: 0 1rem 1.25rem;
+  padding: 0.5rem;
   pointer-events: none;
   z-index: 2;
+  transition: background-color 0.4s var(--ease-out-soft, ease);
+}
+
+.fan-card:hover .fan-card-overlay {
+  background: #FAF9F6;
+}
+
+.fan-card-label-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .fan-card-title {
   color: #1a1a1a;
-  font-family: var(--font-body);
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
+  font-family: "Playfair Display", var(--font-display, serif);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   text-align: center;
-  line-height: 1.3;
+  line-height: 1.2;
+  transition: color 0.4s ease;
+}
+
+.fan-card:hover .fan-card-title {
+  color: var(--gold, #d6b074);
+}
+
+.fan-card-subtitle {
+  font-family: var(--font-body, sans-serif);
+  font-size: 0.55rem;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  color: #a1824a; /* Muted gold / bronze */
+  text-transform: uppercase;
+  margin-top: 0.25rem;
 }
 
 /* Pagination & controls */
@@ -174,9 +209,24 @@
   .fan-card {
     width: 12rem;
     height: 18rem;
+    padding: 0.4rem;
+    border-radius: 10px;
+  }
+  .fan-card-inner {
+    border-radius: 6px;
   }
   .fan-card-img {
-    padding: 2.25rem 1.75rem 3.75rem;
+    padding: 1.75rem 1.25rem 3.75rem;
+  }
+  .fan-card-overlay {
+    height: 3.75rem;
+  }
+  .fan-card-title {
+    font-size: 0.8rem;
+  }
+  .fan-card-subtitle {
+    font-size: 0.5rem;
+    margin-top: 0.15rem;
   }
 }
 
@@ -187,9 +237,25 @@
   .fan-card {
     width: 10rem;
     height: 15rem;
+    padding: 0.35rem;
+    border-radius: 8px;
+  }
+  .fan-card-inner {
+    border-radius: 5px;
   }
   .fan-card-img {
-    padding: 1.75rem 1.25rem 3rem;
+    padding: 1.25rem 0.9rem 3rem;
+  }
+  .fan-card-overlay {
+    height: 3.25rem;
+  }
+  .fan-card-title {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+  }
+  .fan-card-subtitle {
+    font-size: 0.45rem;
+    margin-top: 0.1rem;
   }
 }
 
@@ -200,8 +266,24 @@
   .fan-card {
     width: 8rem;
     height: 12rem;
+    padding: 0.25rem;
+    border-radius: 6px;
+  }
+  .fan-card-inner {
+    border-radius: 4px;
   }
   .fan-card-img {
-    padding: 1.25rem 0.9rem 2.25rem;
+    padding: 0.8rem 0.6rem 2.25rem;
+  }
+  .fan-card-overlay {
+    height: 2.5rem;
+    border-top: none;
+  }
+  .fan-card-title {
+    font-size: 0.6rem;
+    letter-spacing: 0.05em;
+  }
+  .fan-card-subtitle {
+    display: none;
   }
 }

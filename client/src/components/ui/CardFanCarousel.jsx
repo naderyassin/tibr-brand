@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
+import { useT } from "@/stores/lang";
 import "./CardFanCarousel.css";
 
 const FAN_POSITIONS = [
@@ -52,6 +53,7 @@ function getSlotConfig(totalCards, slot, maxVisible) {
 }
 
 export default function CardFanCarousel({ cards }) {
+  const t = useT();
   const containerRef = useRef(null);
   const isAnimating = useRef(false);
   const hasEntered = useRef(false);
@@ -303,7 +305,10 @@ export default function CardFanCarousel({ cards }) {
               <div className="fan-card-inner">
                 <img src={card.imgUrl} loading="lazy" alt={card.alt || `Card ${index}`} className="fan-card-img" />
                 <div className="fan-card-overlay">
-                  <span className="fan-card-title">{card.alt}</span>
+                  <div className="fan-card-label-wrap">
+                    <span className="fan-card-title">{card.alt}</span>
+                    <span className="fan-card-subtitle">{t("Collection", "مجموعة")}</span>
+                  </div>
                 </div>
               </div>
             );

@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { getProduct, getProductReviews, getProducts } from "@/lib/api";
 import ProductCard from "@/components/catalog/ProductCard";
+import { useDraggableScroll } from "@/hooks/useDraggableScroll";
 import { useCart } from "@/stores/cart";
 import { useAuth } from "@/stores/auth";
 import { useWishlist } from "@/stores/wishlist";
@@ -35,6 +36,7 @@ export default function Product() {
   const [selectedVariantId, setSelectedVariantId] = useState(null);
   const [activeImgIndex, setActiveImgIndex] = useState(0);
   const [qty, setQty] = useState(1);
+  const { ref: railRef, onMouseDown: onRailMouseDown, showLeftArrow: showRailLeft, showRightArrow: showRailRight, scroll: scrollRail } = useDraggableScroll();
 
   useEffect(() => {
     setQty(1);
@@ -318,12 +320,43 @@ export default function Product() {
       {relatedProducts.length > 0 && (
         <section className="product-rail pdp__recommended">
           <h2 className="product-rail__title pdp__recommended-title">You May Also Like</h2>
-          <div className="product-rail__track" data-lenis-prevent-horizontal>
-            {relatedProducts.map((prod, idx) => (
-              <div className="product-rail__item" key={prod.id}>
-                <ProductCard product={prod} index={idx} />
-              </div>
-            ))}
+          <div className="slider-wrapper">
+            {showRailLeft && (
+              <button
+                className="slider-arrow slider-arrow--left"
+                onClick={() => scrollRail("left")}
+                aria-label="Previous products"
+                type="button"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M15 18l-6-6 6-6" />
+                </svg>
+              </button>
+            )}
+            <div
+              ref={railRef}
+              onMouseDown={onRailMouseDown}
+              className="product-rail__track"
+              data-lenis-prevent-horizontal
+            >
+              {relatedProducts.map((prod, idx) => (
+                <div className="product-rail__item" key={prod.id} draggable="false">
+                  <ProductCard product={prod} index={idx} />
+                </div>
+              ))}
+            </div>
+            {showRailRight && (
+              <button
+                className="slider-arrow slider-arrow--right"
+                onClick={() => scrollRail("right")}
+                aria-label="Next products"
+                type="button"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
+              </button>
+            )}
           </div>
         </section>
       )}
