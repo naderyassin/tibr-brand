@@ -420,7 +420,14 @@ function AddrCardMap({ lat, lon }) {
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(m);
     L.marker([lat, lon]).addTo(m);
     ref.current._lmap = m;
-    return () => { m.remove(); ref.current && (ref.current._lmap = null); };
+    // The Addresses panel animates in (Framer Motion), so the container may not be at its
+    // final size when Leaflet reads it — recompute once the layout settles, and again on any
+    // later resize, otherwise the map renders as a gray box with no tiles.
+    const settle = setTimeout(() => m.invalidateSize(), 120);
+    const ro = new ResizeObserver(() => m.invalidateSize());
+    ro.observe(ref.current);
+    const el = ref.current;
+    return () => { clearTimeout(settle); ro.disconnect(); m.remove(); el && (el._lmap = null); };
   }, [lat, lon]);
   return <div ref={ref} className="addr-card__map" />;
 }
@@ -577,7 +584,11 @@ export default function Account() {
         setGpsCoords({ lat: e.latlng.lat, lon: e.latlng.lng });
         reverseGeocode(e.latlng.lat, e.latlng.lng);
       });
+      // The map lives inside the address modal, which scales in over ~380ms. Recompute size
+      // both early and after that entrance settles, otherwise Leaflet reads the mid-animation
+      // (scaled) dimensions and renders a gray, mis-tiled map.
       setTimeout(() => m.invalidateSize(), 100);
+      setTimeout(() => m.invalidateSize(), 480);
     } else {
       markerRef.current?.setLatLng([addrLat, addrLon]);
       mapRef.current.panTo([addrLat, addrLon]);
@@ -1385,7 +1396,7 @@ export default function Account() {
                     <h2 className="acct-section__title">Addresses</h2>
                     <p className="acct-section__desc">Save where you want your fragrances delivered. Your default is used first at checkout.</p>
                   </div>
-                  {!addrFormOpen && addresses.length > 0 && (
+                  {addresses.length > 0 && (
                     <button className="btn btn--secondary" type="button" onClick={() => setAddrFormOpen(true)}>
                       Add address
                     </button>
@@ -1404,7 +1415,7 @@ export default function Account() {
                       </div>
                     ))}
                   </div>
-                ) : addresses.length === 0 && !addrFormOpen ? (
+                ) : addresses.length === 0 ? (
                   <div className="acct-empty">
                     <span className="acct-empty__mark" aria-hidden="true">
                       <svg viewBox="0 0 36 36" fill="none">
@@ -1465,13 +1476,25 @@ export default function Account() {
                   </div>
                 )}
 
-              {addrFormOpen && (
-                <form className="panel addr-form-panel" onSubmit={handleSaveAddr} noValidate>
-                  <div className="panel__body">
-                    <div className="addr-form-title">
-                      <h3>{editingAddrId ? "Edit address" : "New address"}</h3>
-                      <p>Search a place, drop a pin on the map, or detect your location.</p>
+              <div
+                className={`pw-modal-backdrop addr-modal-backdrop${addrFormOpen ? " is-open" : ""}`}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="addr-modal-title"
+                onClick={(e) => { if (e.target === e.currentTarget) closeAddrForm(); }}
+              >
+                <div className="pw-modal__card addr-modal__card">
+                  <div className="addr-modal__head">
+                    <div>
+                      <h2 className="pw-modal__title" id="addr-modal-title">{editingAddrId ? "Edit address" : "New address"}</h2>
+                      <p className="pw-modal__sub">Search a place, drop a pin on the map, or detect your location.</p>
                     </div>
+                    <button className="acct-icon-btn" type="button" onClick={closeAddrForm} aria-label="Close">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ width: "1.1rem", height: "1.1rem" }}><path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" /></svg>
+                    </button>
+                  </div>
+                  <form className="addr-modal__form" onSubmit={handleSaveAddr} noValidate>
+                    <div className="addr-modal__scroll">
                     <div className="form-grid">
                     <div className="field">
                       <label className="field__label" htmlFor="af-label">Label</label>
@@ -1604,21 +1627,22 @@ export default function Account() {
                       </label>
                     </div>
                     </div>
-                  </div>
-                  <div className="panel__foot">
-                    <button className="btn btn--secondary" type="button" onClick={closeAddrForm}>
-                      Cancel
-                    </button>
-                    <button
-                      className={`btn btn--primary${addrSaving ? " is-loading" : ""}`}
-                      type="submit"
-                      disabled={addrSaving}
-                    >
-                      {addrSaving ? "" : editingAddrId ? "Update address" : "Save address"}
-                    </button>
-                  </div>
-                </form>
-              )}
+                    </div>
+                    <div className="addr-modal__foot">
+                      <button className="btn btn--secondary" type="button" onClick={closeAddrForm}>
+                        Cancel
+                      </button>
+                      <button
+                        className={`btn btn--primary${addrSaving ? " is-loading" : ""}`}
+                        type="submit"
+                        disabled={addrSaving}
+                      >
+                        {addrSaving ? "" : editingAddrId ? "Update address" : "Save address"}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
               </div>
             </div>
           )}

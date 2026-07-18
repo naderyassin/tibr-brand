@@ -3486,6 +3486,35 @@ p, li { max-width: 68ch; }     /* readable measure */
   .pw-modal-backdrop.is-open .pw-modal__card { opacity: 1; transform: none; }
 }
 
+/* ── Address modal (wider, internally scrolling, sticky footer) ── */
+.addr-modal__card {
+  max-inline-size: 44rem;
+  max-block-size: min(90vh, 820px);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.addr-modal__head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-5) var(--sp-6);
+  border-block-end: 1px solid var(--line);
+}
+.addr-modal__form { display: flex; flex-direction: column; flex: 1; min-block-size: 0; }
+.addr-modal__scroll { flex: 1; overflow-y: auto; padding: var(--sp-6); }
+.addr-modal__foot {
+  display: flex; justify-content: flex-end; gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-6);
+  border-block-start: 1px solid var(--line);
+  background: var(--bg-raised);
+}
+@media (max-width: 38rem) {
+  .addr-modal__card { max-block-size: 92vh; }
+  .addr-modal__scroll { padding: var(--sp-5) var(--sp-4); }
+  .addr-modal__foot { padding: var(--sp-4); }
+}
+
 /* ── Notes tag input ── */
 .notes-tag-wrap {
   position: relative;
