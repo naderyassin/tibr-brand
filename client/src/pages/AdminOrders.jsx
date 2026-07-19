@@ -1,21 +1,35 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/stores/auth";
 import { adminGetOrders } from "@/lib/api";
 import { StatusBadge, STATUSES } from "@/components/admin/StatusBadge";
 
+const PAYMENT_LABELS = {
+  cash_on_delivery: "Cash on Delivery (الدفع عند الاستلام)",
+  vodafone_cash: "Vodafone Cash (فودافون كاش)",
+  instapay: "InstaPay (انستا باي)"
+};
+
+const getWhatsAppLink = (phone, name, orderId) => {
+  if (!phone) return "";
+  let clean = phone.replace(/\D/g, "");
+  // Egyptian numbers start with 01...
+  if (clean.startsWith("0")) clean = clean.substring(1);
+  if (!clean.startsWith("20")) clean = "20" + clean;
+  const msg = `مرحباً يا ${name || "عميلنا العزيز"}، بخصوص طلبك رقم ${orderId.slice(0, 8)} من تبر (TIBR)...`;
+  return `https://wa.me/${clean}?text=${encodeURIComponent(msg)}`;
+};
+
 export default function AdminOrders() {
   const { token } = useAuth();
-  // Status filter lives in the URL so views are deep-linkable (e.g. the
-  // dashboard's "Review all" → /admin/orders?status=pending) and the back
-  // button steps through filters.
   const [searchParams, setSearchParams] = useSearchParams();
   const statusParam = searchParams.get("status");
   const statusFilter = STATUSES.includes(statusParam) ? statusParam : "all";
   const setStatusFilter = (key) =>
     setSearchParams(key === "all" ? {} : { status: key });
   const [orderSearch, setOrderSearch] = useState("");
+  const [activeOrderId, setActiveOrderId] = useState(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-orders", token],
@@ -47,20 +61,43 @@ export default function AdminOrders() {
       );
     });
 
+  const selectedOrder = useMemo(() => {
+    return activeOrderId ? orders.find((o) => o.id === activeOrderId) : null;
+  }, [activeOrderId, orders]);
+
   const FILTER_OPTIONS = [
-    { key: "all",       label: "All",       count: counts.total },
-    { key: "pending",   label: "Pending",   count: counts.pending },
-    { key: "confirmed", label: "Confirmed", count: counts.confirmed },
-    { key: "shipped",   label: "Shipped",   count: counts.shipped },
-    { key: "delivered", label: "Delivered", count: counts.delivered },
-    { key: "cancelled", label: "Cancelled", count: counts.cancelled },
+    { key: "all",       label: "All",       count: counts.total,      color: "var(--ink)" },
+    { key: "pending",   label: "Pending",   count: counts.pending,    color: "var(--warning)" },
+    { key: "confirmed", label: "Confirmed", count: counts.confirmed,  color: "var(--info)" },
+    { key: "shipped",   label: "Shipped",   count: counts.shipped,    color: "var(--gold)" },
+    { key: "delivered", label: "Delivered", count: counts.delivered,  color: "var(--success)" },
+    { key: "cancelled", label: "Cancelled", count: counts.cancelled,  color: "var(--danger)" },
   ];
 
+  // Steps helper for the order workflow stepper in the drawer
+  const steps = ["pending", "confirmed", "shipped", "delivered"];
+  const currentStepIdx = selectedOrder ? steps.indexOf(selectedOrder.status) : -1;
+
   return (
-    <div className="admin-content">
+    <div className="admin-content" style={{ position: "relative" }}>
       <header className="page-head page-head--compact">
         <h1 className="page-head__title">Orders</h1>
       </header>
+
+      {/* Interactive stats cards grid for order states */}
+      <div className="admin-stat-filter-grid" role="group" aria-label="Filter by status">
+        {FILTER_OPTIONS.map(({ key, label, count, color }) => (
+          <button
+            key={key}
+            type="button"
+            className={`stat-filter-card${statusFilter === key ? " is-active" : ""}`}
+            onClick={() => setStatusFilter(key)}
+          >
+            <span className="stat-filter-card__value" style={{ color }}>{count}</span>
+            <span className="stat-filter-card__label">{label}</span>
+          </button>
+        ))}
+      </div>
 
       <div className="admin-card">
         <div className="admin-search-toolbar">
@@ -87,21 +124,6 @@ export default function AdminOrders() {
               </button>
             )}
           </div>
-        </div>
-
-        <div className="order-filter-chips" role="group" aria-label="Filter by status">
-          {FILTER_OPTIONS.map(({ key, label, count }) => (
-            <button
-              key={key}
-              className="filter-chip"
-              type="button"
-              aria-pressed={statusFilter === key}
-              onClick={() => setStatusFilter(key)}
-            >
-              {label}
-              <span className="filter-chip__count">{count}</span>
-            </button>
-          ))}
         </div>
 
         {isLoading ? (
@@ -154,7 +176,7 @@ export default function AdminOrders() {
           </div>
         ) : (
           <div className="table-wrap">
-            <table className="table" aria-label="Orders">
+            <table className="table admin-clickable-table" aria-label="Orders">
               <thead>
                 <tr>
                   <th>Order</th>
@@ -167,7 +189,14 @@ export default function AdminOrders() {
               </thead>
               <tbody>
                 {visibleOrders.map((o) => (
-                  <tr key={o.id}>
+                  <tr
+                    key={o.id}
+                    className="admin-row-link"
+                    onClick={(e) => {
+                      if (e.target.closest(".status-badge")) return;
+                      setActiveOrderId(o.id);
+                    }}
+                  >
                     <td>
                       <span className="order-id">{o.id?.slice(0, 8)}</span>
                     </td>
@@ -180,8 +209,6 @@ export default function AdminOrders() {
                       </div>
                     </td>
                     <td>
-                      {/* An order has LINES now — summarise them rather than
-                          showing the one product the row used to be. */}
                       <div className="order-cell">
                         <span className="order-cell__primary">
                           {o.order_items?.length
@@ -216,6 +243,180 @@ export default function AdminOrders() {
           </div>
         )}
       </div>
+
+      {/* ── Slide-Out Order Detail Drawer ── */}
+      {selectedOrder && (
+        <>
+          <div className="order-drawer-scrim" onClick={() => setActiveOrderId(null)} />
+          <div className="order-drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+            <header className="order-drawer__head">
+              <h2 className="order-drawer__title" id="drawer-title">
+                Order #{selectedOrder.id?.slice(0, 8)}
+              </h2>
+              <button
+                type="button"
+                className="btn btn--secondary"
+                style={{ minBlockSize: "2rem", paddingInline: "var(--sp-3)" }}
+                onClick={() => setActiveOrderId(null)}
+              >
+                Close
+              </button>
+            </header>
+
+            <div className="order-drawer__body">
+              {/* Stepper Progress Timeline */}
+              {selectedOrder.status !== "cancelled" ? (
+                <div className="order-stepper">
+                  {steps.map((st, idx) => {
+                    const isActive = st === selectedOrder.status;
+                    const isCompleted = currentStepIdx >= idx;
+                    return (
+                      <div
+                        key={st}
+                        className={`order-step${isActive ? " is-active" : ""}${isCompleted && !isActive ? " is-completed" : ""}`}
+                      >
+                        <div className="order-step__dot">
+                          {isCompleted && !isActive ? "✓" : idx + 1}
+                        </div>
+                        <span className="order-step__label">{st}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="admin-empty-state" style={{ paddingBlock: "12px", border: "1px dashed var(--danger)", background: "var(--danger-fill)" }}>
+                  <p className="admin-empty-state__title" style={{ color: "var(--danger)", fontSize: "var(--fs-sm)", margin: 0 }}>
+                    This order has been cancelled.
+                  </p>
+                </div>
+              )}
+
+              {/* Status Update dropdown */}
+              <div className="order-drawer-section">
+                <h3 className="order-drawer-section__title">Actions</h3>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "4px" }}>
+                  <span style={{ fontSize: "var(--fs-sm)", color: "var(--ink-2)" }}>Update Status:</span>
+                  <StatusBadge orderId={selectedOrder.id} current={selectedOrder.status} token={token} />
+                </div>
+              </div>
+
+              {/* Customer information */}
+              <div className="order-drawer-section">
+                <h3 className="order-drawer-section__title">Customer Details</h3>
+                <dl className="admin-def-list" style={{ marginTop: "4px" }}>
+                  <div className="admin-def-list__row">
+                    <dt>Name</dt>
+                    <dd>{selectedOrder.customer_name || "—"}</dd>
+                  </div>
+                  <div className="admin-def-list__row">
+                    <dt>Phone</dt>
+                    <dd>{selectedOrder.customer_phone || "—"}</dd>
+                  </div>
+                  <div className="admin-def-list__row">
+                    <dt>Address</dt>
+                    <dd>{selectedOrder.customer_address || "—"}</dd>
+                  </div>
+                </dl>
+                {selectedOrder.customer_phone && (
+                  <a
+                    href={getWhatsAppLink(selectedOrder.customer_phone, selectedOrder.customer_name, selectedOrder.id)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="whatsapp-chat-btn"
+                    style={{ marginTop: "var(--sp-2)" }}
+                  >
+                    <svg viewBox="0 0 448 512" width="16" height="16" aria-hidden="true">
+                      <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7 .9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/>
+                    </svg>
+                    Chat on WhatsApp
+                  </a>
+                )}
+              </div>
+
+              {/* Payment Details */}
+              <div className="order-drawer-section">
+                <h3 className="order-drawer-section__title">Payment details</h3>
+                <dl className="admin-def-list" style={{ marginTop: "4px" }}>
+                  <div className="admin-def-list__row">
+                    <dt>Method</dt>
+                    <dd>{PAYMENT_LABELS[selectedOrder.payment_method] || selectedOrder.payment_method || "—"}</dd>
+                  </div>
+                  {selectedOrder.checkout_reference && (
+                    <div className="admin-def-list__row">
+                      <dt>Reference</dt>
+                      <dd>{selectedOrder.checkout_reference}</dd>
+                    </div>
+                  )}
+                </dl>
+              </div>
+
+              {/* Items Breakdown */}
+              <div className="order-drawer-section">
+                <h3 className="order-drawer-section__title">Items ({selectedOrder.order_items?.length || 0})</h3>
+                <div className="order-drawer-items" style={{ marginTop: "4px" }}>
+                  {selectedOrder.order_items?.map((item) => (
+                    <div key={item.id} className="order-drawer-item">
+                      {item.image_snapshot ? (
+                        <img className="order-drawer-item__img" src={item.image_snapshot} alt="" />
+                      ) : (
+                        <div className="order-drawer-item__empty" />
+                      )}
+                      <div className="order-drawer-item__main">
+                        <p className="order-drawer-item__title">{item.name_snapshot}</p>
+                        <p className="order-drawer-item__meta">
+                          {item.size_snapshot} · {item.qty} unit{item.qty === 1 ? "" : "s"}
+                        </p>
+                      </div>
+                      <span className="order-drawer-item__price">
+                        {((item.unit_price - (item.discount_amount || 0)) * item.qty).toLocaleString()} EGP
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Order Financial Summary */}
+              <div className="order-drawer-section">
+                <h3 className="order-drawer-section__title">Financial Summary</h3>
+                <dl className="admin-def-list" style={{ marginTop: "4px" }}>
+                  <div className="admin-def-list__row">
+                    <dt>Subtotal</dt>
+                    <dd className="num">{Number(selectedOrder.subtotal || 0).toLocaleString()} EGP</dd>
+                  </div>
+                  {Number(selectedOrder.discount_amount || 0) > 0 && (
+                    <div className="admin-def-list__row" style={{ color: "var(--danger)" }}>
+                      <dt style={{ color: "var(--danger)" }}>Discount {selectedOrder.discount_code ? `(${selectedOrder.discount_code})` : ""}</dt>
+                      <dd className="num">- {Number(selectedOrder.discount_amount).toLocaleString()} EGP</dd>
+                    </div>
+                  )}
+                  {Number(selectedOrder.shipping || 0) > 0 && (
+                    <div className="admin-def-list__row">
+                      <dt>Shipping</dt>
+                      <dd className="num">+{Number(selectedOrder.shipping).toLocaleString()} EGP</dd>
+                    </div>
+                  )}
+                  <div className="admin-def-list__row" style={{ fontWeight: "bold", borderBlockStart: "2px solid var(--line-strong)" }}>
+                    <dt style={{ color: "var(--ink)", fontWeight: "bold" }}>Total</dt>
+                    <dd className="num" style={{ color: "var(--ink)", fontWeight: "bold" }}>
+                      {Number(selectedOrder.total || 0).toLocaleString()} EGP
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+            </div>
+
+            <footer className="order-drawer__footer">
+              <button
+                type="button"
+                className="btn btn--secondary"
+                onClick={() => setActiveOrderId(null)}
+              >
+                Close Details
+              </button>
+            </footer>
+          </div>
+        </>
+      )}
     </div>
   );
 }

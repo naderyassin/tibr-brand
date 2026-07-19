@@ -15,6 +15,9 @@ export default function AdminProducts() {
   const filterTriggerRef = useRef(null);
   const [search, setSearch] = useState("");
 
+  // Bulk operations state
+  const [selectedIds, setSelectedIds] = useState([]);
+
   const { data, isLoading } = useQuery({
     queryKey: ["admin-products", token],
     queryFn: () => adminGetProducts(token),
@@ -23,16 +26,18 @@ export default function AdminProducts() {
 
   const { mutate: deleteProduct } = useMutation({
     mutationFn: (id) => adminDeleteProduct(id, token),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-products"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-products"] });
+      setSelectedIds((prev) => prev.filter((id) => id !== id));
+    },
   });
 
   const allProducts = data?.data ?? [];
   const typeTabs = PRODUCT_TYPES.filter((t) => allProducts.some((p) => p.product_type === t.slug));
   const audienceTabs = AUDIENCES.filter((a) => allProducts.some((p) => p.audience === a.slug));
-  // Prefer grouping by product type; if the catalog is all one type (e.g. all perfumes),
-  // group by audience (Men/Women/Unisex) instead so the tabs are actually useful.
   const groupBy = typeTabs.length > 1 ? "product_type" : "audience";
   const categories = groupBy === "product_type" ? typeTabs : audienceTabs;
+  
   const products = allProducts
     .filter((p) => category === "all" || p[groupBy] === category)
     .filter((p) => {
@@ -58,6 +63,59 @@ export default function AdminProducts() {
   const openFilter = () => {
     if (filterTriggerRef.current) setFilterRect(filterTriggerRef.current.getBoundingClientRect());
     setFilterOpen(true);
+  };
+
+  // Checkbox Handlers
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      setSelectedIds(products.map((p) => p.id));
+    } else {
+      setSelectedIds([]);
+    }
+  };
+
+  const handleSelectRow = (id) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  // Bulk Actions
+  const handleBulkExport = () => {
+    const selectedProducts = allProducts.filter((p) => selectedIds.includes(p.id));
+    let csv = "ID,Name (EN),Name (AR),Brand,Audience,Concentration,SKUs,Prices,Quantities\n";
+    
+    selectedProducts.forEach((p) => {
+      const skus = p.variants?.map((v) => v.sku).filter(Boolean).join(" | ") || "";
+      const prices = p.variants?.map((v) => v.price).filter(Boolean).join(" | ") || "";
+      const quantities = p.variants?.map((v) => v.quantity).filter(Boolean).join(" | ") || "";
+      
+      const escapeCSV = (str) => `"${String(str || "").replace(/"/g, '""')}"`;
+      
+      csv += `${p.id},${escapeCSV(p.en_name)},${escapeCSV(p.ar_name)},${escapeCSV(p.brands?.name_en)},${p.audience || ""},${p.concentration || ""},${escapeCSV(skus)},${escapeCSV(prices)},${escapeCSV(quantities)}\n`;
+    });
+    
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `tibr_products_export_${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleBulkDelete = async () => {
+    if (!confirm(`Are you sure you want to delete ${selectedIds.length} products?`)) return;
+    
+    try {
+      await Promise.all(selectedIds.map((id) => adminDeleteProduct(id, token)));
+      qc.invalidateQueries({ queryKey: ["admin-products"] });
+      setSelectedIds([]);
+      alert("Selected products deleted successfully.");
+    } catch (err) {
+      alert("Failed to delete some products.");
+    }
   };
 
   return (
@@ -114,6 +172,7 @@ export default function AdminProducts() {
             <table className="table admin-product-table" aria-label="Products loading">
               <thead>
                 <tr>
+                  <th className="bulk-select-cell" />
                   <th className="ap-thumb-cell" />
                   <th>Name</th><th>Listing</th><th>Price</th><th>Stock</th><th>Actions</th>
                 </tr>
@@ -121,6 +180,7 @@ export default function AdminProducts() {
               <tbody>
                 {[...Array(5)].map((_, i) => (
                   <tr key={i} className="skel-row">
+                    <td className="bulk-select-cell" />
                     <td className="ap-thumb-cell">
                       <span className="skel" style={{ display: "block", inlineSize: "44px", blockSize: "44px", borderRadius: "var(--r-sm)" }} />
                     </td>
@@ -170,6 +230,14 @@ export default function AdminProducts() {
             <table className="table admin-product-table" aria-label="Products">
               <thead>
                 <tr>
+                  <th className="bulk-select-cell">
+                    <input
+                      type="checkbox"
+                      className="bulk-select-checkbox"
+                      checked={products.length > 0 && selectedIds.length === products.length}
+                      onChange={handleSelectAll}
+                    />
+                  </th>
                   <th className="ap-thumb-cell" />
                   <th>Name</th>
                   <th>Listing</th>
@@ -181,6 +249,14 @@ export default function AdminProducts() {
               <tbody>
                 {products.map((p) => (
                   <tr key={p.id}>
+                    <td className="bulk-select-cell">
+                      <input
+                        type="checkbox"
+                        className="bulk-select-checkbox"
+                        checked={selectedIds.includes(p.id)}
+                        onChange={() => handleSelectRow(p.id)}
+                      />
+                    </td>
                     <td className="ap-thumb-cell">
                       {p.image ? (
                         <img className="ap-thumb" src={p.image} alt={p.en_name} />
@@ -200,7 +276,6 @@ export default function AdminProducts() {
                         <span className="admin-product-meta__status"> · {p.status}</span>
                       )}
                     </td>
-                    {/* Price and stock are per-VARIANT now: show the range and the total. */}
                     <td className="num">
                       {p.variants?.length
                         ? (() => {
@@ -244,6 +319,32 @@ export default function AdminProducts() {
         )}
       </div>
 
+      {/* ── Floating Bulk Actions Bar ── */}
+      {selectedIds.length > 0 && (
+        <div className="bulk-actions-bar">
+          <span className="bulk-actions-bar__count">
+            {selectedIds.length} product{selectedIds.length === 1 ? "" : "s"} selected
+          </span>
+          <div className="bulk-actions-bar__divider" />
+          <div className="bulk-actions-bar__btns">
+            <button
+              type="button"
+              className="btn btn--secondary"
+              onClick={handleBulkExport}
+            >
+              Export Selected (CSV)
+            </button>
+            <button
+              type="button"
+              className="btn btn--danger"
+              onClick={handleBulkDelete}
+            >
+              Delete Selected
+            </button>
+          </div>
+        </div>
+      )}
+
       {filterOpen && filterRect && createPortal(
         <>
           <div className="admin-popover-scrim" onClick={() => setFilterOpen(false)} />
@@ -269,6 +370,7 @@ export default function AdminProducts() {
                   onClick={() => {
                     setCategory(o.slug);
                     setFilterOpen(false);
+                    setSelectedIds([]); // Reset bulk select on filter change
                   }}
                 >
                   <span>{o.label}</span>

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/stores/auth";
@@ -74,6 +74,19 @@ export default function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [theme, setTheme] = useState(
+    () => localStorage.getItem("admin-theme") || "light"
+  );
+
+  const toggleTheme = () => {
+    setTheme((prev) => {
+      const next = prev === "light" ? "dark" : "light";
+      localStorage.setItem("admin-theme", next);
+      return next;
+    });
+  };
+
   useEffect(() => {
     if (!authLoading && !user) navigate("/login", { replace: true });
   }, [authLoading, user, navigate]);
@@ -111,9 +124,33 @@ export default function AdminLayout() {
       : item.match.some((m) => location.pathname === m || location.pathname.startsWith(`${m}/`));
 
   return (
-    <div className="admin-shell">
+    <div className={`admin-shell theme-${theme}`}>
       <ToastProvider>
-        <aside className="admin-sidebar">
+        {/* Mobile Header Bar */}
+        <header className="admin-header-bar">
+          <button
+            type="button"
+            className="admin-menu-toggle"
+            onClick={() => setIsMobileOpen(true)}
+            aria-label="Open navigation menu"
+          >
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+              <path d="M4 6h16M4 12h16M4 18h16" strokeLinecap="round" />
+            </svg>
+          </button>
+          <span className="admin-header-brand-mark">TIBR</span>
+        </header>
+
+        {/* Mobile Sidebar Scrim */}
+        {isMobileOpen && (
+          <div
+            className="admin-sidebar-scrim"
+            onClick={() => setIsMobileOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+
+        <aside className={`admin-sidebar${isMobileOpen ? " is-open" : ""}`}>
           <div className="admin-sidebar__brand">
             <span className="admin-sidebar__brand-mark">TIBR</span>
             <span className="admin-sidebar__brand-tag">Admin</span>
@@ -124,10 +161,11 @@ export default function AdminLayout() {
               <NavLink
                 key={item.label}
                 to={item.to}
+                onClick={() => setIsMobileOpen(false)}
                 className={`admin-sidebar__link${isItemActive(item) ? " is-active" : ""}`}
               >
                 {item.icon}
-                {item.label}
+                <span>{item.label}</span>
                 {item.label === "Orders" && pendingCount > 0 && (
                   <span className="admin-sidebar__count" aria-label={`${pendingCount} pending`}>
                     {pendingCount}
@@ -142,12 +180,38 @@ export default function AdminLayout() {
               <span className="admin-sidebar__user-email">{user.email}</span>
               <span className="admin-sidebar__user-role">{role === "super_admin" ? "Super Admin" : "Admin"}</span>
             </div>
+
+            {/* Theme Toggle Button */}
+            <button
+              type="button"
+              className="admin-sidebar__action"
+              onClick={toggleTheme}
+              aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+            >
+              {theme === "light" ? (
+                <>
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                    <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m10.607 10.607l.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <span>Light theme</span>
+                </>
+              ) : (
+                <>
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                    <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <span>Dark theme</span>
+                </>
+              )}
+            </button>
+
             <NavLink className="admin-sidebar__action" to="/shop">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-                <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              View store
+              <span>View store</span>
             </NavLink>
+
             <button
               type="button"
               className="admin-sidebar__action admin-sidebar__action--danger"
@@ -156,12 +220,14 @@ export default function AdminLayout() {
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              Sign out
+              <span>Sign out</span>
             </button>
           </div>
         </aside>
 
-        <Outlet />
+        <div className="admin-theme" style={{ display: "contents" }}>
+          <Outlet />
+        </div>
       </ToastProvider>
     </div>
   );
