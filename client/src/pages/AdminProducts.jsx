@@ -62,8 +62,12 @@ export default function AdminProducts() {
 
   return (
     <div className="admin-content">
-      <header className="page-head page-head--compact">
+      <header className="page-head page-head--compact admin-head">
         <h1 className="page-head__title">Products</h1>
+        <div className="page-head__actions">
+          <Link className="btn btn--secondary" to="/admin/products/import">Import CSV</Link>
+          <Link className="btn btn--primary" to="/admin/product">Add product</Link>
+        </div>
       </header>
 
       <div className="admin-card">
@@ -88,29 +92,79 @@ export default function AdminProducts() {
 
         <div className="admin-toolbar">
           <span style={{ color: "var(--muted)", fontSize: "var(--fs-sm)" }}>{products.length} products</span>
-          <div style={{ display: "flex", gap: "var(--sp-2)" }}>
-            {!isLoading && categories.length > 1 && (
-              <button
-                ref={filterTriggerRef}
-                type="button"
-                className="btn btn--secondary admin-filter-btn"
-                onClick={openFilter}
-                aria-haspopup="listbox"
-                aria-expanded={filterOpen}
-              >
-                <span>Filter: {activeFilterLabel}</span>
-                <svg className="admin-filter-btn__chevron" width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
-                  <path d="M2.5 3.75L5 6.25L7.5 3.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </button>
-            )}
-            <Link className="btn btn--secondary" to="/admin/products/import">Import CSV</Link>
-            <Link className="btn btn--primary" to="/admin/product">Add product</Link>
-          </div>
+          {!isLoading && categories.length > 1 && (
+            <button
+              ref={filterTriggerRef}
+              type="button"
+              className="btn btn--secondary admin-filter-btn"
+              onClick={openFilter}
+              aria-haspopup="listbox"
+              aria-expanded={filterOpen}
+            >
+              <span>Filter: {activeFilterLabel}</span>
+              <svg className="admin-filter-btn__chevron" width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                <path d="M2.5 3.75L5 6.25L7.5 3.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+          )}
         </div>
 
         {isLoading ? (
-          <p style={{ color: "var(--muted)" }}>Loading products…</p>
+          <div className="table-wrap">
+            <table className="table admin-product-table" aria-label="Products loading">
+              <thead>
+                <tr>
+                  <th className="ap-thumb-cell" />
+                  <th>Name</th><th>Listing</th><th>Price</th><th>Stock</th><th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[...Array(5)].map((_, i) => (
+                  <tr key={i} className="skel-row">
+                    <td className="ap-thumb-cell">
+                      <span className="skel" style={{ display: "block", inlineSize: "44px", blockSize: "44px", borderRadius: "var(--r-sm)" }} />
+                    </td>
+                    <td><span className="skel skel--name" /></td>
+                    <td><span className="skel skel--product" /></td>
+                    <td><span className="skel skel--price" /></td>
+                    <td><span className="skel skel--id" /></td>
+                    <td><span className="skel skel--badge" /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : allProducts.length === 0 ? (
+          <div className="admin-empty-state">
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+              <path d="M13 5h12l3 6v18a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2V11l3-6z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M8 11h20M15 5v6M23 5v6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+            </svg>
+            <p className="admin-empty-state__title">No products yet</p>
+            <p className="admin-empty-state__sub">
+              Add your first product or import a catalog from CSV to start selling.
+            </p>
+            <Link className="btn btn--primary" style={{ marginBlockStart: "var(--sp-4)" }} to="/admin/product">
+              Add product
+            </Link>
+          </div>
+        ) : products.length === 0 ? (
+          <div className="admin-empty-state">
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+              <circle cx="15" cy="15" r="9" stroke="currentColor" strokeWidth="1.4"/>
+              <path d="M22 22l8 8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+            </svg>
+            <p className="admin-empty-state__title">No products found</p>
+            <p className="admin-empty-state__sub">Try a different search term or filter.</p>
+            <button
+              className="btn btn--secondary"
+              style={{ marginBlockStart: "var(--sp-4)" }}
+              type="button"
+              onClick={() => { setSearch(""); setCategory("all"); }}
+            >
+              Clear filters
+            </button>
+          </div>
         ) : (
           <div className="table-wrap">
             <table className="table admin-product-table" aria-label="Products">
@@ -160,7 +214,7 @@ export default function AdminProducts() {
                     </td>
                     <td className="num">
                       {p.variants?.length
-                        ? `${p.variants.reduce((sum, v) => sum + (v.stock || 0), 0)} units`
+                        ? `${p.variants.reduce((sum, v) => sum + (v.quantity || 0), 0)} units`
                         : "0 units"}
                     </td>
                     <td>

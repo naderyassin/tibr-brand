@@ -2,11 +2,25 @@ import { useEffect } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/stores/auth";
-import { getProfile } from "@/lib/api";
+import { getProfile, adminGetOrders } from "@/lib/api";
 import { ToastProvider } from "@/components/ui/Toast";
 import "../../styles/store/admin.css";
 
 const NAV_ITEMS = [
+  {
+    label: "Overview",
+    to: "/admin",
+    match: ["/admin"],
+    exact: true,
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+        <rect x="3.5" y="3.5" width="7" height="7" rx="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <rect x="13.5" y="3.5" width="7" height="7" rx="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <rect x="3.5" y="13.5" width="7" height="7" rx="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <rect x="13.5" y="13.5" width="7" height="7" rx="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ),
+  },
   {
     label: "Orders",
     to: "/admin/orders",
@@ -79,10 +93,22 @@ export default function AdminLayout() {
     if (profileData && !isAdmin) navigate("/account", { replace: true });
   }, [profileLoading, profileError, profileData, isAdmin, navigate, signOut]);
 
+  // Shares the ["admin-orders"] cache with the dashboard/orders pages, so this
+  // costs no extra request once either page has loaded.
+  const { data: ordersData } = useQuery({
+    queryKey: ["admin-orders", token],
+    queryFn: () => adminGetOrders(token),
+    enabled: !!token && isAdmin,
+  });
+  const pendingCount =
+    ordersData?.data?.filter((o) => o.status === "pending").length ?? 0;
+
   if (authLoading || !user || profileLoading || profileError || !isAdmin) return null;
 
   const isItemActive = (item) =>
-    item.match.some((m) => location.pathname === m || location.pathname.startsWith(`${m}/`));
+    item.exact
+      ? item.match.includes(location.pathname)
+      : item.match.some((m) => location.pathname === m || location.pathname.startsWith(`${m}/`));
 
   return (
     <div className="admin-shell">
@@ -102,6 +128,11 @@ export default function AdminLayout() {
               >
                 {item.icon}
                 {item.label}
+                {item.label === "Orders" && pendingCount > 0 && (
+                  <span className="admin-sidebar__count" aria-label={`${pendingCount} pending`}>
+                    {pendingCount}
+                  </span>
+                )}
               </NavLink>
             ))}
           </nav>

@@ -48,6 +48,7 @@ const Login = lazy(() => import("@/pages/Login"));
 const Signup = lazy(() => import("@/pages/Signup"));
 const Account = lazy(() => import("@/pages/Account"));
 const AdminLayout = lazy(() => import("@/components/layout/AdminLayout"));
+const AdminDashboard = lazy(() => import("@/pages/AdminDashboard"));
 const AdminOrders = lazy(() => import("@/pages/AdminOrders"));
 const AdminProducts = lazy(() => import("@/pages/AdminProducts"));
 const AdminCustomers = lazy(() => import("@/pages/AdminCustomers"));
@@ -149,7 +150,7 @@ export default function App() {
 
         {/* Admin — own shell, no storefront header/footer */}
         <Route element={<AdminLayout />}>
-          <Route path="/admin" element={<Navigate to="/admin/orders" replace />} />
+          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/orders" element={<AdminOrders />} />
           <Route path="/admin/products" element={<AdminProducts />} />
           <Route path="/admin/customers" element={<AdminCustomers />} />

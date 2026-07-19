@@ -37,6 +37,15 @@ export default function ProductCard({ product, index = 0 }) {
   const cheapest = variants.length
     ? variants.reduce((lo, v) => (v.price < lo.price ? v : lo), variants[0])
     : null;
+
+  // Server-computed inStock is authoritative; fall back to summing variant
+  // quantity for callers that pass a raw (non-normalized) product row.
+  const outOfStock =
+    product.inStock != null
+      ? !product.inStock
+      : variants.length
+      ? !variants.some((v) => (v.quantity ?? v.stock ?? 0) > 0)
+      : false;
   const fromPrice =
     cheapest?.price ?? product.price ?? product.ar_price ?? 0;
   const fromSize = cheapest?.size_label ?? product.sizes?.[0] ?? "";
@@ -77,7 +86,7 @@ export default function ProductCard({ product, index = 0 }) {
 
   return (
     <motion.article
-      className={`product-new is-visible${product.is_bestseller ? " product-new--bestseller" : ""}`}
+      className={`product-new is-visible${product.is_bestseller ? " product-new--bestseller" : ""}${outOfStock ? " product-new--oos" : ""}`}
       data-product
       data-id={product.id}
       initial={{ opacity: 0, y: 18 }}
@@ -137,13 +146,15 @@ export default function ProductCard({ product, index = 0 }) {
             )}
           </div>
 
-          <div className="product-new__action-pill">
-            <span className="product-new__action-text">Add to cart</span>
-            <span className="product-new__arrow-wrap">
-              <svg className="product-new__arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-                <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </span>
+          <div className={`product-new__action-pill${outOfStock ? " product-new__action-pill--oos" : ""}`}>
+            <span className="product-new__action-text">{outOfStock ? "Sold out" : "Add to cart"}</span>
+            {!outOfStock && (
+              <span className="product-new__arrow-wrap">
+                <svg className="product-new__arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                  <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
+            )}
           </div>
         </div>
       </Link>

@@ -60,18 +60,43 @@ export default function AdminDiscounts() {
 
   return (
     <div className="admin-content">
-      <header className="page-head page-head--compact">
+      <header className="page-head page-head--compact admin-head">
         <h1 className="page-head__title">Discounts</h1>
+        <div className="page-head__actions">
+          <button className="btn btn--primary" type="button" onClick={() => setModalOpen(true)}>Create discount</button>
+        </div>
       </header>
 
       <div className="admin-card">
         <div className="admin-toolbar">
           <span style={{ color: "var(--muted)", fontSize: "var(--fs-sm)" }}>{discounts.length} discounts</span>
-          <button className="btn btn--primary" type="button" onClick={() => setModalOpen(true)}>Create discount</button>
         </div>
 
         {isLoading ? (
-          <p style={{ color: "var(--muted)" }}>Loading discounts…</p>
+          <div className="table-wrap">
+            <table className="table" aria-label="Discounts loading">
+              <thead>
+                <tr>
+                  <th>Discount</th><th>Value</th><th>Status</th><th>Used</th><th>Ends</th><th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[...Array(4)].map((_, i) => (
+                  <tr key={i} className="skel-row">
+                    <td>
+                      <span className="skel skel--name" />
+                      <span className="skel skel--phone" />
+                    </td>
+                    <td><span className="skel skel--product" /></td>
+                    <td><span className="skel skel--badge" /></td>
+                    <td><span className="skel skel--id" /></td>
+                    <td><span className="skel skel--date" /></td>
+                    <td><span className="skel skel--price" /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : discounts.length === 0 ? (
           <div className="admin-empty-state">
             <svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true">

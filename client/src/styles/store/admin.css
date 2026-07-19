@@ -28,8 +28,8 @@
 
   --ink:          #1c1a18;   /* deep espresso/charcoal for premium readability */
   --ink-2:        #4a4742;   /* secondary text */
-  --muted:        #827d75;   /* tertiary / meta */
-  --muted-faint:  #ab9f8c;
+  --muted:        #6e6961;   /* tertiary / meta — ≥4.5:1 on white */
+  --muted-faint:  #ab9f8c;   /* decorative only (icons, dashed borders) — not for text */
 
   --gold:         #b89755;   /* elegant signature TIBR gold */
   --gold-bright:  #cfad6a;   /* hover gold */
@@ -72,6 +72,33 @@
 
 @media (min-width: 56rem) {
   .admin-shell { padding-inline-start: 15.5rem; }
+}
+
+/* ── Product-register type discipline ──────────────────────────
+   The Bodoni display face is reserved for the TIBR wordmark; all
+   UI chrome (page titles, card titles, table headers, KPI values)
+   runs in the body sans at a fixed rem scale. */
+.admin-shell .page-head__title,
+.admin-shell .admin-panel__title {
+  font-family: var(--font-body);
+  font-size: 1.5rem;
+  font-weight: var(--fw-bold);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+/* Page header row: title on one side, primary page actions on the other. */
+.admin-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+.page-head__actions {
+  display: flex;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
 }
 
 /* ============================ SIDEBAR ============================ */
@@ -145,8 +172,7 @@
   font-size: var(--fs-sm);
   font-weight: var(--fw-medium);
   white-space: nowrap;
-  border-left: 3px solid transparent;
-  transition: all var(--dur) var(--ease-out);
+  transition: background var(--dur) var(--ease-out), color var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out);
 }
 .admin-sidebar__link svg {
   inline-size: 1.15rem;
@@ -164,13 +190,31 @@
 }
 .admin-sidebar__link.is-active {
   background: var(--gold-ghost);
-  color: var(--gold);
+  color: var(--ink);
   font-weight: var(--fw-semibold);
-  border-left-color: var(--gold);
-  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  box-shadow: inset 0 0 0 1px var(--gold-line);
 }
 .admin-sidebar__link.is-active svg {
   color: var(--gold);
+}
+
+/* Attention count on a nav item (e.g. pending orders) */
+.admin-sidebar__count {
+  margin-inline-start: auto;
+  min-inline-size: 1.25rem;
+  block-size: 1.25rem;
+  padding: 0 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 99px;
+  background: var(--gold-ghost);
+  border: 1px solid var(--gold-line);
+  color: var(--ink);
+  font-size: 0.65rem;
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
 }
 
 .admin-sidebar__footer {
@@ -210,7 +254,7 @@
 /* ============================ CONTENT ============================ */
 .admin-content {
   padding: var(--sp-6) var(--gutter) var(--sp-9);
-  max-inline-size: 68rem;
+  max-inline-size: 72rem;
   inline-size: 100%;
   margin-inline: auto;
 }
@@ -228,18 +272,13 @@
   padding: var(--sp-5);
   background: var(--surface);
   box-shadow: var(--shadow-1);
-  transition: all var(--dur) var(--ease-out);
-}
-.stat:hover {
-  transform: translateY(-2px);
-  border-color: var(--gold-line);
-  box-shadow: 0 10px 25px -8px rgba(184, 151, 85, 0.06), var(--shadow-2);
 }
 .stat__value {
-  font-family: var(--font-display);
-  font-size: var(--fs-h1);
-  color: var(--gold);
+  font-family: var(--font-body);
+  font-size: 1.75rem;
+  color: var(--ink);
   font-weight: var(--fw-bold);
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
   line-height: var(--lh-tight);
 }
@@ -251,6 +290,11 @@
   letter-spacing: 0.08em;
   margin-block-start: var(--sp-2);
 }
+.stat__hint {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  margin-block-start: var(--sp-1);
+}
 
 .admin-card {
   background: var(--surface);
@@ -258,19 +302,19 @@
   border-radius: var(--r-lg);
   padding: var(--sp-6);
   margin-block-end: var(--sp-5);
-  box-shadow: var(--shadow-2);
-  transition: border-color var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out);
+  box-shadow: var(--shadow-1);
+  transition: border-color var(--dur) var(--ease-out);
 }
 .admin-card:hover {
   border-color: var(--line-strong);
 }
 .admin-card + .admin-card { margin-block-start: 0; }
 .admin-card__title {
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: var(--fs-base);
-  font-weight: var(--fw-bold);
+  font-weight: var(--fw-semibold);
   color: var(--ink);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   margin-block-end: var(--sp-4);
 }
 
@@ -287,11 +331,12 @@
   border-radius: 99px !important; /* premium pill shape */
   color: var(--ink) !important;
   font-size: var(--fs-sm) !important;
-  padding: 0.65rem 2.25rem 0.65rem 2.5rem !important;
+  padding-block: 0.65rem !important;
+  padding-inline: 2.5rem 2.25rem !important;
   transition: border-color var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out) !important;
 }
 .admin-search__input::placeholder {
-  color: var(--muted-faint) !important;
+  color: var(--muted) !important;
 }
 .admin-search__input:focus {
   border-color: var(--gold) !important;
@@ -370,8 +415,8 @@
   overflow: hidden !important;
 }
 .table th {
-  font-family: var(--font-display) !important;
-  font-size: 0.65rem !important;
+  font-family: var(--font-body) !important;
+  font-size: 0.7rem !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.08em !important;
@@ -397,13 +442,13 @@
 .order-id {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
   font-size: var(--fs-xs) !important;
-  color: var(--gold) !important;
+  color: var(--ink-2) !important;
   font-weight: 600 !important;
   letter-spacing: 0.03em !important;
   transition: color var(--dur-fast) var(--ease-out) !important;
 }
 .order-id:hover {
-  color: var(--gold-bright) !important;
+  color: var(--ink) !important;
   text-decoration: underline !important;
 }
 .order-cell__primary {
@@ -417,8 +462,9 @@
   margin-block-start: 2px !important;
 }
 .order-total-cell {
-  color: var(--gold) !important;
+  color: var(--ink) !important;
   font-weight: 700 !important;
+  font-variant-numeric: tabular-nums !important;
 }
 .order-date-cell {
   color: var(--muted) !important;
@@ -725,6 +771,22 @@
 
 .btn--sm { padding: 7px 14px; font-size: 13px; }
 
+/* Row-level actions inside any admin table: compact, and destructive
+   actions stay quiet until engaged (ghost-danger, fills on hover). */
+.admin-shell .table .btn {
+  min-block-size: 2.4rem;
+  padding-inline: 0.85rem;
+}
+.admin-shell .table .btn--danger {
+  background: transparent;
+  border-color: color-mix(in srgb, var(--danger) 30%, transparent);
+  color: var(--danger);
+}
+.admin-shell .table .btn--danger:hover:not(:disabled) {
+  background: var(--danger-fill);
+  border-color: var(--danger);
+}
+
 /* Override primary buttons to be premium black instead of gold in admin */
 .admin-shell .btn--primary,
 .admin-theme .btn--primary {
@@ -781,4 +843,110 @@
   inline-size: 1.75rem; block-size: 1.75rem; padding: 0;
   display: inline-flex; align-items: center; justify-content: center;
   line-height: 1; font-size: var(--fs-base);
+}
+
+/* ============================ DASHBOARD (Overview) ============================ */
+.admin-dash-date {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  margin-block-start: var(--sp-1);
+}
+
+.admin-card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-block-end: var(--sp-4);
+}
+.admin-card__head .admin-card__title { margin-block-end: 0; }
+.admin-card__link {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--ink-2);
+  white-space: nowrap;
+  transition: color var(--dur) var(--ease-out);
+}
+.admin-card__link:hover { color: var(--ink); text-decoration: underline; }
+
+.admin-dash-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-4);
+  align-items: start;
+  margin-block-end: var(--sp-5);
+}
+@media (min-width: 64rem) {
+  .admin-dash-grid { grid-template-columns: 1fr 1fr; }
+}
+.admin-dash-grid .admin-card { margin-block-end: 0; }
+
+/* Rows in dashboard panels: the list is the container — no nested cards.
+   Prefixed admin-dash-* — store.css already owns a .dash-* namespace. */
+.admin-dash-list { display: flex; flex-direction: column; }
+.admin-dash-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding-block: var(--sp-3);
+  border-block-end: 1px solid var(--line);
+}
+.admin-dash-row:last-child { border-block-end: none; padding-block-end: 0; }
+.admin-dash-row:first-child { padding-block-start: 0; }
+.admin-dash-row__main { flex: 1; min-inline-size: 0; display: flex; flex-direction: column; gap: 2px; }
+.admin-dash-row__title {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.admin-dash-row__meta {
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.admin-dash-row__meta--danger { color: var(--danger); font-weight: var(--fw-semibold); }
+.admin-dash-row__val {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.admin-dash-thumb {
+  inline-size: 2.25rem;
+  block-size: 2.25rem;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--line);
+  object-fit: cover;
+  flex-shrink: 0;
+  display: block;
+}
+.admin-dash-thumb--empty { background: var(--surface-3); border-style: dashed; }
+
+.admin-dash-empty {
+  padding: var(--sp-5) var(--sp-3);
+  text-align: center;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+/* ============================ REDUCED MOTION ============================ */
+@media (prefers-reduced-motion: reduce) {
+  .admin-shell *,
+  .admin-theme * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+  .admin-shell .status-badge:hover:not(:disabled),
+  .admin-theme .status-badge:hover:not(:disabled),
+  .admin-shell .status-badge:active:not(:disabled),
+  .admin-theme .status-badge:active:not(:disabled) {
+    transform: none !important;
+  }
 }

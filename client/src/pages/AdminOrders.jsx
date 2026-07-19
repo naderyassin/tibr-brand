@@ -1,12 +1,20 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/stores/auth";
 import { adminGetOrders } from "@/lib/api";
-import { StatusBadge } from "@/components/admin/StatusBadge";
+import { StatusBadge, STATUSES } from "@/components/admin/StatusBadge";
 
 export default function AdminOrders() {
   const { token } = useAuth();
-  const [statusFilter, setStatusFilter] = useState("all");
+  // Status filter lives in the URL so views are deep-linkable (e.g. the
+  // dashboard's "Review all" → /admin/orders?status=pending) and the back
+  // button steps through filters.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const statusParam = searchParams.get("status");
+  const statusFilter = STATUSES.includes(statusParam) ? statusParam : "all";
+  const setStatusFilter = (key) =>
+    setSearchParams(key === "all" ? {} : { status: key });
   const [orderSearch, setOrderSearch] = useState("");
 
   const { data, isLoading } = useQuery({
@@ -53,25 +61,6 @@ export default function AdminOrders() {
       <header className="page-head page-head--compact">
         <h1 className="page-head__title">Orders</h1>
       </header>
-
-      <div className="admin-stats">
-        <div className="stat">
-          <p className="stat__value">{counts.total}</p>
-          <p className="stat__label">Total Orders</p>
-        </div>
-        <div className="stat">
-          <p className="stat__value" style={{ color: "var(--warning)" }}>{counts.pending}</p>
-          <p className="stat__label">Pending</p>
-        </div>
-        <div className="stat">
-          <p className="stat__value" style={{ color: "var(--gold)" }}>{counts.shipped}</p>
-          <p className="stat__label">Shipped</p>
-        </div>
-        <div className="stat">
-          <p className="stat__value" style={{ color: "var(--success)" }}>{counts.delivered}</p>
-          <p className="stat__label">Delivered</p>
-        </div>
-      </div>
 
       <div className="admin-card">
         <div className="admin-search-toolbar">
