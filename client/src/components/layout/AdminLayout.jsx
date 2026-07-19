@@ -88,6 +88,19 @@ export default function AdminLayout() {
   };
 
   useEffect(() => {
+    if (theme === "dark") {
+      document.documentElement.classList.add("theme-dark");
+      document.documentElement.classList.remove("theme-light");
+    } else {
+      document.documentElement.classList.add("theme-light");
+      document.documentElement.classList.remove("theme-dark");
+    }
+    return () => {
+      document.documentElement.classList.remove("theme-dark", "theme-light");
+    };
+  }, [theme]);
+
+  useEffect(() => {
     if (!authLoading && !user) navigate("/login", { replace: true });
   }, [authLoading, user, navigate]);
 
@@ -225,7 +238,7 @@ export default function AdminLayout() {
           </div>
         </aside>
 
-        <div className="admin-theme" style={{ display: "contents" }}>
+        <div className={`admin-theme theme-${theme}`} style={{ display: "contents" }}>
           <Outlet />
         </div>
       </ToastProvider>

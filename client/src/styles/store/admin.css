@@ -954,8 +954,10 @@
 /* =============================================================================
    DARK BOUTIQUE THEME OVERRIDES
    ============================================================================= */
-.admin-shell.theme-dark,
-.admin-theme.theme-dark {
+.admin-shell.theme-dark,
+.admin-theme.theme-dark,
+.theme-dark .admin-shell,
+.theme-dark .admin-theme {
   --bg:           #0a0908;   /* deep charcoal/obsidian */
   --bg-raised:    #110f0e;   /* dark paper for sidebar */
   --surface:      #1a1816;   /* graphite card surface */
