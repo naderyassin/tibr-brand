@@ -485,6 +485,57 @@ p, li { max-width: 68ch; }     /* readable measure */
 }
 .store-footer__socials {
   margin-block-start: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+.store-footer__social-icons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.store-footer__social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #a1a1aa;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+}
+.store-footer__social-link svg {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.3s ease;
+}
+.store-footer__social-link:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+.store-footer__social-link--facebook:hover {
+  background: rgba(24, 119, 242, 0.15);
+  border-color: #1877f2;
+  color: #1877f2;
+}
+.store-footer__social-link--instagram:hover {
+  background: rgba(228, 64, 95, 0.15);
+  border-color: #e4405f;
+  color: #e4405f;
+}
+.store-footer__social-link--tiktok:hover {
+  background: rgba(37, 244, 238, 0.15);
+  border-color: #25f4ee;
+  color: #ffffff;
+}
+.store-footer__social-link--whatsapp:hover {
+  background: rgba(37, 211, 102, 0.15);
+  border-color: #25d366;
+  color: #25d366;
 }
 .store-footer__whatsapp-pill {
   display: inline-flex;
