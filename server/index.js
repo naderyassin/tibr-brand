@@ -59,9 +59,9 @@ app.use(require("./routes/admin"));
 // store routes. In dev, Vite runs on :5173 and proxies /api back here — these
 // routes are never reached from Vite's dev server.
 const clientDist = path.join(rootDir, "dist", "client");
-const clientDistExists = fs.existsSync(path.join(clientDist, "index.html"));
+const indexPath = path.join(clientDist, "index.html");
 
-if (clientDistExists) {
+if (fs.existsSync(clientDist)) {
   // index:false so this static middleware doesn't auto-serve index.html at
   // "/" itself — the SPA fallback below does that with explicit no-cache.
   app.use(express.static(clientDist, {
@@ -77,29 +77,20 @@ if (clientDistExists) {
       }
     }
   }));
-
-  // SPA fallback: every non-API, non-file GET gets the shell, and React Router
-  // owns the path (its "*" route redirects unknowns to /shop). A hand-kept
-  // route list here drifts from App.jsx — it had already lost /blog, /about,
-  // /checkout/callback and most /admin pages, 301ing them to /shop on refresh.
-  app.get("*", (req, res, next) => {
-    if (req.path.startsWith("/api/") || path.extname(req.path)) return next();
-    res.setHeader("Cache-Control", "no-cache");
-    res.sendFile(path.join(clientDist, "index.html"));
-  });
-} else {
-  // No build present. In dev, Vite serves the store on :5173 (`npm run client:dev`).
-  // For a production server the build is required — run `npm run client:build`.
-  console.warn(
-    "[store] dist/client not found — store routes are unavailable until you run `npm run client:build`."
-  );
 }
 
+// SPA fallback: every non-API, non-file GET gets index.html, and React Router
+// owns the path.
 app.get("*", (req, res, next) => {
-  if (req.path.startsWith("/api/")) {
-    return next();
+  if (req.path.startsWith("/api/")) return next();
+  if (path.extname(req.path)) return next();
+
+  if (fs.existsSync(indexPath)) {
+    res.setHeader("Cache-Control", "no-cache");
+    return res.sendFile(indexPath);
   }
-  res.redirect(301, "/shop");
+
+  res.redirect(302, "/");
 });
 
 if (!process.env.SKIP_LISTEN) {

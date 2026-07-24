@@ -4,7 +4,7 @@
   "installCommand": "npm install",
   "functions": {
     "api/index.js": {
-      "includeFiles": "{assets/**,dist/client/**}"
+      "includeFiles": ["assets/**", "dist/client/**"]
     }
   },
   "rewrites": [

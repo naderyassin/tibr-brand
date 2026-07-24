@@ -144,8 +144,8 @@ export default function App() {
           <Route path="/account" element={<Account />} />
           <Route path="/wishlist" element={<Navigate to="/account?tab=wishlist" replace />} />
 
-          {/* Fallback → shop home */}
-          <Route path="*" element={<Navigate to="/shop" replace />} />
+          {/* Fallback → home */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
 
         {/* Admin — own shell, no storefront header/footer */}
