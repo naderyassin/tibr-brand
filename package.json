@@ -9,6 +9,7 @@
     "client:dev": "cd client && npm run dev",
     "client:build": "cd client && npm run build",
     "client:install": "cd client && npm install",
+    "build": "npm run client:build",
     "postinstall": "npm run client:install",
     "dev:all": "concurrently \"npm run dev\" \"npm run client:dev\""
   },
