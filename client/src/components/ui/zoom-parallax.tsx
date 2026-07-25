@@ -44,6 +44,8 @@ export function ZoomParallax({ images }: ZoomParallaxProps) {
 								<img
 									src={src || '/placeholder.svg'}
 									alt={alt || `Parallax image ${index + 1}`}
+									loading="lazy"
+									decoding="async"
 									className={`h-full w-full ${index === 0 ? 'object-contain' : 'object-cover'}`}
 								/>
 							</div>

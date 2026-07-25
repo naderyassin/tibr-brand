@@ -441,7 +441,7 @@ export default function Collection() {
               <motion.div key={p.title} {...reveal}>
                 <GlowCard glowColor="purple" customSize className="col-signature-card">
                   <div className="col-signature-card__image-wrap">
-                    <img src={p.image} alt={p.title} className="col-signature-card__image" />
+                    <img src={p.image} alt={p.title} loading="lazy" decoding="async" className="col-signature-card__image" />
                     <div className="col-signature-card__scrim" />
                   </div>
                   <div data-glow className="col-signature-card__border" />

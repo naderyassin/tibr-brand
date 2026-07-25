@@ -187,24 +187,51 @@ export default function ScrollSequence({
     };
 
     // ── Preload ───────────────────────────────────────────
-    for (let i = 0; i < frameCount; i++) {
+    // Load first 8 priority frames immediately for instant FCP/LCP.
+    const priorityCount = Math.min(8, frameCount);
+
+    const loadFrame = (i) => {
+      if (images[i] || disposed) return;
       const img = new Image();
       img.decoding = "async";
       img.src = frameSrc(i);
       img.onload = () => {
-        // Trigger background decoding on loaded images
         if (typeof img.decode === "function") {
           img.decode().catch(() => {});
         }
-        // Repaint if this frame is the one currently on screen (or the poster).
-        // Clear the skip-guard so a fallback frame gets swapped for the real one
-        // even though the playhead position hasn't moved.
         if (Math.abs(i - currentFloat) <= 1) {
           lastDrawnFloat = -1;
           schedule();
         }
       };
       images[i] = img;
+    };
+
+    for (let i = 0; i < priorityCount; i++) {
+      loadFrame(i);
+    }
+
+    // Batch load remaining frames in idle windows so main thread & network stay clear
+    let nextBatchIndex = priorityCount;
+    const loadRemainingBatch = () => {
+      if (disposed || nextBatchIndex >= frameCount) return;
+      const end = Math.min(nextBatchIndex + 12, frameCount);
+      for (; nextBatchIndex < end; nextBatchIndex++) {
+        loadFrame(nextBatchIndex);
+      }
+      if (nextBatchIndex < frameCount) {
+        if (typeof window.requestIdleCallback === "function") {
+          window.requestIdleCallback(loadRemainingBatch, { timeout: 1000 });
+        } else {
+          setTimeout(loadRemainingBatch, 60);
+        }
+      }
+    };
+
+    if (typeof window.requestIdleCallback === "function") {
+      window.requestIdleCallback(loadRemainingBatch, { timeout: 800 });
+    } else {
+      setTimeout(loadRemainingBatch, 150);
     }
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
