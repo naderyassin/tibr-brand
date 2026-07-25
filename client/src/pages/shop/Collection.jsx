@@ -65,13 +65,13 @@ const COLLECTIONS = [
 ];
 
 const PARALLAX_IMAGES = [
-  { src: "/assets/images/parallax/parallax_hero_bottle.png", alt: "TIBR luxury flacon, full profile" },
-  { src: "/assets/images/parallax/parallax_amber_pour.png", alt: "Golden amber elixir being poured" },
-  { src: "/assets/images/parallax/parallax_ingredients.png", alt: "Rare raw perfume ingredients" },
-  { src: "/assets/images/parallax/parallax_cap_detail.png", alt: "Machined metal cap, detail" },
-  { src: "/assets/images/parallax/parallax_golden_texture.png", alt: "Golden liquid refractions" },
-  { src: "/assets/images/parallax/parallax_scent_trail.png", alt: "Ethereal scent trail" },
-  { src: "/assets/images/parallax/parallax_crystal_bottle.png", alt: "Crystal-cut flacon, dramatic angle" },
+  { src: "/assets/images/parallax/parallax_hero_bottle.webp", alt: "TIBR luxury flacon, full profile" },
+  { src: "/assets/images/parallax/parallax_amber_pour.webp", alt: "Golden amber elixir being poured" },
+  { src: "/assets/images/parallax/parallax_ingredients.webp", alt: "Rare raw perfume ingredients" },
+  { src: "/assets/images/parallax/parallax_cap_detail.webp", alt: "Machined metal cap, detail" },
+  { src: "/assets/images/parallax/parallax_golden_texture.webp", alt: "Golden liquid refractions" },
+  { src: "/assets/images/parallax/parallax_scent_trail.webp", alt: "Ethereal scent trail" },
+  { src: "/assets/images/parallax/parallax_crystal_bottle.webp", alt: "Crystal-cut flacon, dramatic angle" },
 ];
 
 const TIMELINE = [
