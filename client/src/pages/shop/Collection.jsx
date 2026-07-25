@@ -9,10 +9,17 @@ import { Hero } from "@/components/ui/animated-hero";
 import { ZoomParallax } from "@/components/ui/zoom-parallax";
 import "./Collection.css";
 
-/* Hero image sequence — frames extracted from hero.mp4 at 24fps. */
-const HERO_FRAME_COUNT = 122;
-const heroFrameSrc = (i) =>
-  `/assets/hero-frames-2/frame_${String(i + 1).padStart(4, "0")}.jpg`;
+/* Hero image sequence — responsive frame stepping to optimize mobile data & performance. */
+const getHeroConfig = () => {
+  const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
+  const step = isMobile ? 3 : 1;
+  const count = isMobile ? Math.ceil(122 / 3) : 122;
+  const getSrc = (i) => {
+    const frameIndex = Math.min(i * step + 1, 122);
+    return `/assets/hero-frames-2/frame_${String(frameIndex).padStart(4, "0")}.jpg`;
+  };
+  return { count, getSrc };
+};
 
 /* Reveal preset — product-register restraint, ease-out only. */
 const reveal = {
@@ -199,6 +206,7 @@ function GoldDust() {
 }
 
 export default function Collection() {
+  const heroConfig = useMemo(() => getHeroConfig(), []);
   const philosophyRef = useRef(null);
   const timelineRef = useRef(null);
 
@@ -313,8 +321,8 @@ export default function Collection() {
     <div className="collection-page frontier-cinematic">
       {/* ── HERO (scroll-driven frame sequence) ────────────── */}
       <ScrollSequence
-        frameCount={HERO_FRAME_COUNT}
-        frameSrc={heroFrameSrc}
+        frameCount={heroConfig.count}
+        frameSrc={heroConfig.getSrc}
         scrollLength={3900}
         zoom={1}
         onProgress={handleHeroProgress}
