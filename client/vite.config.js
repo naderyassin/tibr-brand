@@ -43,6 +43,40 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: "../dist/client",
       emptyOutDir: true,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes("node_modules")) {
+              if (id.includes("jodit") || id.includes("dompurify")) {
+                return "vendor-editor";
+              }
+              if (id.includes("leaflet")) {
+                return "vendor-map";
+              }
+              if (id.includes("lucide-react")) {
+                return "vendor-icons";
+              }
+              if (id.includes("framer-motion") || id.includes("gsap") || id.includes("lenis")) {
+                return "vendor-motion";
+              }
+              if (id.includes("@supabase")) {
+                return "vendor-supabase";
+              }
+              if (id.includes("@tanstack")) {
+                return "vendor-query";
+              }
+              if (
+                id.includes("node_modules/react/") ||
+                id.includes("node_modules/react-dom/") ||
+                id.includes("node_modules/react-router") ||
+                id.includes("node_modules/scheduler/")
+              ) {
+                return "vendor-react";
+              }
+            }
+          },
+        },
+      },
     },
   };
 });

@@ -29,8 +29,8 @@ app.use(compression());
 // Serve uploaded product images and brand media from /assets
 app.use("/assets", express.static(path.join(rootDir, "assets"), {
   setHeaders: (res, filePath) => {
-    if (/\.(png|jpg|jpeg|gif|ico|svg|webp|avif|mp4|webm)$/i.test(path.extname(filePath))) {
-      res.setHeader("Cache-Control", "public, max-age=86400");
+    if (/\.(png|jpg|jpeg|gif|ico|svg|webp|avif|mp4|webm|woff2?|ttf)$/i.test(path.extname(filePath))) {
+      res.setHeader("Cache-Control", CACHE_IMMUTABLE);
     }
   }
 }));
@@ -68,12 +68,12 @@ if (fs.existsSync(clientDist)) {
     index: false,
     setHeaders: (res, filePath) => {
       // Everything Vite emits under assets/ is content-hashed → cache forever.
-      if (filePath.includes(`${path.sep}assets${path.sep}`)) {
+      const isAssetFolder = filePath.includes("assets") || filePath.includes("assets/");
+      const isMediaOrFont = /\.(png|jpg|jpeg|gif|ico|svg|webp|avif|woff2?|ttf)$/i.test(filePath);
+      if (isAssetFolder || isMediaOrFont) {
         res.setHeader("Cache-Control", CACHE_IMMUTABLE);
-      } else if (/\.(js|css|mjs)$/i.test(path.extname(filePath))) {
+      } else {
         res.setHeader("Cache-Control", "no-cache");
-      } else if (/\.(png|jpg|jpeg|gif|ico|svg|webp|avif|woff2?|ttf)$/i.test(path.extname(filePath))) {
-        res.setHeader("Cache-Control", CACHE_IMMUTABLE);
       }
     }
   }));
