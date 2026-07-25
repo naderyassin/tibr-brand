@@ -132,6 +132,7 @@ function TiltCard({ c }) {
           <video
             className="col-collection-card__media"
             src={c.video}
+            preload="none"
             loop
             muted
             playsInline
