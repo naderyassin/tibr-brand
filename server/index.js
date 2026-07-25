@@ -16,7 +16,7 @@ const { apiLimiter } = require("./middleware/rateLimit");
 
 const app = express();
 
-// One hop in front of us in production (Vercel) — needed so req.ip reflects
+// One hop in front of us in production (Hostinger reverse proxy / NGINX / Cloudflare) — needed so req.ip reflects
 // the real client for rate limiting, not the proxy.
 app.set("trust proxy", 1);
 

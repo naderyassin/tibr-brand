@@ -11,7 +11,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const rootDir = path.resolve(__dirname, "..");
-const host = process.env.HOST || "127.0.0.1";
+const host = process.env.HOST || "0.0.0.0";
 const port = process.env.PORT || 3000;
 
 const isProduction = process.env.NODE_ENV === "production";
