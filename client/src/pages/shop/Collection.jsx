@@ -16,7 +16,7 @@ const getHeroConfig = () => {
   const count = isMobile ? Math.ceil(122 / 3) : 122;
   const getSrc = (i) => {
     const frameIndex = Math.min(i * step + 1, 122);
-    return `/assets/hero-frames-2/frame_${String(frameIndex).padStart(4, "0")}.jpg`;
+    return `/assets/hero-frames-2/frame_${String(frameIndex).padStart(4, "0")}.webp`;
   };
   return { count, getSrc };
 };
@@ -36,19 +36,19 @@ const SIGNATURE_PILLARS = [
     icon: Sparkles,
     title: "Original",
     text: "No imitation, no shortcuts — every TIBR scent is composed from a blank canvas.",
-    image: "/assets/images/promise_original.png",
+    image: "/assets/images/promise_original.webp",
   },
   {
     icon: Compass,
     title: "Inspired",
     text: "Rooted in a century of Egyptian perfumery, carried forward into the present.",
-    image: "/assets/images/promise_inspired.png",
+    image: "/assets/images/promise_inspired.webp",
   },
   {
     icon: Fingerprint,
     title: "Your Own Signature",
     text: "A fragrance that becomes unmistakably yours the moment it meets skin.",
-    image: "/assets/images/promise_signature.png",
+    image: "/assets/images/promise_signature.webp",
   },
 ];
 
@@ -79,7 +79,7 @@ const TIMELINE = [
     year: "1924",
     title: "The First Extraction",
     body: "Founded in the heart of the Golden Age, TIBR established its signature rich olfactory contrast that would define modern high perfumery.",
-    image: "https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/images/frontier_1924.png",
+    image: "/assets/images/frontier_1924.webp",
     align: "right",
     chapter: "CHAPTER 01",
   },
@@ -87,7 +87,7 @@ const TIMELINE = [
     year: "1997",
     title: "The Pure Extract Revolution",
     body: "The introduction of pure perfume mastery with our legendary Aurum extract. TIBR expanded its collection, embracing rare raw materials as the true theater of human emotion.",
-    image: "https://hlmbehyjshdtklhjqiii.supabase.co/storage/v1/object/public/brand-assets/images/frontier_1997.png",
+    image: "/assets/images/frontier_1997.webp",
     align: "left",
     chapter: "CHAPTER 02",
   },
