@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, lazy, Suspense } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/stores/auth";
@@ -13,7 +13,12 @@ import {
   LONGEVITY, SILLAGE, FAMILIES, SEASONS, STATUSES, NOTE_LAYERS,
   biLabel, requiresOriginal, slugify,
 } from "@/lib/taxonomy";
-import JoditEditor from "jodit-react";
+// Jodit is ~863 kB — by far the largest chunk in the build, and it backs a
+// single field in step 7 of this form (below the fold). Loading it lazily lets
+// the rest of the product form paint and become editable immediately while the
+// editor streams in behind it. Cached after the first load, so switching
+// AR/EN — which remounts it via `key` — stays instant.
+const JoditEditor = lazy(() => import("jodit-react"));
 
 // slug -> { en, ar, family }, so the form can hold note SLUGS (what the API
 // wants) while showing bilingual labels.
@@ -762,17 +767,21 @@ export default function AdminProduct() {
                     </div>
                   </div>
                 </div>
-                <JoditEditor
-                  key={descLang}
-                  value={descValue}
-                  onBlur={setDesc}
-                  config={{
-                    placeholder: descLang === "ar" ? "اكتب وصف المنتج…" : "Write a product description…",
-                    direction: descLang === "ar" ? "rtl" : "ltr",
-                    showCharsCounter: false, showWordsCounter: false, showXPathInStatusbar: false,
-                    buttons: ["eraser", "paragraph", "bold", "italic", "underline", "brush", "align", "link", "table", "dots", "source"],
-                  }}
-                />
+                {/* Reserves the editor's height so the form doesn't jump when
+                    the chunk lands. */}
+                <Suspense fallback={<div className="ap-desc-loading" />}>
+                  <JoditEditor
+                    key={descLang}
+                    value={descValue}
+                    onBlur={setDesc}
+                    config={{
+                      placeholder: descLang === "ar" ? "اكتب وصف المنتج…" : "Write a product description…",
+                      direction: descLang === "ar" ? "rtl" : "ltr",
+                      showCharsCounter: false, showWordsCounter: false, showXPathInStatusbar: false,
+                      buttons: ["eraser", "paragraph", "bold", "italic", "underline", "brush", "align", "link", "table", "dots", "source"],
+                    }}
+                  />
+                </Suspense>
               </div>
             </div>
 

@@ -3822,6 +3822,9 @@ p, li { max-width: 68ch; }     /* readable measure */
 .ap-media-add:hover { border-color: var(--gold); color: var(--gold); }
 .ap-file-hidden { display: none; }
 .ap-desc-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); margin-block-end: var(--sp-2); }
+/* Placeholder held while the lazily-loaded Jodit chunk arrives — matches the
+   editor's default height so step 7 doesn't shift when it mounts. */
+.ap-desc-loading { min-height: 300px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
 .ap-autogen-btn {
   display: inline-flex; align-items: center; gap: 5px;
   padding: .3rem .65rem; font-size: var(--fs-xs); font-weight: var(--fw-semibold);
