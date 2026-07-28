@@ -12,6 +12,7 @@ const {
   pickBestDiscount,
 } = require("../services/discounts");
 const paymob = require("../paymob");
+const { bust: bustCatalogCache } = require("../lib/cache");
 
 const router = express.Router();
 
@@ -154,6 +155,8 @@ router.post("/api/checkout", checkoutLimiter, requireUser, async (req, res) => {
         .eq("id", line.variant_id);
     }
   }
+  // Stock moved — drop the cached catalog so the grid's in-stock flags are true.
+  bustCatalogCache();
 
   if (appliedDiscount) {
     const { data: current } = await serviceClient
@@ -397,6 +400,7 @@ router.post("/api/payments/paymob/webhook", async (req, res) => {
           .update({ quantity: Math.max(0, v.quantity - line.qty) }).eq("id", line.variant_id);
       }
     }
+    bustCatalogCache();
     // Count a typed discount code's usage once, on the confirmed payment.
     if (order.discount_code) {
       const { data: d } = await serviceClient

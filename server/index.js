@@ -13,6 +13,7 @@ const helmet = require("helmet");
 
 const { rootDir, host, port, CACHE_IMMUTABLE } = require("./config");
 const { apiLimiter } = require("./middleware/rateLimit");
+const { trafficMonitor } = require("./middleware/traffic");
 
 const app = express();
 
@@ -25,6 +26,12 @@ app.set("trust proxy", 1);
 app.use(helmet({ contentSecurityPolicy: false }));
 
 app.use(compression());
+
+// Counts document + /api requests per IP into a rolling window. Mounted before
+// the routes so it sees everything, including requests the rate limiter later
+// rejects — a blocked flood is exactly what we want visible. Read it back at
+// GET /api/admin/traffic.
+app.use(trafficMonitor);
 
 // Serve uploaded product images and brand media from /assets
 app.use("/assets", express.static(path.join(rootDir, "assets"), {

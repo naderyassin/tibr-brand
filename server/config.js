@@ -54,6 +54,14 @@ const smtpConfig = {
 const CACHE_DURATION = 365 * 24 * 60 * 60; // 1 year
 const CACHE_IMMUTABLE = `public, max-age=${CACHE_DURATION}, immutable`;
 
+// Public catalog reads (products / facets). Short enough that an admin edit
+// surfaces within a minute, long enough that a shopper clicking through the
+// store re-uses the browser copy instead of re-hitting the API on every view.
+// stale-while-revalidate lets an edge/browser serve the old copy instantly and
+// refresh in the background.
+const CATALOG_CACHE_SECONDS = 60;
+const CACHE_CATALOG = `public, max-age=${CATALOG_CACHE_SECONDS}, stale-while-revalidate=300`;
+
 module.exports = {
   rootDir,
   host,
@@ -66,4 +74,6 @@ module.exports = {
   smtpConfig,
   CACHE_DURATION,
   CACHE_IMMUTABLE,
+  CATALOG_CACHE_SECONDS,
+  CACHE_CATALOG,
 };

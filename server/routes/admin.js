@@ -27,8 +27,26 @@ const {
   FAMILIES,
 } = require("../services/products");
 const { trimValue, slugifyValue, parseStringArray, parseBool } = require("../lib/parse");
+// The public catalog reads are cached in-process (lib/cache). Every write that
+// can change what a shopper sees drops that cache, so an edit is live at once
+// instead of after the TTL.
+const { bust: bustCatalogCache } = require("../lib/cache");
+const { trafficReport } = require("../middleware/traffic");
 
 const router = express.Router();
+
+// ── Traffic ──────────────────────────────────────────────────────────────────
+
+// Who is actually hitting the site — the heaviest IPs in the current and
+// previous 15-minute windows, with a `looks_like_loop` flag for the classic
+// signature (one IP, hundreds of requests, nearly all to a single path). Use
+// this when the host reports Max Processes climbing, before assuming the
+// traffic is organic. In-process only: the numbers reset on restart.
+router.get("/api/admin/traffic", requireUser, requireAdmin, (req, res) => {
+  const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 25));
+  res.setHeader("Cache-Control", "no-store");
+  res.json({ data: trafficReport(limit) });
+});
 
 // ── Orders ───────────────────────────────────────────────────────────────────
 
@@ -249,6 +267,8 @@ router.post("/api/admin/discounts", requireUser, requireAdmin, async (req, res) 
       return res.status(500).json({ error: error.message || "Failed to create discount." });
     }
 
+    // An automatic product discount changes the prices in the cached listing.
+    bustCatalogCache();
     res.status(201).json({ data });
   } catch (err) {
     res.status(500).json({ error: err.message || "Failed to create discount." });
@@ -283,6 +303,7 @@ router.patch("/api/admin/discounts/:id", requireUser, requireAdmin, async (req, 
       return res.status(500).json({ error: error.message || "Failed to update discount." });
     }
 
+    bustCatalogCache();
     res.json({ data });
   } catch (err) {
     res.status(500).json({ error: err.message || "Failed to update discount." });
@@ -300,6 +321,7 @@ router.delete("/api/admin/discounts/:id", requireUser, requireAdmin, async (req,
     return res.status(500).json({ error: error.message || "Failed to delete discount." });
   }
 
+  bustCatalogCache();
   res.json({ success: true });
 });
 
@@ -344,6 +366,7 @@ const createProductHandler = async (req, res) => {
     return res.status(500).json({ error: error.message || "Failed to save product." });
   }
 
+  bustCatalogCache();
   res.status(201).json({ data: normalizeProduct(data) });
 };
 
@@ -379,6 +402,7 @@ router.patch("/api/admin/products/:id", requireUser, requireAdmin, async (req, r
     return res.status(500).json({ error: error.message || "Failed to update product." });
   }
 
+  bustCatalogCache();
   res.json({ data: normalizeProduct(data) });
 });
 
@@ -475,6 +499,7 @@ router.delete("/api/admin/products/:id", requireUser, requireAdmin, async (req, 
     return res.status(500).json({ error: error.message || "Failed to delete product." });
   }
 
+  bustCatalogCache();
   res.json({ success: true });
 });
 
