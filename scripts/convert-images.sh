@@ -6,8 +6,19 @@
 # photographic art — WebP at q82 is visually indistinguishable here at roughly a
 # tenth the bytes.
 #
-# Re-runnable: skips a target that is already newer than its source. Keep the
-# PNG originals in the repo as the masters — only the .webp files are served.
+# Re-runnable: skips a target that is already newer than its source.
+#
+# NOTE: the PNG/JPEG masters are no longer in the working tree — they were
+# 20 MB of files that shipped on every deploy but were never served, so they
+# were removed once the WebP versions were in place. They are still in git
+# history, so re-encoding at a different quality means restoring them first:
+#
+#   git checkout 75e645d -- assets/hero-frames-2 assets/images   # last commit
+#   bash scripts/convert-images.sh    # after editing QUALITY below
+#   git clean -f assets/hero-frames-2 assets/images               # drop masters
+#
+# With no masters present this script is a no-op that reports every target as
+# missing — that is expected, not a failure.
 #
 # Usage:  bash scripts/convert-images.sh
 # Needs:  ffmpeg with libwebp (ffmpeg -encoders | grep webp)
@@ -56,10 +67,19 @@ for target in "${TARGETS[@]}"; do
     "$(basename "$out")" "$before" "$after" "$(( (before - after) * 100 / before ))"
 done
 
+# Guarded: with the masters absent (the normal state — see the header) every
+# target is skipped and the totals are zero, which must not divide by zero.
+report() { # label before after
+  if [ "$2" -eq 0 ]; then
+    printf '%s: nothing to convert (no source files present)\n' "$1"
+  else
+    printf '%s: %d kB -> %d kB  (saved %d kB, -%d%%)\n' \
+      "$1" "$2" "$3" "$(($2 - $3))" "$(( ($2 - $3) * 100 / $2 ))"
+  fi
+}
+
 echo
-printf 'stills: %d kB -> %d kB  (saved %d kB, -%d%%)\n' \
-  "$total_before" "$total_after" "$((total_before - total_after))" \
-  "$(( (total_before - total_after) * 100 / total_before ))"
+report "stills" "$total_before" "$total_after"
 
 # ── Hero frame sequence ──────────────────────────────────────────────────────
 # The scroll-scrubbed hero (client/src/components/ui/ScrollSequence.jsx) is the
@@ -89,14 +109,10 @@ if [ -d "$FRAME_DIR" ]; then
     frames_after=$((frames_after + $(du -k "$out" | cut -f1)))
   done
 
-  printf '  %d frames (%d newly converted)\n' \
+  printf '  %d frames on disk (%d newly converted)\n' \
     "$(ls "$FRAME_DIR"/frame_*.webp 2>/dev/null | wc -l)" "$converted"
-  printf '  %d kB -> %d kB  (saved %d kB, -%d%%)\n' \
-    "$frames_before" "$frames_after" "$((frames_before - frames_after))" \
-    "$(( (frames_before - frames_after) * 100 / frames_before ))"
+  report "  hero" "$frames_before" "$frames_after"
 fi
 
 echo
-printf 'TOTAL: %d kB -> %d kB  (saved %d kB)\n' \
-  "$((total_before + frames_before))" "$((total_after + frames_after))" \
-  "$((total_before + frames_before - total_after - frames_after))"
+report "TOTAL" "$((total_before + frames_before))" "$((total_after + frames_after))"
