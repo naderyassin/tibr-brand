@@ -65,7 +65,7 @@ const COLLECTIONS = [
 ];
 
 const PARALLAX_IMAGES = [
-  { src: "/assets/images/parallax/parallax_hero_bottle.webp", alt: "TIBR luxury flacon, full profile" },
+  { src: "/assets/images/parallax/parallax_hero_bottle_tibr.jpg", alt: "TIBR luxury flacon, full profile" },
   { src: "/assets/images/parallax/parallax_amber_pour.webp", alt: "Golden amber elixir being poured" },
   { src: "/assets/images/parallax/parallax_ingredients.webp", alt: "Rare raw perfume ingredients" },
   { src: "/assets/images/parallax/parallax_cap_detail.webp", alt: "Machined metal cap, detail" },
