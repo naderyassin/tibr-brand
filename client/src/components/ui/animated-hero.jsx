@@ -24,9 +24,9 @@ function Hero() {
       <div className="container flex justify-center min-w-0">
         <div className="flex gap-8 py-20 lg:py-40 items-center justify-center flex-col text-center min-w-0 w-full">
           <div className="flex gap-4 flex-col items-center min-w-0 w-full">
-            <h1 className="text-4xl sm:text-5xl md:text-7xl max-w-3xl tracking-tighter text-center font-regular">
-              <span className="text-spektr-cyan-50">TIBR is</span>
-              <span className="relative flex w-full min-w-[240px] md:min-w-[460px] min-h-[1.3em] justify-center overflow-y-hidden text-center mt-4 md:mt-6">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl max-w-3xl tracking-tighter font-regular flex flex-col items-center justify-center">
+              <span className="text-spektr-cyan-50 text-gold">TIBR is</span>
+              <span className="relative flex w-full min-w-[240px] md:min-w-[460px] min-h-[1.3em] justify-center overflow-y-hidden text-center mt-2 md:mt-4">
                 &nbsp;
                 {titles.map((title, index) => (
                   <motion.span
@@ -53,10 +53,8 @@ function Hero() {
               </span>
             </h1>
 
-            <p className="text-lg md:text-xl leading-relaxed tracking-tight text-muted-foreground max-w-2xl text-center min-w-0 w-full">
-              Handcrafted extraits de parfum inspired by the heritage of
-              Egypt — meticulous by hand, born from authenticity, nostalgia,
-              and luxury.
+            <p className="text-lg md:text-xl leading-relaxed tracking-tight text-muted-foreground max-w-2xl text-center min-w-0 w-full mt-4">
+              Handcrafted extraits de parfum inspired by the heritage of Egypt — meticulous by hand, born from authenticity, nostalgia, and luxury.
             </p>
           </div>
         </div>

@@ -39,42 +39,27 @@
 
 /* Shared buttons */
 .frontier-cinematic .col-btn {
-  display: inline-block;
-  padding: 0.8em 2.8em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1em 3em;
   font-family: var(--font-sans);
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.28em;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
   color: var(--gold);
   text-decoration: none;
   position: relative;
-  border-radius: 0.6em;
   overflow: hidden;
-  transition: all 0.3s ease-out;
-  border: 2px solid var(--gold);
-  background: linear-gradient(to right, rgba(212, 175, 55, 0.1) 1%, transparent 40%, transparent 60% , rgba(212, 175, 55, 0.1) 100%);
-  box-shadow: inset 0 0 10px rgba(212, 175, 55, 0.4), 0 0 9px 3px rgba(212, 175, 55, 0.1);
+  border: 1px solid var(--gold);
+  background: transparent;
+  transition: background 0.4s ease, color 0.4s ease;
 }
-.frontier-cinematic .col-btn:hover {
-  color: var(--gold-bright);
-  box-shadow: inset 0 0 10px rgba(212, 175, 55, 0.6), 0 0 9px 3px rgba(212, 175, 55, 0.2);
-  transform: translateY(-2px);
-}
-.frontier-cinematic .col-btn:active { transform: translateY(0); }
 
-.frontier-cinematic .col-btn:before {
-  content: "";
-  position: absolute;
-  left: -4em;
-  width: 4em;
-  height: 100%;
-  top: 0;
-  transition: transform .4s ease-in-out;
-  background: linear-gradient(to right, transparent 1%, rgba(212, 175, 55, 0.1) 40%, rgba(212, 175, 55, 0.1) 60% , transparent 100%);
-}
-.frontier-cinematic .col-btn:hover:before {
-  transform: translateX(35em);
+.frontier-cinematic .col-btn:hover {
+  background: var(--gold);
+  color: #000;
 }
 
 .frontier-cinematic .col-btn--ghost {
@@ -271,7 +256,7 @@
 }
 
 @media (max-width: 768px) {
-  .frontier-cinematic .col-hero-scene {
+  .frontier-cinematic .col-hero-scene:not(.scene-1) {
     left: 5% !important;
     right: 5% !important;
     width: 90% !important;
@@ -291,12 +276,10 @@
   /* Scrim panel so text stays legible over the busy mid-frame product shot.
      scene-1 excluded — it already has its own full-bleed blur backdrop. */
   .frontier-cinematic .col-hero-scene:not(.scene-1) {
-    background: rgba(8, 8, 8, 0.6);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: rgba(8, 8, 8, 0.85);
     border-radius: 1.25rem;
     padding: 1.75rem 1.5rem !important;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
   }
 
   /* Center the Hero text vertically within scene-1 on mobile.

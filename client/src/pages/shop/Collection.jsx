@@ -340,38 +340,26 @@ export default function Collection() {
 
           {/* Scene: Craftsmanship — Top-Left, words stagger in */}
           <div className="col-hero-scene scene-craft">
-            <span className="col-kicker">THE CRAFT</span>
             <h2 className="col-scene-title">
               {["Meticulous", "by", "Hand"].map((w, i) => (
                 <span className="col-scene-word" key={i}>{w}&nbsp;</span>
               ))}
             </h2>
-            <div className="col-scene-divider" />
-            <p className="col-scene-desc">Each flacon is shaped, sealed, and inspected by hand before it ever reaches you.</p>
           </div>
 
           {/* Scene 2: Bottom-Right Editorial Detail */}
           <div className="col-hero-scene scene-2">
-            <span className="col-kicker">THE HERITAGE</span>
             <h2 className="col-scene-title">A Legacy of Luxury</h2>
-            <div className="col-scene-divider" />
-            <p className="col-scene-desc">Handcrafted extraits de parfum, inspired by the heritage of Egypt.</p>
           </div>
 
           {/* Scene: Ingredients — Bottom-Left, scale + glow bloom */}
           <div className="col-hero-scene scene-ingredients">
-            <span className="col-kicker">THE INGREDIENTS</span>
             <h2 className="col-scene-title">Rare Raw Materials</h2>
-            <div className="col-scene-divider" />
-            <p className="col-scene-desc">Aged woods, warm amber, and midnight spices sourced from across the world.</p>
           </div>
 
           {/* Scene 3: Middle-Left Asymmetric Focus, horizontal wipe reveal */}
           <div className="col-hero-scene scene-3">
-            <span className="col-kicker">THE PROFILE</span>
             <h2 className="col-scene-title">Rare Olfactory Contrast</h2>
-            <div className="col-scene-divider" />
-            <p className="col-scene-desc">Warm amber, midnight spices, and aged woods colliding.</p>
           </div>
 
           {/* Scene 4: Center Finale / CTA */}
