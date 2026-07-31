@@ -7,11 +7,12 @@
 // only assembles them.
 const path = require("path");
 const fs = require("fs");
+const os = require("os");
 const express = require("express");
 const compression = require("compression");
 const helmet = require("helmet");
 
-const { rootDir, host, port, CACHE_IMMUTABLE } = require("./config");
+const { rootDir, host, port, CACHE_IMMUTABLE, PRODUCT_IMAGES_DIR_NAME, productImagesAbsDir } = require("./config");
 const { apiLimiter } = require("./middleware/rateLimit");
 const { trafficMonitor } = require("./middleware/traffic");
 
@@ -33,10 +34,21 @@ app.use(compression());
 // GET /api/admin/traffic.
 app.use(trafficMonitor);
 
-// Serve uploaded product images and brand media from /assets
+// Serve brand media (checked into git, redeployed with the app) from /assets
 app.use("/assets", express.static(path.join(rootDir, "assets"), {
   setHeaders: (res, filePath) => {
     if (/\.(png|jpg|jpeg|gif|ico|svg|webp|avif|mp4|webm|woff2?|ttf)$/i.test(path.extname(filePath))) {
+      res.setHeader("Cache-Control", CACHE_IMMUTABLE);
+    }
+  }
+}));
+
+// Serve admin-uploaded product images (server/routes/admin.js SFTP upload)
+// from a folder in the account home directory — OUTSIDE the versioned build
+// dir Hostinger deploys into, so uploads survive the next deploy.
+app.use("/" + PRODUCT_IMAGES_DIR_NAME, express.static(productImagesAbsDir || path.join(os.homedir(), PRODUCT_IMAGES_DIR_NAME), {
+  setHeaders: (res, filePath) => {
+    if (/\.(png|jpg|jpeg|gif|webp|avif)$/i.test(path.extname(filePath))) {
       res.setHeader("Cache-Control", CACHE_IMMUTABLE);
     }
   }

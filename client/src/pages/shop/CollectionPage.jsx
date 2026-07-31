@@ -27,6 +27,21 @@ const FILTER_KEYS = [
   "family", "season", "tag", "brand", "inspired_by", "note", "collection", "q",
 ];
 
+const ITEMS_PER_PAGE = 12;
+
+function getPageNumbers(currentPage, totalPages) {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+  if (currentPage <= 4) {
+    return [1, 2, 3, 4, 5, "...", totalPages];
+  }
+  if (currentPage >= totalPages - 3) {
+    return [1, "...", totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+  }
+  return [1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages];
+}
+
 /**
  * The ONLY collection page. A route preset seeds filters; the URL query string
  * overrides them; the sidebar edits the query string. There is no per-tab
@@ -100,6 +115,31 @@ export default function CollectionPage() {
     return result;
   }, [products, availabilityOnly, minPrice, maxPrice]);
 
+  const pageParam = parseInt(params.get("page") || "1", 10);
+  const totalPages = Math.ceil(displayedProducts.length / ITEMS_PER_PAGE);
+  const page = Math.max(1, Math.min(isNaN(pageParam) ? 1 : pageParam, Math.max(1, totalPages)));
+
+  const paginatedProducts = useMemo(() => {
+    const start = (page - 1) * ITEMS_PER_PAGE;
+    return displayedProducts.slice(start, start + ITEMS_PER_PAGE);
+  }, [displayedProducts, page]);
+
+  const handlePageChange = (newPage) => {
+    if (newPage < 1 || newPage > totalPages || newPage === page) return;
+    const next = new URLSearchParams(params);
+    if (newPage === 1) {
+      next.delete("page");
+    } else {
+      next.set("page", String(newPage));
+    }
+    setParams(next, { replace: false });
+
+    const target = document.getElementById("product-grid") || document.querySelector(".shop-header");
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   // A filter the preset already pins isn't editable here — you don't offer a
   // "Men" toggle on a page that is by definition Men. Product type is the one
   // exception: the mockup always shows it, and it's how a shopper pivots off
@@ -108,6 +148,7 @@ export default function CollectionPage() {
 
   const toggle = (key, value) => {
     const next = new URLSearchParams(params);
+    next.delete("page");
     if (next.get(key) === value) next.delete(key);
     else next.set(key, value);
     setParams(next, { replace: true });
@@ -143,6 +184,7 @@ export default function CollectionPage() {
 
   const removeFilter = (key) => {
     const next = new URLSearchParams(params);
+    next.delete("page");
     next.delete(key);
     setParams(next, { replace: true });
   };
@@ -454,11 +496,58 @@ export default function CollectionPage() {
               )}
             </motion.div>
           ) : (
-            <section className="catalog-grid" id="product-grid" aria-label={`${preset.title} list`}>
-              {displayedProducts.map((p, i) => (
-                <ProductCard key={p.id} product={p} index={i} />
-              ))}
-            </section>
+            <>
+              <section className="catalog-grid" id="product-grid" aria-label={`${preset.title} list`}>
+                {paginatedProducts.map((p, i) => (
+                  <ProductCard key={p.id} product={p} index={i} />
+                ))}
+              </section>
+
+              {totalPages > 1 && (
+                <nav className="catalog-pagination" aria-label="Pagination">
+                  <button
+                    type="button"
+                    className="pagination__btn pagination__prev"
+                    disabled={page <= 1}
+                    onClick={() => handlePageChange(page - 1)}
+                    aria-label="Previous page"
+                  >
+                    ‹
+                  </button>
+
+                  {getPageNumbers(page, totalPages).map((p, idx) => {
+                    if (p === "...") {
+                      return (
+                        <span key={`ellipsis-${idx}`} className="pagination__ellipsis">
+                          …
+                        </span>
+                      );
+                    }
+                    return (
+                      <button
+                        key={p}
+                        type="button"
+                        className={`pagination__num ${p === page ? "is-active" : ""}`}
+                        onClick={() => handlePageChange(p)}
+                        aria-current={p === page ? "page" : undefined}
+                      >
+                        {p}
+                      </button>
+                    );
+                  })}
+
+                  <button
+                    type="button"
+                    className="pagination__btn pagination__next"
+                    disabled={page >= totalPages}
+                    onClick={() => handlePageChange(page + 1)}
+                    aria-label="Next page"
+                  >
+                    ›
+                  </button>
+                </nav>
+              )}
+            </>
           )}
         </div>
     </div>

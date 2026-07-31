@@ -41,6 +41,7 @@ export default function Product() {
 
   useEffect(() => {
     setQty(1);
+    setActiveImgIndex(0);
   }, [id, selectedVariantId]);
 
   const { data: productData, isLoading, isError } = useQuery({
@@ -175,25 +176,51 @@ export default function Product() {
         initial="hidden"
         animate="show"
       >
-        <div className="pdp__gallery">
-          {images.length > 0 ? (
-            images.map((img, idx) => (
-              <motion.div key={idx} variants={itemVariants} className="pdp__gallery-item">
-                <img src={img} alt={`${name} - View ${idx + 1}`} loading={idx > 0 ? "lazy" : "eager"} />
+        <div className="pdp__gallery-wrapper">
+          <div className="pdp__main-image-container">
+            {images.length > 0 ? (
+              <motion.div
+                key={activeImgIndex}
+                initial={{ opacity: 0.85, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
+                className="pdp__gallery-item"
+              >
+                <img
+                  src={images[activeImgIndex] || images[0]}
+                  alt={`${name} - View ${(activeImgIndex || 0) + 1}`}
+                  loading="eager"
+                />
               </motion.div>
-            ))
-          ) : (
-            <motion.div variants={itemVariants} className="pdp__gallery-item skeleton" />
+            ) : (
+              <motion.div variants={itemVariants} className="pdp__gallery-item skeleton" />
+            )}
+            <button
+              className="pdp__wish"
+              type="button"
+              aria-pressed={isWishlisted}
+              aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+              onClick={handleToggleWishlist}
+            >
+              <HeartIcon />
+            </button>
+          </div>
+
+          {images.length > 1 && (
+            <div className="pdp__thumbnails">
+              {images.map((img, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  className={`pdp__thumbnail ${idx === activeImgIndex ? "is-active" : ""}`}
+                  onClick={() => setActiveImgIndex(idx)}
+                  aria-label={`View image ${idx + 1}`}
+                >
+                  <img src={img} alt={`${name} - Thumbnail ${idx + 1}`} />
+                </button>
+              ))}
+            </div>
           )}
-          <button
-            className="pdp__wish"
-            type="button"
-            aria-pressed={isWishlisted}
-            aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-            onClick={handleToggleWishlist}
-          >
-            <HeartIcon />
-          </button>
         </div>
 
         <div className="pdp__buy">

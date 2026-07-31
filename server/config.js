@@ -51,6 +51,33 @@ const smtpConfig = {
   configured: !!process.env.SMTP_HOST,
 };
 
+// ── Product image storage (Hostinger SFTP) — see server/routes/admin.js ─────
+// Supabase Storage's 500MB bucket can't hold the full product image catalog,
+// so uploads go to the same box serving the storefront instead.
+//
+// Hostinger's Node.js hosting deploys each build into a fresh, timestamped
+// directory (.builds/versions/<uuid>/) and re-points a "current" symlink at
+// it — so anything written inside the deployed app's own folder (e.g. its
+// "assets/" dir) is wiped on the next deploy. Uploads instead go to
+// PRODUCT_IMAGES_DIR_NAME, a folder in the account's home directory (SFTP's
+// login root), outside any versioned build. server/index.js serves it from
+// PRODUCT_IMAGES_ABS_DIR — an explicit absolute path, not os.homedir(),
+// since the Node process launched by Hostinger's app manager doesn't
+// reliably resolve $HOME to the SFTP login root.
+const PRODUCT_IMAGES_DIR_NAME = "product-images";
+const productImagesAbsDir = process.env.PRODUCT_IMAGES_DIR || "";
+
+const sftpConfig = {
+  host: process.env.SFTP_HOST || "",
+  port: Number(process.env.SFTP_PORT) || 22,
+  username: process.env.SFTP_USER || "",
+  password: process.env.SFTP_PASSWORD || "",
+  remoteDir: process.env.SFTP_REMOTE_DIR || PRODUCT_IMAGES_DIR_NAME,
+  urlPath: process.env.SFTP_URL_PATH || PRODUCT_IMAGES_DIR_NAME,
+  publicBaseUrl: (process.env.SFTP_PUBLIC_BASE_URL || "").replace(/\/$/, ""),
+  configured: !!(process.env.SFTP_HOST && process.env.SFTP_USER && process.env.SFTP_PASSWORD),
+};
+
 const CACHE_DURATION = 365 * 24 * 60 * 60; // 1 year
 const CACHE_IMMUTABLE = `public, max-age=${CACHE_DURATION}, immutable`;
 
@@ -72,6 +99,9 @@ module.exports = {
   supabaseServiceRoleKey,
   otpConfig,
   smtpConfig,
+  sftpConfig,
+  PRODUCT_IMAGES_DIR_NAME,
+  productImagesAbsDir,
   CACHE_DURATION,
   CACHE_IMMUTABLE,
   CATALOG_CACHE_SECONDS,

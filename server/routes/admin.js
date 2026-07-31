@@ -7,8 +7,8 @@ const express = require("express");
 const path = require("path");
 const { randomUUID } = require("crypto");
 const multer = require("multer");
-const { createClient } = require("@supabase/supabase-js");
-const { supabaseUrl, supabaseAnonKey } = require("../config");
+const SftpClient = require("ssh2-sftp-client");
+const { sftpConfig } = require("../config");
 const { createAuthedClient, createServiceClient } = require("../db");
 const { requireUser, requireAdmin, requireSuperAdmin } = require("../middleware/auth");
 const {
@@ -503,13 +503,13 @@ router.delete("/api/admin/products/:id", requireUser, requireAdmin, async (req, 
   res.json({ success: true });
 });
 
-// ── Image upload — stores in Supabase Storage (works on Vercel / any host) ────
-
-const STORAGE_BUCKET = "brand-assets";
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+// ── Image upload — stores on Hostinger via SFTP (Supabase Storage's 500MB ────
+// bucket can't hold the full product catalog, so files land on the same box
+// serving the storefront instead; only the public URL goes in the DB).
 
 // Extension + mimetype whitelist. Notably NO svg: SVGs can carry scripts, and
-// the bucket is public — an uploaded SVG would be a stored-XSS vector.
+// the target folder is served statically — an uploaded SVG would be a
+// stored-XSS vector.
 const ALLOWED_IMAGE_TYPES = new Map([
   [".png", "image/png"],
   [".jpg", "image/jpeg"],
@@ -532,24 +532,30 @@ const upload = multer({
 
 router.post("/api/admin/upload", requireUser, requireAdmin, upload.single("file"), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: "No file received" });
+  if (!sftpConfig.configured) {
+    return res.status(500).json({ error: "Image storage is not configured (missing SFTP_HOST/SFTP_USER/SFTP_PASSWORD)." });
+  }
 
   const ext = path.extname(req.file.originalname).toLowerCase();
   const filename = "product-" + Date.now() + "-" + randomUUID().slice(0, 8) + ext;
-  const storagePath = "images/products/" + filename;
 
-  const serviceKey = SUPABASE_SERVICE_KEY || supabaseAnonKey;
-  const storageClient = createClient(supabaseUrl, serviceKey, {
-    auth: { autoRefreshToken: false, persistSession: false }
-  });
+  const sftp = new SftpClient();
+  try {
+    await sftp.connect({
+      host: sftpConfig.host,
+      port: sftpConfig.port,
+      username: sftpConfig.username,
+      password: sftpConfig.password,
+    });
+    await sftp.mkdir(sftpConfig.remoteDir, true);
+    await sftp.put(req.file.buffer, sftpConfig.remoteDir + "/" + filename);
+  } catch (err) {
+    return res.status(500).json({ error: "Upload failed: " + err.message });
+  } finally {
+    await sftp.end().catch(() => {});
+  }
 
-  const { error } = await storageClient.storage
-    .from(STORAGE_BUCKET)
-    .upload(storagePath, req.file.buffer, { contentType: req.file.mimetype, upsert: false });
-
-  if (error) return res.status(500).json({ error: "Upload failed: " + error.message });
-
-  const { data } = storageClient.storage.from(STORAGE_BUCKET).getPublicUrl(storagePath);
-  res.json({ url: data.publicUrl });
+  res.json({ url: sftpConfig.publicBaseUrl + "/" + sftpConfig.urlPath + "/" + filename });
 });
 
 module.exports = router;
