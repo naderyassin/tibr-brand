@@ -277,16 +277,17 @@
   transform: translateX(4px);
 }
 
-/* ── Sold-out state: the pill communicates it can't be added, quietly ───── */
+/* ── Sold-out state: solid grey pill with white text ───── */
 .product-new__action-pill--oos {
-  background: transparent;
-  border-color: rgba(0, 0, 0, 0.14);
-  color: #86868b;
+  background: #808080 !important;
+  border-color: #808080 !important;
+  color: #ffffff !important;
   justify-content: center;
 }
 .product-new--oos:hover .product-new__action-pill {
-  background: transparent;
-  border-color: rgba(0, 0, 0, 0.14);
+  background: #757575 !important;
+  border-color: #757575 !important;
+  color: #ffffff !important;
 }
 .product-new--oos .product-new__img { opacity: 0.55; }
 .product-new--oos:hover .product-new__img { transform: none; }
@@ -526,12 +527,11 @@
   .chip:active { background: #f5f5f7 !important; border-color: rgba(0, 0, 0, 0.15) !important; }
   .breadcrumb a:hover { color: inherit; }
 
-  /* Sold-out pill must stay inert on tap too — override the generic
-     tap-sticky black fill above (same specificity, so order decides). */
   .product-new--oos:hover .product-new__action-pill,
   .product-new__action-pill--oos:active {
-    background: transparent;
-    border-color: rgba(0, 0, 0, 0.14);
+    background: #808080 !important;
+    border-color: #808080 !important;
+    color: #ffffff !important;
   }
   .product-new--oos:hover .product-new__img { transform: none; }
 }

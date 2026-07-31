@@ -3,7 +3,7 @@ import { lazy, Suspense, useEffect } from "react";
 import AppShell from "@/components/layout/AppShell";
 
 function StartAtHomeAndScroll() {
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
 
   // Disable browser scroll restoration once, on initial mount
   useEffect(() => {
@@ -12,16 +12,12 @@ function StartAtHomeAndScroll() {
     }
   }, []);
 
-  // Scroll to top on every navigation change. Lenis owns the scroll, so a plain
-  // window.scrollTo(0,0) gets overwritten on the next animation frame — reset
-  // THROUGH Lenis (immediate + force, so it wins even while the drawer has
-  // scrolling locked). Fall back to native for the first frames before Lenis
-  // initializes.
+  // Scroll to top on every navigation change (including pagination query ?page=2).
   useEffect(() => {
     const lenis = window.__lenis;
     if (lenis) lenis.scrollTo(0, { immediate: true, force: true });
     else window.scrollTo(0, 0);
-  }, [pathname]);
+  }, [pathname, search]);
 
   return null;
 }

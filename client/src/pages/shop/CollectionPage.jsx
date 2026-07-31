@@ -134,10 +134,9 @@ export default function CollectionPage() {
     }
     setParams(next, { replace: false });
 
-    const target = document.getElementById("product-grid") || document.querySelector(".shop-header");
-    if (target) {
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+    const lenis = window.__lenis;
+    if (lenis) lenis.scrollTo(0, { immediate: true, force: true });
+    else window.scrollTo(0, 0);
   };
 
   // A filter the preset already pins isn't editable here — you don't offer a
