@@ -1361,10 +1361,9 @@ p, li { max-width: 68ch; }     /* readable measure */
 .pdp__main-image-container {
   position: relative;
   aspect-ratio: 1 / 1;
-  border-radius: 1.25rem;
-  background: var(--bg-subtle, #f6f6f8);
+  background: transparent;
   overflow: hidden;
-  border: 1px solid var(--line, rgba(0, 0, 0, 0.05));
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1377,7 +1376,7 @@ p, li { max-width: 68ch; }     /* readable measure */
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
+  padding: 0;
 }
 
 .pdp__gallery-item img {
