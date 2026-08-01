@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useT } from "@/stores/lang";
 
 const RATING_SUMMARY = { avg: 4.9, count: 140 };
 
@@ -54,6 +55,7 @@ const REVIEWS = [
 ];
 
 function ReviewCard({ review }) {
+  const t = useT();
   return (
     <div className="review-card">
       <div className="review-card__header">
@@ -62,7 +64,7 @@ function ReviewCard({ review }) {
         </div>
         <div className="review-card__info">
           <span className="review-card__name">{review.name}</span>
-          <span className="review-card__verified">Verified buyer</span>
+          <span className="review-card__verified">{t("Verified buyer", "مشترٍ موثّق")}</span>
         </div>
       </div>
       <div className="review-card__rating">
@@ -78,6 +80,7 @@ function ReviewCard({ review }) {
 }
 
 export default function ReviewsBanner() {
+  const t = useT();
   const { avg, count } = RATING_SUMMARY;
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -119,7 +122,7 @@ export default function ReviewsBanner() {
   };
 
   return (
-    <section className="reviews-section" aria-label="Customer Reviews">
+    <section className="reviews-section" aria-label={t("Customer Reviews", "آراء العملاء")}>
       <div className="reviews-section__top">
         <div className="reviews-badge">
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -128,20 +131,23 @@ export default function ReviewsBanner() {
             <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
             <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
           </svg>
-          <span>Google Reviews</span>
+          <span>{t("Google Reviews", "تقييمات جوجل")}</span>
         </div>
 
         <div className="reviews-score-block">
           <span className="reviews-score">{avg.toFixed(1)}</span>
           <div className="reviews-stars-wrapper">
             <span className="reviews-stars">★★★★★</span>
-            <span className="reviews-count">Based on {count}+ reviews</span>
+            <span className="reviews-count">{t(`Based on ${count}+ reviews`, `استنادًا إلى ${count}+ تقييم`)}</span>
           </div>
         </div>
 
-        <h2 className="reviews-title">What Our Customers Say</h2>
+        <h2 className="reviews-title">{t("What Our Customers Say", "ماذا يقول عملاؤنا")}</h2>
         <p className="reviews-subtitle">
-          Join thousands of satisfied customers who trust TIBR for authentic, luxury Egyptian fragrances. Our commitment to preserving heritage and delivering exceptional quality speaks through their experiences.
+          {t(
+            "Join thousands of satisfied customers who trust TIBR for authentic, luxury Egyptian fragrances. Our commitment to preserving heritage and delivering exceptional quality speaks through their experiences.",
+            "انضم إلى آلاف العملاء الراضين الذين يثقون في تِبر لعطور مصرية أصيلة وفاخرة. التزامنا بالحفاظ على الإرث وتقديم جودة استثنائية ينعكس في تجاربهم."
+          )}
         </p>
       </div>
 
@@ -159,18 +165,18 @@ export default function ReviewsBanner() {
             ))}
           </div>
           
-          <button className="reviews-nav-next" onClick={handleNext} aria-label="Next review">
+          <button className="reviews-nav-next" onClick={handleNext} aria-label={t("Next review", "التقييم التالي")}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
           </button>
         </div>
 
         <div className="reviews-pagination">
           {[0, 1, 2].map((dot) => (
-            <button 
+            <button
               key={dot}
               className={`reviews-dot ${Math.floor((currentIndex / REVIEWS.length) * 3) === dot ? 'is-active' : ''}`}
               onClick={() => handleDotClick(Math.floor((dot / 3) * REVIEWS.length))}
-              aria-label={`Go to page ${dot + 1}`}
+              aria-label={t(`Go to page ${dot + 1}`, `الانتقال إلى الصفحة ${dot + 1}`)}
             />
           ))}
         </div>

@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { getProducts } from "@/lib/api";
 import { useDraggableScroll } from "@/hooks/useDraggableScroll";
+import { useT } from "@/stores/lang";
 import ProductCard from "@/components/catalog/ProductCard";
 
 /* A product is "on offer" when any of its sizes carries a compare-at price
@@ -17,6 +18,7 @@ const MAX_PER_RAIL = 12;
 
 function ProductRailTrack({ items }) {
   const { ref, onMouseDown, showLeftArrow, showRightArrow, scroll } = useDraggableScroll();
+  const t = useT();
 
   return (
     <div className="slider-wrapper">
@@ -24,7 +26,7 @@ function ProductRailTrack({ items }) {
         <button
           className="slider-arrow slider-arrow--left"
           onClick={() => scroll("left")}
-          aria-label="Previous products"
+          aria-label={t("Previous products", "المنتجات السابقة")}
           type="button"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -48,7 +50,7 @@ function ProductRailTrack({ items }) {
         <button
           className="slider-arrow slider-arrow--right"
           onClick={() => scroll("right")}
-          aria-label="Next products"
+          aria-label={t("Next products", "المنتجات التالية")}
           type="button"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -70,6 +72,7 @@ function ProductRailTrack({ items }) {
  * nothing is marked — so it stays invisible until you start curating.
  */
 export default function MerchandisingRails({ filterKey }) {
+  const t = useT();
   const { data } = useQuery({
     queryKey: ["products", { merchandising: true }],
     queryFn: () => getProducts(),
@@ -80,19 +83,19 @@ export default function MerchandisingRails({ filterKey }) {
   const rails = [
     {
       key: "spotlight",
-      title: "Spotlight",
+      title: t("Spotlight", "مختارات"),
       to: "/shop/spotlight",
       items: products.filter((p) => p.is_spotlight),
     },
     {
       key: "bestsellers",
-      title: "Best Sellers",
+      title: t("Best Sellers", "الأكثر مبيعًا"),
       to: "/shop/bestsellers",
       items: products.filter((p) => p.is_bestseller),
     },
     {
       key: "offers",
-      title: "Offers",
+      title: t("Offers", "العروض"),
       to: "/shop/offers",
       items: products.filter(isOffer),
     },
@@ -119,7 +122,7 @@ export default function MerchandisingRails({ filterKey }) {
         >
           <div className="product-rail__head">
             <h2 className="product-rail__title">{rail.title}</h2>
-            <Link className="product-rail__view-all" to={rail.to}>View All</Link>
+            <Link className="product-rail__view-all" to={rail.to}>{t("View All", "عرض الكل")}</Link>
           </div>
           <ProductRailTrack items={rail.items} />
         </motion.section>

@@ -21,6 +21,38 @@ function StartAtHomeAndScroll() {
 
   return null;
 }
+
+// Warms the lazy store-route chunks once the browser is idle after first
+// paint. Without this, the FIRST click to an unvisited lazy route (Cart,
+// Account, Product, ...) suspends mid-navigation — React Router wraps route
+// changes in a transition, which holds the OLD page (old scroll position,
+// old footer) on screen until the chunk resolves, then snaps to the new
+// page. Preloading means that suspend basically never happens for a real
+// user. Admin chunks are deliberately excluded — see the Jodit comment
+// below, storefront visitors shouldn't fetch admin-only code.
+function PreloadStoreChunks() {
+  useEffect(() => {
+    // Not requestIdleCallback: the landing hero (Lenis/GSAP rAF loops) keeps
+    // the main thread continuously busy, so "idle" can be seconds away.
+    const id = setTimeout(() => {
+      import("@/pages/shop/AboutPage");
+      import("@/pages/shop/Signature");
+      import("@/pages/shop/BrandDirectory");
+      import("@/pages/shop/BrandCollection");
+      import("@/pages/Blog");
+      import("@/pages/BlogPost");
+      import("@/pages/Product");
+      import("@/pages/Cart");
+      import("@/pages/Checkout");
+      import("@/pages/CheckoutCallback");
+      import("@/pages/Login");
+      import("@/pages/Signup");
+      import("@/pages/Account");
+    }, 1500);
+    return () => clearTimeout(id);
+  }, []);
+  return null;
+}
 // Eager: the landing at "/" (first paint) and the shop shell + listing page
 // (the SPA fallback target and the most common entry). Everything else is
 // code-split per route so storefront visitors never download the admin
@@ -58,6 +90,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <StartAtHomeAndScroll />
+      <PreloadStoreChunks />
       {/* Route chunks resolve in well under a frame on repeat visits; the
           fallback stays blank rather than flashing a spinner. */}
       <Suspense fallback={null}>

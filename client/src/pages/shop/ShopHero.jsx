@@ -1,5 +1,6 @@
 import CardFanCarousel from "../../components/ui/CardFanCarousel";
 import TrustBadges from "./home/TrustBadges";
+import { useT } from "@/stores/lang";
 import "./Perfumes.css";
 
 // Each entry is a real brand in the catalog (slug matches brands.slug) — the
@@ -22,6 +23,7 @@ const CAROUSEL_CARDS = FEATURED.map((item) => ({
 }));
 
 export default function ShopHero() {
+  const t = useT();
   return (
     <>
       {/* HERO SECTION */}
@@ -29,20 +31,23 @@ export default function ShopHero() {
         <div className="perfume-hero-split__left">
           <div className="perfume-hero-split__content">
             <h1 className="perfume-hero-split__title">
-              LUXURY<br />PERFUME
+              {t("LUXURY", "فخامة")}<br />{t("PERFUME", "العطور")}
             </h1>
             <p className="perfume-hero-split__desc">
-              Discover the essence of sophistication with our exclusive collection of luxurious fragrances.
+              {t(
+                "Discover the essence of sophistication with our exclusive collection of luxurious fragrances.",
+                "اكتشف جوهر الرقي مع مجموعتنا الحصرية من العطور الفاخرة."
+              )}
             </p>
             <div className="perfume-hero-split__btn-wrapper">
-              <a href="#collection" className="cta-ghost"><span>SHOP NOW</span></a>
+              <a href="#collection" className="cta-ghost"><span>{t("SHOP NOW", "تسوق الآن")}</span></a>
             </div>
           </div>
         </div>
         <div className="perfume-hero-split__right">
           <img
             src="/perfume_hero_product_tibr_white.png"
-            alt="TIBR Luxury Perfume"
+            alt={t("TIBR Luxury Perfume", "عطور تِبر الفاخرة")}
             className="perfume-hero-split__img"
           />
         </div>
@@ -57,7 +62,7 @@ export default function ShopHero() {
 
       {/* COLLECTION CAROUSEL */}
       <section id="collection" className="perfume-collection">
-        <h2 className="perfume-collection__title">Original Brands</h2>
+        <h2 className="perfume-collection__title">{t("Original Brands", "الماركات الأصلية")}</h2>
         <CardFanCarousel cards={CAROUSEL_CARDS} />
         <TrustBadges />
       </section>

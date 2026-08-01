@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { SHOP_NAV } from "@/lib/shopNav";
+import { useT } from "@/stores/lang";
 
 const FacebookIcon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -53,6 +54,7 @@ const SOCIAL_LINKS = [
 ];
 
 export default function Footer() {
+  const t = useT();
   return (
     <footer className="store-footer">
       <div className="store-container">
@@ -60,12 +62,15 @@ export default function Footer() {
           <div className="store-footer__brand">
             <Link className="store-wordmark" to="/">Tibr<span className="dot">.</span></Link>
             <p className="store-footer__tagline">
-              Egyptian perfume — joining the heritage of the past to the luxury of the present.
+              {t(
+                "Egyptian perfume — joining the heritage of the past to the luxury of the present.",
+                "عطر مصري — يجمع بين أصالة الماضي وفخامة الحاضر."
+              )}
             </p>
             <div className="store-footer__socials">
               <a className="store-footer__whatsapp-pill" href="https://wa.me/message/7IF766RWOGXAA1" target="_blank" rel="noopener noreferrer">
                 <WhatsAppIcon />
-                <span>WhatsApp Support</span>
+                <span>{t("WhatsApp Support", "الدعم عبر واتساب")}</span>
               </a>
               <div className="store-footer__social-icons">
                 {SOCIAL_LINKS.map(({ name, url, icon: Icon, className }) => (
@@ -86,48 +91,51 @@ export default function Footer() {
           </div>
 
           <div className="store-footer__col">
-            <h4>Shop</h4>
+            <h4>{t("Shop", "المتجر")}</h4>
             <ul>
               {SHOP_NAV.map((tab) => (
-                <li key={tab.key}><Link to={tab.path}>{tab.label.split(" —")[0]}</Link></li>
+                <li key={tab.key}><Link to={tab.path}>{t(tab.label, tab.label_ar)}</Link></li>
               ))}
-              <li><Link to="/account?tab=wishlist">Wishlist</Link></li>
+              <li><Link to="/account?tab=wishlist">{t("Wishlist", "المفضلة")}</Link></li>
             </ul>
           </div>
 
           <div className="store-footer__col">
-            <h4>Help & Care</h4>
+            <h4>{t("Help & Care", "المساعدة والرعاية")}</h4>
             <ul>
-              <li><Link to="/help/ordering">How to order</Link></li>
-              <li><Link to="/help/shipping">Shipping &amp; cash on delivery</Link></li>
-              <li><Link to="/help/returns">Returns &amp; exchanges</Link></li>
-              <li><Link to="/account">My account</Link></li>
+              <li><Link to="/help/ordering">{t("How to order", "طريقة الطلب")}</Link></li>
+              <li><Link to="/help/shipping">{t("Shipping & cash on delivery", "الشحن والدفع عند الاستلام")}</Link></li>
+              <li><Link to="/help/returns">{t("Returns & exchanges", "الإرجاع والاستبدال")}</Link></li>
+              <li><Link to="/account">{t("My account", "حسابي")}</Link></li>
             </ul>
           </div>
 
           <div className="store-footer__col store-footer__newsletter">
-            <h4>Join Tibr</h4>
+            <h4>{t("Join Tibr", "انضم إلى تِبر")}</h4>
             <p className="store-footer__newsletter-desc">
-              Subscribe to receive scent stories, collection releases, and private offers.
+              {t(
+                "Subscribe to receive scent stories, collection releases, and private offers.",
+                "اشترك لتصلك قصص العطور وإطلاقات المجموعات والعروض الخاصة."
+              )}
             </p>
             <form className="store-footer__newsletter-form" onSubmit={(e) => e.preventDefault()}>
-              <input 
-                type="email" 
-                placeholder="Your email address" 
-                className="store-footer__newsletter-input" 
-                required 
+              <input
+                type="email"
+                placeholder={t("Your email address", "بريدك الإلكتروني")}
+                className="store-footer__newsletter-input"
+                required
               />
-              <button type="submit" className="store-footer__newsletter-btn" aria-label="Subscribe">
+              <button type="submit" className="store-footer__newsletter-btn" aria-label={t("Subscribe", "اشتراك")}>
                 →
               </button>
             </form>
-            <p className="store-footer__note">Cash on delivery across every governorate in Egypt.</p>
+            <p className="store-footer__note">{t("Cash on delivery across every governorate in Egypt.", "الدفع عند الاستلام في جميع محافظات مصر.")}</p>
           </div>
         </div>
 
         <div className="store-footer__bar">
-          <span>© 2026 Tibr. All rights reserved.</span>
-          <span>Crafted in Cairo, Egypt</span>
+          <span>{t("© 2026 Tibr. All rights reserved.", "© 2026 تِبر. جميع الحقوق محفوظة.")}</span>
+          <span>{t("Crafted in Cairo, Egypt", "صُنع في القاهرة، مصر")}</span>
         </div>
       </div>
     </footer>

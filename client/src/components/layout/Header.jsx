@@ -3,6 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useCart } from "@/stores/cart";
 import { useAuth } from "@/stores/auth";
+import { useLang, useT } from "@/stores/lang";
 import { getProfile } from "@/lib/api";
 
 const BagIcon = () => (
@@ -23,10 +24,10 @@ const SettingsIcon = () => (
 );
 
 const NAVIGATION = [
-  { label: "Home", to: "/" },
-  { label: "Shop", to: "/shop" },
-  { label: "About", to: "/about" },
-  { label: "Profile", to: "/account" },
+  { label: "Home", label_ar: "الرئيسية", to: "/" },
+  { label: "Shop", label_ar: "المتجر", to: "/shop" },
+  { label: "About", label_ar: "من نحن", to: "/about" },
+  { label: "Profile", label_ar: "حسابي", to: "/account" },
 ];
 
 export default function Header({ onMenuOpen }) {
@@ -34,6 +35,9 @@ export default function Header({ onMenuOpen }) {
   const items = useCart((s) => s.items);
   const count = items.reduce((n, i) => n + i.qty, 0);
   const token = useAuth((s) => s.token);
+  const t = useT();
+  const lang = useLang((s) => s.lang);
+  const toggleLang = useLang((s) => s.toggle);
   const { data: profileData } = useQuery({
     queryKey: ["profile", token],
     queryFn: () => getProfile(token),
@@ -55,12 +59,12 @@ export default function Header({ onMenuOpen }) {
           TIBR<span className="dot">.</span>
         </Link>
 
-        <nav className="store-nav" aria-label="Categories">
+        <nav className="store-nav" aria-label={t("Categories", "الأقسام")}>
           <ul className="store-nav__list">
             {NAVIGATION.map((item) => (
               <li key={item.label} className="store-nav__item group">
                 <NavLink className="store-nav__link" to={item.to} end={item.to === "/"}>
-                  {item.label}
+                  {t(item.label, item.label_ar)}
                 </NavLink>
                 {item.subItems && (
                   <div className="store-nav__dropdown">
@@ -81,12 +85,20 @@ export default function Header({ onMenuOpen }) {
         </nav>
 
         <div className="store-utils">
+          <button
+            className="store-iconbtn store-lang-toggle"
+            type="button"
+            onClick={toggleLang}
+            aria-label={t("Switch to Arabic", "التبديل إلى الإنجليزية")}
+          >
+            {lang === "ar" ? "EN" : "AR"}
+          </button>
           {isAdmin && (
-            <Link className="store-iconbtn" to="/admin" aria-label="Control Panel">
+            <Link className="store-iconbtn" to="/admin" aria-label={t("Control Panel", "لوحة التحكم")}>
               <SettingsIcon />
             </Link>
           )}
-          <Link className="store-iconbtn" to="/cart" aria-label="Cart">
+          <Link className="store-iconbtn" to="/cart" aria-label={t("Cart", "السلة")}>
             <BagIcon />
             <span className={`store-cart-count${count > 0 ? " is-active" : ""}`} aria-hidden="true">
               {count}
@@ -98,7 +110,7 @@ export default function Header({ onMenuOpen }) {
             type="button"
             aria-expanded="false"
             aria-controls="drawer"
-            aria-label="Menu"
+            aria-label={t("Menu", "القائمة")}
             onClick={onMenuOpen}
           >
             <MenuIcon />

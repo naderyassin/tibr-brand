@@ -1,16 +1,18 @@
 import { Link, useParams, Navigate } from "react-router-dom";
 import { getBlogPost } from "@/lib/blogPosts";
+import { useT } from "@/stores/lang";
 
 export default function BlogPost() {
   const { slug } = useParams();
   const post = getBlogPost(slug);
+  const t = useT();
 
   if (!post) return <Navigate to="/blog" replace />;
 
   return (
     <div className="store-container">
-      <nav className="breadcrumb" aria-label="Breadcrumb">
-        <Link to="/blog">Blog</Link>
+      <nav className="breadcrumb" aria-label={t("Breadcrumb", "مسار التنقل")}>
+        <Link to="/blog">{t("Blog", "المدونة")}</Link>
         <span className="breadcrumb__sep" aria-hidden="true">/</span>
         <span aria-current="page">{post.title}</span>
       </nav>

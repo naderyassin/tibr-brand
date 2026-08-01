@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/stores/auth";
 import { useToast } from "@/components/ui/Toast";
 import AnimatedCharacters from "@/components/ui/AnimatedCharacters";
+import { useT } from "@/stores/lang";
 
 const stagger = {
   hidden: {},
@@ -54,6 +55,7 @@ export default function Login() {
   const signIn   = useAuth((s) => s.signIn);
   const navigate = useNavigate();
   const toast    = useToast();
+  const t        = useT();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -61,10 +63,10 @@ export default function Login() {
     setLoading(true);
     try {
       await signIn(email, password);
-      toast("Welcome back!");
+      toast(t("Welcome back!", "أهلاً بعودتك!"));
       navigate("/account");
     } catch (err) {
-      setError(err.message || "Invalid email or password.");
+      setError(err.message || t("Invalid email or password.", "البريد الإلكتروني أو كلمة المرور غير صحيحة."));
     } finally {
       setLoading(false);
     }
@@ -90,7 +92,7 @@ export default function Login() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.55, duration: 0.8 }}
           >
-            Authenticity · Nostalgia · Luxury
+            {t("Authenticity · Nostalgia · Luxury", "الأصالة · الحنين · الفخامة")}
           </motion.p>
           <AnimatedCharacters
             isTyping={isTyping}
@@ -109,8 +111,8 @@ export default function Login() {
           animate="show"
         >
           <motion.div variants={fadeUp} className="auth-panel__head">
-            <h1 className="auth-panel__title">Sign in</h1>
-            <p className="auth-panel__sub">Welcome back to Tibr.</p>
+            <h1 className="auth-panel__title">{t("Sign in", "تسجيل الدخول")}</h1>
+            <p className="auth-panel__sub">{t("Welcome back to Tibr.", "أهلاً بعودتك إلى تيبر.")}</p>
           </motion.div>
 
           <form className="auth-panel__form" onSubmit={handleSubmit} noValidate>
@@ -130,7 +132,7 @@ export default function Login() {
                 autoComplete="email"
                 required
               />
-              <label className="aff__label" htmlFor="aff-email">Email</label>
+              <label className="aff__label" htmlFor="aff-email">{t("Email", "البريد الإلكتروني")}</label>
             </motion.div>
 
             {/* Password */}
@@ -146,12 +148,12 @@ export default function Login() {
                 autoComplete="current-password"
                 required
               />
-              <label className="aff__label" htmlFor="aff-pw">Password</label>
+              <label className="aff__label" htmlFor="aff-pw">{t("Password", "كلمة المرور")}</label>
               <button
                 type="button"
                 className="aff__eye"
                 onClick={() => setShowPw((v) => !v)}
-                aria-label={showPw ? "Hide password" : "Show password"}
+                aria-label={showPw ? t("Hide password", "إخفاء كلمة المرور") : t("Show password", "إظهار كلمة المرور")}
               >
                 <IconEye off={showPw} />
               </button>
@@ -174,7 +176,7 @@ export default function Login() {
             </AnimatePresence>
 
             <motion.div variants={fadeUp} className="aff-row">
-              <Link className="aff-link" to="/forgot-password">Forgot password?</Link>
+              <Link className="aff-link" to="/forgot-password">{t("Forgot password?", "نسيت كلمة المرور؟")}</Link>
             </motion.div>
 
             <motion.button
@@ -187,7 +189,7 @@ export default function Login() {
             >
               {loading ? "" : (
                 <>
-                  <span>Sign in</span>
+                  <span>{t("Sign in", "تسجيل الدخول")}</span>
                   <svg className="auth-submit__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </>
               )}
@@ -195,7 +197,7 @@ export default function Login() {
           </form>
 
           <motion.p variants={fadeUp} className="auth-switch">
-            New to Tibr? <Link to="/signup">Create account</Link>
+            {t("New to Tibr?", "جديد على تيبر؟")} <Link to="/signup">{t("Create account", "إنشاء حساب")}</Link>
           </motion.p>
         </motion.div>
       </div>

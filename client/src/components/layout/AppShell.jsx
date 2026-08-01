@@ -1,15 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Header from "./Header";
 import HomeHeader from "./HomeHeader";
 import MobileDrawer from "./MobileDrawer";
 import Footer from "./Footer";
 import { ToastProvider } from "@/components/ui/Toast";
+import { useLang, useT } from "@/stores/lang";
 
 export default function AppShell() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const location = useLocation();
   const isHome = location.pathname === "/";
+  // Arabic is scoped to the store surface, not flipped on <html> — the
+  // landing page keeps its locked ltr hero. See stores/lang.js.
+  const { lang, dir } = useLang();
+  const t = useT();
 
   const showFooter =
     (location.pathname === "/" ||
@@ -77,19 +82,26 @@ export default function AppShell() {
     };
   }, []);
 
-  return (
-    <ToastProvider>
-      <a className="skip-link" href="#main">Skip to content</a>
-      {isHome ? (
-        <HomeHeader />
-      ) : (
-        <Header onMenuOpen={() => setDrawerOpen(true)} />
-      )}
+  const body = (
+    <>
+      {isHome ? <HomeHeader /> : <Header onMenuOpen={() => setDrawerOpen(true)} />}
       <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
       <main id="main">
-        <Outlet />
+        {/* Own boundary so a lazy route chunk only blanks the page content —
+            not header/footer, which otherwise freezes on the old route
+            (old scroll position, old footer) until the chunk loads. */}
+        <Suspense fallback={null}>
+          <Outlet />
+        </Suspense>
       </main>
       {showFooter && <Footer />}
+    </>
+  );
+
+  return (
+    <ToastProvider>
+      <a className="skip-link" href="#main">{isHome ? "Skip to content" : t("Skip to content", "تخطَّ إلى المحتوى")}</a>
+      {isHome ? body : <div dir={dir} lang={lang}>{body}</div>}
     </ToastProvider>
   );
 }

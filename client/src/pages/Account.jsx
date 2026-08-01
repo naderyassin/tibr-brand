@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useAuth } from "@/stores/auth";
+import { useT, useLang } from "@/stores/lang";
 import { useWishlist } from "@/stores/wishlist";
 import { useToast } from "@/components/ui/Toast";
 import SecurityCenter from "@/components/account/SecurityCenter";
@@ -24,34 +25,38 @@ L.Icon.Default.mergeOptions({
 });
 
 const GOVERNORATES = [
-  "Cairo", "Giza", "Alexandria", "Qalyubia", "Dakahlia", "Sharqia",
-  "Gharbia", "Monufia", "Beheira", "Kafr El Sheikh", "Damietta",
-  "Port Said", "Ismailia", "Suez", "Faiyum", "Beni Suef", "Minya",
-  "Asyut", "Sohag", "Qena", "Luxor", "Aswan", "Red Sea", "New Valley",
-  "Matrouh", "North Sinai", "South Sinai",
-];
+  ["Cairo", "القاهرة"], ["Giza", "الجيزة"], ["Alexandria", "الإسكندرية"],
+  ["Qalyubia", "القليوبية"], ["Dakahlia", "الدقهلية"], ["Sharqia", "الشرقية"],
+  ["Gharbia", "الغربية"], ["Monufia", "المنوفية"], ["Beheira", "البحيرة"],
+  ["Kafr El Sheikh", "كفر الشيخ"], ["Damietta", "دمياط"],
+  ["Port Said", "بورسعيد"], ["Ismailia", "الإسماعيلية"], ["Suez", "السويس"],
+  ["Faiyum", "الفيوم"], ["Beni Suef", "بني سويف"], ["Minya", "المنيا"],
+  ["Asyut", "أسيوط"], ["Sohag", "سوهاج"], ["Qena", "قنا"], ["Luxor", "الأقصر"],
+  ["Aswan", "أسوان"], ["Red Sea", "البحر الأحمر"], ["New Valley", "الوادي الجديد"],
+  ["Matrouh", "مطروح"], ["North Sinai", "شمال سيناء"], ["South Sinai", "جنوب سيناء"],
+].map(([en, ar]) => ({ en, ar, slug: en.toLowerCase().replace(/\s+/g, "-") }));
 
 const STATUS_META = {
-  pending:   { label: "Pending",   dot: "var(--warning)",  bg: "oklch(0.808 0.105 72 / 0.12)", text: "var(--warning)" },
-  confirmed: { label: "Confirmed", dot: "var(--info)",     bg: "oklch(0.760 0.060 232 / 0.12)", text: "var(--info)" },
-  shipped:   { label: "Shipped",   dot: "var(--gold)",     bg: "var(--gold-ghost)",              text: "var(--gold)" },
-  delivered: { label: "Delivered", dot: "var(--success)",  bg: "var(--success-fill)",            text: "var(--success)" },
-  cancelled: { label: "Cancelled", dot: "var(--danger)",   bg: "var(--danger-fill)",             text: "var(--danger)" },
+  pending:   { label: "Pending",   label_ar: "قيد الانتظار", dot: "var(--warning)",  bg: "oklch(0.808 0.105 72 / 0.12)", text: "var(--warning)" },
+  confirmed: { label: "Confirmed", label_ar: "مؤكد",        dot: "var(--info)",     bg: "oklch(0.760 0.060 232 / 0.12)", text: "var(--info)" },
+  shipped:   { label: "Shipped",   label_ar: "تم الشحن",     dot: "var(--gold)",     bg: "var(--gold-ghost)",              text: "var(--gold)" },
+  delivered: { label: "Delivered", label_ar: "تم التوصيل",   dot: "var(--success)",  bg: "var(--success-fill)",            text: "var(--success)" },
+  cancelled: { label: "Cancelled", label_ar: "ملغي",         dot: "var(--danger)",   bg: "var(--danger-fill)",             text: "var(--danger)" },
 };
 
 const PAYMENT_LABELS = {
-  cash_on_delivery: "Cash on delivery",
-  vodafone_cash: "Vodafone Cash",
-  instapay: "InstaPay",
+  cash_on_delivery: { label: "Cash on delivery", label_ar: "الدفع عند الاستلام" },
+  vodafone_cash: { label: "Vodafone Cash", label_ar: "فودافون كاش" },
+  instapay: { label: "InstaPay", label_ar: "إنستاباي" },
 };
 
-const fmtEGP = (v) => `${Number(v ?? 0).toLocaleString()} EGP`;
+const fmtEGP = (v, currency) => `${Number(v ?? 0).toLocaleString()} ${currency}`;
 
 // Saved wallet types the Billing tab can store. Handles only — no card data.
 const PM_TYPES = [
   {
-    id: "vodafone_cash", label: "Vodafone Cash",
-    handleLabel: "Wallet phone number", placeholder: "01XXXXXXXXX",
+    id: "vodafone_cash", label: "Vodafone Cash", label_ar: "فودافون كاش",
+    handleLabel: "Wallet phone number", handleLabel_ar: "رقم المحفظة", placeholder: "01XXXXXXXXX",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <rect x="5" y="2" width="14" height="20" rx="2" />
@@ -61,8 +66,8 @@ const PM_TYPES = [
     ),
   },
   {
-    id: "instapay", label: "InstaPay",
-    handleLabel: "InstaPay address", placeholder: "name@instapay",
+    id: "instapay", label: "InstaPay", label_ar: "إنستاباي",
+    handleLabel: "InstaPay address", handleLabel_ar: "عنوان إنستاباي", placeholder: "name@instapay",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" />
@@ -99,7 +104,7 @@ const GOV_SLUG_MAP = {
 
 const TABS = [
   {
-    id: "orders", label: "Orders",
+    id: "orders", label: "Orders", label_ar: "الطلبات",
     icon: (
       <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
         <rect x="4" y="2" width="12" height="16" rx="1.5" strokeLinejoin="round" />
@@ -108,7 +113,7 @@ const TABS = [
     ),
   },
   {
-    id: "billing", label: "Billing",
+    id: "billing", label: "Billing", label_ar: "الفواتير",
     icon: (
       <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
         <path d="M5 2.5h10a1 1 0 0 1 1 1V17l-2-1.2L12 17l-2-1.2L8 17l-2-1.2L4 17V3.5a1 1 0 0 1 1-1z" strokeLinejoin="round" />
@@ -117,7 +122,7 @@ const TABS = [
     ),
   },
   {
-    id: "profile", label: "Profile",
+    id: "profile", label: "Profile", label_ar: "الملف الشخصي",
     icon: (
       <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
         <circle cx="10" cy="6" r="3.5" />
@@ -126,7 +131,7 @@ const TABS = [
     ),
   },
   {
-    id: "addresses", label: "Addresses",
+    id: "addresses", label: "Addresses", label_ar: "العناوين",
     icon: (
       <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
         <path d="M10 18s-7-4.5-7-10a7 7 0 0 1 14 0c0 5.5-7 10-7 10z" strokeLinejoin="round" />
@@ -135,7 +140,7 @@ const TABS = [
     ),
   },
   {
-    id: "wishlist", label: "Wishlist",
+    id: "wishlist", label: "Wishlist", label_ar: "المفضلة",
     icon: (
       <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
         <path d="M10 17s-8-4.8-8-9.5A4.5 4.5 0 0 1 10 4.2 4.5 4.5 0 0 1 18 7.5C18 12.2 10 17 10 17z" strokeLinejoin="round" />
@@ -145,6 +150,7 @@ const TABS = [
 ];
 
 function StatusPill({ status }) {
+  const t = useT();
   const meta = STATUS_META[status] ?? STATUS_META.pending;
   return (
     <span
@@ -152,7 +158,7 @@ function StatusPill({ status }) {
       style={{ "--sb-bg": meta.bg, "--sb-text": meta.text, "--sb-dot": meta.dot }}
     >
       <span className="order-status-pill__dot" aria-hidden="true" />
-      {meta.label}
+      {t(meta.label, meta.label_ar)}
     </span>
   );
 }
@@ -165,6 +171,8 @@ const STATUS_STEPS = ["pending", "confirmed", "shipped", "delivered"];
 // are historical — renaming or repricing a product never rewrites what was
 // bought — so the card reads them straight off the order, not live products.
 function OrderCard({ order }) {
+  const t = useT();
+  const currency = t("EGP", "ج.م");
   const [open, setOpen] = useState(false);
   const items = order.order_items || [];
   const ref = (order.checkout_reference || order.id || "").slice(0, 8).toUpperCase();
@@ -210,12 +218,12 @@ function OrderCard({ order }) {
           <span className="order__when">
             {dateStr}
             <span className="order-card__dot-sep" aria-hidden="true" />
-            {items.length} item{items.length !== 1 ? "s" : ""}
+            {items.length} {items.length !== 1 ? t("items", "منتجات") : t("item", "منتج")}
           </span>
         </div>
 
         <span className="order__status-cell"><StatusPill status={status} /></span>
-        {order.total != null && <span className="order__total">{fmtEGP(order.total)}</span>}
+        {order.total != null && <span className="order__total">{fmtEGP(order.total, currency)}</span>}
 
         <svg className="order__chevron" width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true">
           <path d="M4 6L8 10L12 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -228,15 +236,15 @@ function OrderCard({ order }) {
             <div className="order__track">
               <div className="order__step is-cancel">
                 <span className="order__step-bar" />
-                <span className="order__step-name">This order was cancelled</span>
+                <span className="order__step-name">{t("This order was cancelled", "تم إلغاء هذا الطلب")}</span>
               </div>
             </div>
           ) : (
-            <div className="order__track" role="list" aria-label="Fulfilment progress">
+            <div className="order__track" role="list" aria-label={t("Fulfilment progress", "حالة التنفيذ")}>
               {STATUS_STEPS.map((s, i) => (
                 <div key={s} className={`order__step${i <= stepIndex ? " is-done" : ""}`} role="listitem">
                   <span className="order__step-bar" />
-                  <span className="order__step-name">{STATUS_META[s].label}</span>
+                  <span className="order__step-name">{t(STATUS_META[s].label, STATUS_META[s].label_ar)}</span>
                 </div>
               ))}
             </div>
@@ -260,7 +268,7 @@ function OrderCard({ order }) {
                     </div>
                   </div>
                   {item.unit_price != null && (
-                    <span className="order-item__price">{fmtEGP(item.unit_price)}</span>
+                    <span className="order-item__price">{fmtEGP(item.unit_price, currency)}</span>
                   )}
                 </div>
               );
@@ -268,15 +276,15 @@ function OrderCard({ order }) {
           </div>
 
           <div className="order__totals">
-            <div className="order__trow"><span>Subtotal</span><span>{fmtEGP(subtotal)}</span></div>
+            <div className="order__trow"><span>{t("Subtotal", "الإجمالي الفرعي")}</span><span>{fmtEGP(subtotal, currency)}</span></div>
             {discount > 0 && (
               <div className="order__trow">
-                <span>Discount{order.discount_code ? ` (${order.discount_code})` : ""}</span>
-                <span>−{fmtEGP(discount)}</span>
+                <span>{t("Discount", "الخصم")}{order.discount_code ? ` (${order.discount_code})` : ""}</span>
+                <span>−{fmtEGP(discount, currency)}</span>
               </div>
             )}
-            <div className="order__trow"><span>Shipping</span><span>Free</span></div>
-            <div className="order__trow order__trow--grand"><span>Total</span><span>{fmtEGP(total)}</span></div>
+            <div className="order__trow"><span>{t("Shipping", "الشحن")}</span><span>{t("Free", "مجاني")}</span></div>
+            <div className="order__trow order__trow--grand"><span>{t("Total", "الإجمالي")}</span><span>{fmtEGP(total, currency)}</span></div>
           </div>
         </div>
       )}
@@ -288,26 +296,29 @@ function OrderCard({ order }) {
 // a Stripe-style history table (see the Billing tab) rather than its own row
 // component now — this stays a formatting helper for one table row.
 function BillingTableRow({ order, onView }) {
+  const t = useT();
+  const currency = t("EGP", "ج.م");
   const ref = (order.checkout_reference || order.id || "").slice(0, 8).toUpperCase();
   const dateStr = new Date(order.created_at).toLocaleDateString("en-GB", {
     day: "numeric", month: "short", year: "numeric",
   });
   const itemCount = (order.order_items || []).reduce((n, l) => n + (l.qty || 0), 0);
+  const payMeta = PAYMENT_LABELS[order.payment_method];
 
   return (
     <tr>
-      <td data-label="Invoice"><span className="bill-table__ref">#{ref}</span></td>
-      <td data-label="Date">{dateStr}</td>
-      <td data-label="Items" className="bill-table__num">{itemCount}</td>
-      <td data-label="Method">{PAYMENT_LABELS[order.payment_method] || order.payment_method || "—"}</td>
-      <td data-label="Status"><StatusPill status={order.status || "pending"} /></td>
-      <td data-label="Amount" className="bill-table__amount">{fmtEGP(order.total)}</td>
+      <td data-label={t("Invoice", "الفاتورة")}><span className="bill-table__ref">#{ref}</span></td>
+      <td data-label={t("Date", "التاريخ")}>{dateStr}</td>
+      <td data-label={t("Items", "المنتجات")} className="bill-table__num">{itemCount}</td>
+      <td data-label={t("Method", "الطريقة")}>{payMeta ? t(payMeta.label, payMeta.label_ar) : order.payment_method || "—"}</td>
+      <td data-label={t("Status", "الحالة")}><StatusPill status={order.status || "pending"} /></td>
+      <td data-label={t("Amount", "المبلغ")} className="bill-table__amount">{fmtEGP(order.total, currency)}</td>
       <td className="bill-table__action">
         <button type="button" className="btn btn--secondary bill-table__view" onClick={() => onView(order)}>
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" style={{ width: "0.95rem", height: "0.95rem" }}>
             <path d="M5 2.5h10a1 1 0 0 1 1 1V17l-2-1.2L12 17l-2-1.2L8 17l-2-1.2L4 17V3.5a1 1 0 0 1 1-1z" strokeLinejoin="round" />
           </svg>
-          Invoice
+          {t("Invoice", "الفاتورة")}
         </button>
       </td>
     </tr>
@@ -321,6 +332,8 @@ function BillingTableRow({ order, onView }) {
 // the user's current billing details (company, tax ID, billing address) when set,
 // falling back to the order's own customer snapshot.
 function InvoiceDoc({ order, billing }) {
+  const t = useT();
+  const currency = t("EGP", "ج.م");
   if (!order) return null;
   const ref = (order.checkout_reference || order.id || "").slice(0, 8).toUpperCase();
   const dateStr = new Date(order.created_at).toLocaleDateString("en-GB", {
@@ -330,6 +343,8 @@ function InvoiceDoc({ order, billing }) {
   const subtotal = order.subtotal ?? lines.reduce((s, l) => s + (l.unit_price || 0) * (l.qty || 0), 0);
   const discount = order.discount_amount || 0;
   const total = order.total ?? Math.max(0, subtotal - discount);
+  const payMeta = PAYMENT_LABELS[order.payment_method];
+  const statusMeta = STATUS_META[order.status];
 
   return (
     <div className="invoice-doc" id="invoice-print">
@@ -339,7 +354,7 @@ function InvoiceDoc({ order, billing }) {
           <p className="invoice-doc__brand-sub">تِبْر · Fragrance House</p>
         </div>
         <div className="invoice-doc__head-right">
-          <p className="invoice-doc__label">Invoice</p>
+          <p className="invoice-doc__label">{t("Invoice", "الفاتورة")}</p>
           <p className="invoice-doc__ref">#{ref}</p>
           <p className="invoice-doc__date">{dateStr}</p>
         </div>
@@ -347,60 +362,60 @@ function InvoiceDoc({ order, billing }) {
 
       <div className="invoice-doc__parties">
         <div>
-          <p className="invoice-doc__ptitle">Billed to</p>
+          <p className="invoice-doc__ptitle">{t("Billed to", "الفاتورة باسم")}</p>
           <p className="invoice-doc__pname">{billing?.full_name || order.customer_name || "—"}</p>
           {billing?.company && <p className="invoice-doc__pline">{billing.company}</p>}
           {order.customer_phone && <p className="invoice-doc__pline">{order.customer_phone}</p>}
           {(billing?.street || order.customer_address) && (
             <p className="invoice-doc__pline">{billing?.street || order.customer_address}</p>
           )}
-          {billing?.tax_id && <p className="invoice-doc__pline invoice-doc__pline--tax">Tax ID: {billing.tax_id}</p>}
+          {billing?.tax_id && <p className="invoice-doc__pline invoice-doc__pline--tax">{t("Tax ID:", "الرقم الضريبي:")} {billing.tax_id}</p>}
         </div>
         <div className="invoice-doc__parties-right">
-          <p className="invoice-doc__ptitle">Payment</p>
-          <p className="invoice-doc__pline">{PAYMENT_LABELS[order.payment_method] || order.payment_method || "—"}</p>
-          <p className="invoice-doc__ptitle invoice-doc__ptitle--gap">Status</p>
-          <p className="invoice-doc__pline">{STATUS_META[order.status]?.label || "Pending"}</p>
+          <p className="invoice-doc__ptitle">{t("Payment", "الدفع")}</p>
+          <p className="invoice-doc__pline">{payMeta ? t(payMeta.label, payMeta.label_ar) : order.payment_method || "—"}</p>
+          <p className="invoice-doc__ptitle invoice-doc__ptitle--gap">{t("Status", "الحالة")}</p>
+          <p className="invoice-doc__pline">{statusMeta ? t(statusMeta.label, statusMeta.label_ar) : t("Pending", "قيد الانتظار")}</p>
         </div>
       </div>
 
       <table className="invoice-doc__table">
         <thead>
           <tr>
-            <th>Item</th>
-            <th className="invoice-doc__col-num">Qty</th>
-            <th className="invoice-doc__col-num">Unit</th>
-            <th className="invoice-doc__col-num">Amount</th>
+            <th>{t("Item", "المنتج")}</th>
+            <th className="invoice-doc__col-num">{t("Qty", "الكمية")}</th>
+            <th className="invoice-doc__col-num">{t("Unit", "السعر")}</th>
+            <th className="invoice-doc__col-num">{t("Amount", "المبلغ")}</th>
           </tr>
         </thead>
         <tbody>
           {lines.map((l) => (
             <tr key={l.id}>
               <td>
-                <span className="invoice-doc__item-name">{l.name_snapshot || "Product"}</span>
+                <span className="invoice-doc__item-name">{l.name_snapshot || t("Product", "منتج")}</span>
                 {l.size_snapshot && <span className="invoice-doc__item-size">{l.size_snapshot}</span>}
               </td>
               <td className="invoice-doc__col-num">{l.qty}</td>
-              <td className="invoice-doc__col-num">{fmtEGP(l.unit_price)}</td>
-              <td className="invoice-doc__col-num">{fmtEGP((l.unit_price || 0) * (l.qty || 0))}</td>
+              <td className="invoice-doc__col-num">{fmtEGP(l.unit_price, currency)}</td>
+              <td className="invoice-doc__col-num">{fmtEGP((l.unit_price || 0) * (l.qty || 0), currency)}</td>
             </tr>
           ))}
         </tbody>
       </table>
 
       <div className="invoice-doc__totals">
-        <div className="invoice-doc__trow"><span>Subtotal</span><span>{fmtEGP(subtotal)}</span></div>
+        <div className="invoice-doc__trow"><span>{t("Subtotal", "الإجمالي الفرعي")}</span><span>{fmtEGP(subtotal, currency)}</span></div>
         {discount > 0 && (
           <div className="invoice-doc__trow">
-            <span>Discount{order.discount_code ? ` (${order.discount_code})` : ""}</span>
-            <span>−{fmtEGP(discount)}</span>
+            <span>{t("Discount", "الخصم")}{order.discount_code ? ` (${order.discount_code})` : ""}</span>
+            <span>−{fmtEGP(discount, currency)}</span>
           </div>
         )}
-        <div className="invoice-doc__trow"><span>Shipping</span><span>Free</span></div>
-        <div className="invoice-doc__trow invoice-doc__trow--grand"><span>Total</span><span>{fmtEGP(total)}</span></div>
+        <div className="invoice-doc__trow"><span>{t("Shipping", "الشحن")}</span><span>{t("Free", "مجاني")}</span></div>
+        <div className="invoice-doc__trow invoice-doc__trow--grand"><span>{t("Total", "الإجمالي")}</span><span>{fmtEGP(total, currency)}</span></div>
       </div>
 
-      <p className="invoice-doc__foot">Thank you for shopping with TIBR — الأصالة والحنين والفخامة</p>
+      <p className="invoice-doc__foot">{t("Thank you for shopping with TIBR", "شكرًا لتسوّقك مع تِبْر")} — الأصالة والحنين والفخامة</p>
     </div>
   );
 }
@@ -433,6 +448,9 @@ function AddrCardMap({ lat, lon }) {
 }
 
 export default function Account() {
+  const t = useT();
+  const lang = useLang((s) => s.lang);
+  const currency = t("EGP", "ج.م");
   const [params, setParams] = useSearchParams();
   const tab = params.get("tab") || "orders";
   const { user, token, signOut, loading: authLoading } = useAuth();
@@ -520,14 +538,14 @@ export default function Account() {
         setAddrLat(lat); setAddrLon(lon);
         setGpsCoords({ lat, lon });
         reverseGeocode(lat, lon);
-        toast("Location pinned — drag the marker to adjust");
+        toast(t("Location pinned — drag the marker to adjust", "تم تحديد الموقع — اسحب العلامة للتعديل"));
       },
       (err) => {
         setGpsLoading(false);
         if (err.code === 1) {
-          toast("Location access denied — enable it in your browser's site settings to detect your address.");
+          toast(t("Location access denied — enable it in your browser's site settings to detect your address.", "تم رفض إذن الموقع — فعّله من إعدادات المتصفح لتحديد عنوانك."));
         } else {
-          toast("Could not get your location.");
+          toast(t("Could not get your location.", "تعذّر تحديد موقعك."));
         }
       },
       // enableHighAccuracy asks the device for GPS/Wi-Fi-grade positioning rather than
@@ -538,7 +556,7 @@ export default function Account() {
   };
 
   const locateForAddress = () => {
-    if (!navigator.geolocation) { toast("Geolocation not supported."); return; }
+    if (!navigator.geolocation) { toast(t("Geolocation not supported.", "تحديد الموقع غير مدعوم.")); return; }
     // Explicitly resolve the permission state first rather than firing getCurrentPosition
     // blind — on browsers that support the Permissions API this lets us give a precise
     // "access denied" message up front instead of a generic failure after the fact.
@@ -546,7 +564,7 @@ export default function Account() {
       navigator.permissions.query({ name: "geolocation" }).then(
         (status) => {
           if (status.state === "denied") {
-            toast("Location access denied — enable it in your browser's site settings to detect your address.");
+            toast(t("Location access denied — enable it in your browser's site settings to detect your address.", "تم رفض إذن الموقع — فعّله من إعدادات المتصفح لتحديد عنوانك."));
             return;
           }
           requestPreciseLocation();
@@ -674,38 +692,38 @@ export default function Account() {
 
   const { mutate: saveProfile, isPending: profileSaving } = useMutation({
     mutationFn: (body) => updateProfile(body, token),
-    onSuccess: () => { toast("Profile saved!"); qc.invalidateQueries({ queryKey: ["profile"] }); },
-    onError: (err) => toast(err.message || "Failed to save profile"),
+    onSuccess: () => { toast(t("Profile saved!", "تم حفظ الملف الشخصي!")); qc.invalidateQueries({ queryKey: ["profile"] }); },
+    onError: (err) => toast(err.message || t("Failed to save profile", "تعذّر حفظ الملف الشخصي")),
   });
 
   const { mutate: removeAddress } = useMutation({
     mutationFn: (id) => deleteAddress(id, token),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["addresses"] }),
-    onError: (err) => toast(err.message || "Failed to delete address"),
+    onError: (err) => toast(err.message || t("Failed to delete address", "تعذّر حذف العنوان")),
   });
 
   const { mutate: makeDefault } = useMutation({
     mutationFn: (id) => setDefaultAddress(id, token),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["addresses"] }),
-    onError: (err) => toast(err.message || "Failed to set default"),
+    onError: (err) => toast(err.message || t("Failed to set default", "تعذّر تعيين الافتراضي")),
   });
 
   const { mutate: removePm } = useMutation({
     mutationFn: (id) => deletePaymentMethod(id, token),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["payment-methods"] }),
-    onError: (err) => toast(err.message || "Failed to delete payment method"),
+    onError: (err) => toast(err.message || t("Failed to delete payment method", "تعذّر حذف وسيلة الدفع")),
   });
 
   const { mutate: makePmDefault } = useMutation({
     mutationFn: (id) => setDefaultPaymentMethod(id, token),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["payment-methods"] }),
-    onError: (err) => toast(err.message || "Failed to set default"),
+    onError: (err) => toast(err.message || t("Failed to set default", "تعذّر تعيين الافتراضي")),
   });
 
   const { mutate: saveBilling, isPending: billingSaving } = useMutation({
     mutationFn: (body) => saveBillingDetails(body, token),
-    onSuccess: () => { toast("Billing details saved!"); qc.invalidateQueries({ queryKey: ["billing-details"] }); },
-    onError: (err) => toast(err.message || "Failed to save billing details"),
+    onSuccess: () => { toast(t("Billing details saved!", "تم حفظ بيانات الفوترة!")); qc.invalidateQueries({ queryKey: ["billing-details"] }); },
+    onError: (err) => toast(err.message || t("Failed to save billing details", "تعذّر حفظ بيانات الفوترة")),
   });
 
   const openEditPm = (pm) => {
@@ -716,15 +734,15 @@ export default function Account() {
   const closePmForm = () => { setPmFormOpen(false); setPmForm(EMPTY_PM); setEditingPmId(null); };
   const handleSavePm = async (e) => {
     e.preventDefault();
-    if (!pmForm.handle.trim()) { toast("Please enter the wallet number or address."); return; }
+    if (!pmForm.handle.trim()) { toast(t("Please enter the wallet number or address.", "من فضلك أدخل رقم المحفظة أو العنوان.")); return; }
     setPmSaving(true);
     try {
-      if (editingPmId) { await updatePaymentMethod(editingPmId, pmForm, token); toast("Payment method updated!"); }
-      else { await addPaymentMethod(pmForm, token); toast("Payment method saved!"); }
+      if (editingPmId) { await updatePaymentMethod(editingPmId, pmForm, token); toast(t("Payment method updated!", "تم تحديث وسيلة الدفع!")); }
+      else { await addPaymentMethod(pmForm, token); toast(t("Payment method saved!", "تم حفظ وسيلة الدفع!")); }
       qc.invalidateQueries({ queryKey: ["payment-methods"] });
       closePmForm();
     } catch (err) {
-      toast(err.message || "Failed to save payment method");
+      toast(err.message || t("Failed to save payment method", "تعذّر حفظ وسيلة الدفع"));
     } finally {
       setPmSaving(false);
     }
@@ -742,7 +760,7 @@ export default function Account() {
       city:        addr.city && addr.city !== addr.governorate ? addr.city : f.city,
       street:      addr.street || f.street,
     }));
-    toast("Filled from saved address");
+    toast(t("Filled from saved address", "تم التعبئة من عنوان محفوظ"));
   };
 
   const openEditAddr = (addr) => {
@@ -767,7 +785,7 @@ export default function Account() {
   const handleSaveAddr = async (e) => {
     e.preventDefault();
     if (!addrForm.governorate || !addrForm.street) {
-      toast("Please fill in governorate and street address.");
+      toast(t("Please fill in governorate and street address.", "من فضلك أدخل المحافظة وعنوان الشارع."));
       return;
     }
     setAddrSaving(true);
@@ -775,15 +793,15 @@ export default function Account() {
       const payload = { ...addrForm, latitude: addrLat, longitude: addrLon };
       if (editingAddrId) {
         await updateAddress(editingAddrId, payload, token);
-        toast("Address updated!");
+        toast(t("Address updated!", "تم تحديث العنوان!"));
       } else {
         await addAddress(payload, token);
-        toast("Address saved!");
+        toast(t("Address saved!", "تم حفظ العنوان!"));
       }
       qc.invalidateQueries({ queryKey: ["addresses"] });
       closeAddrForm();
     } catch (err) {
-      toast(err.message || "Failed to save address");
+      toast(err.message || t("Failed to save address", "تعذّر حفظ العنوان"));
     } finally {
       setAddrSaving(false);
     }
@@ -825,26 +843,26 @@ export default function Account() {
           <div className="acct-hero__text">
             <p className="acct-hero__eyebrow">
               <span className="acct-hero__spark" aria-hidden="true" />
-              {memberSince ? `Member since ${memberSince}` : "TIBR account"}
+              {memberSince ? t(`Member since ${memberSince}`, `عضو منذ ${memberSince}`) : t("TIBR account", "حساب تِبْر")}
             </p>
             <h1 className="acct-hero__name">
-              {firstName ? `Welcome back, ${firstName}` : "My account"}
+              {firstName ? t(`Welcome back, ${firstName}`, `أهلاً بعودتك، ${firstName}`) : t("My account", "حسابي")}
             </h1>
             <p className="acct-hero__email">{user.email}</p>
           </div>
         </div>
 
-        <dl className="acct-stats" aria-label="Account overview">
+        <dl className="acct-stats" aria-label={t("Account overview", "نظرة عامة على الحساب")}>
           <div className="acct-stat">
-            <dt className="acct-stat__label">Orders</dt>
+            <dt className="acct-stat__label">{t("Orders", "الطلبات")}</dt>
             <dd className="acct-stat__value">{ordersCount ?? "—"}</dd>
           </div>
           <div className="acct-stat">
-            <dt className="acct-stat__label">Saved</dt>
+            <dt className="acct-stat__label">{t("Saved", "المحفوظات")}</dt>
             <dd className="acct-stat__value">{wishlistLoaded ? wishlistItems.length : "—"}</dd>
           </div>
           <div className="acct-stat">
-            <dt className="acct-stat__label">Addresses</dt>
+            <dt className="acct-stat__label">{t("Addresses", "العناوين")}</dt>
             <dd className="acct-stat__value">{addressCount || 0}</dd>
           </div>
         </dl>
@@ -852,23 +870,23 @@ export default function Account() {
 
       <div className="dashboard">
         {/* ── Navigation rail ── */}
-        <nav className="acct-nav" aria-label="Account sections">
+        <nav className="acct-nav" aria-label={t("Account sections", "أقسام الحساب")}>
           <div className="acct-nav__list">
-            {TABS.map((t) => {
-              const count = t.id === "orders" ? ordersCount
-                : t.id === "wishlist" ? (wishlistLoaded ? wishlistItems.length : undefined)
-                : t.id === "addresses" ? addressCount
+            {TABS.map((tabItem) => {
+              const count = tabItem.id === "orders" ? ordersCount
+                : tabItem.id === "wishlist" ? (wishlistLoaded ? wishlistItems.length : undefined)
+                : tabItem.id === "addresses" ? addressCount
                 : undefined;
               return (
                 <button
-                  key={t.id}
+                  key={tabItem.id}
                   className="acct-nav__item"
-                  aria-current={tab === t.id ? "true" : undefined}
+                  aria-current={tab === tabItem.id ? "true" : undefined}
                   type="button"
-                  onClick={() => setTab(t.id)}
+                  onClick={() => setTab(tabItem.id)}
                 >
-                  {t.icon}
-                  <span className="acct-nav__item-label">{t.label}</span>
+                  {tabItem.icon}
+                  <span className="acct-nav__item-label">{t(tabItem.label, tabItem.label_ar)}</span>
                   {count != null && count > 0 && <span className="acct-nav__count">{count}</span>}
                 </button>
               );
@@ -883,7 +901,7 @@ export default function Account() {
                 <path d="M13 3h4a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-4" strokeLinecap="round" />
                 <path d="M9 14l-4-4 4-4M5 10h9" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              <span className="acct-nav__item-label">Sign out</span>
+              <span className="acct-nav__item-label">{t("Sign out", "تسجيل الخروج")}</span>
             </button>
           </div>
         </nav>
@@ -902,11 +920,11 @@ export default function Account() {
               <div className="acct-section">
                 <div className="acct-section__head">
                   <div>
-                    <h2 className="acct-section__title">Orders</h2>
-                    <p className="acct-section__desc">Track fulfilment and revisit everything you&apos;ve bought.</p>
+                    <h2 className="acct-section__title">{t("Orders", "الطلبات")}</h2>
+                    <p className="acct-section__desc">{t("Track fulfilment and revisit everything you've bought.", "تابع حالة الشحن وراجع كل ما اشتريته.")}</p>
                   </div>
                   {ordersData?.data?.length > 0 && (
-                    <Link className="btn btn--secondary" to="/shop/perfumes">Continue shopping</Link>
+                    <Link className="btn btn--secondary" to="/shop/perfumes">{t("Continue shopping", "متابعة التسوق")}</Link>
                   )}
                 </div>
 
@@ -931,12 +949,12 @@ export default function Account() {
                         <path d="M14 13h12M14 19h12M14 25h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                       </svg>
                     </span>
-                    <h3 className="acct-empty__title">No orders yet</h3>
+                    <h3 className="acct-empty__title">{t("No orders yet", "لا توجد طلبات بعد")}</h3>
                     <p className="acct-empty__sub">
-                      When you place your first order, it&apos;ll live here — with live fulfilment status and every invoice.
+                      {t("When you place your first order, it'll live here — with live fulfilment status and every invoice.", "بمجرد أن تضع طلبك الأول، سيظهر هنا — مع حالة الشحن الحية وكل فاتورة.")}
                     </p>
                     <div className="acct-empty__actions">
-                      <Link className="btn btn--primary" to="/shop/perfumes">Start shopping</Link>
+                      <Link className="btn btn--primary" to="/shop/perfumes">{t("Start shopping", "ابدأ التسوق")}</Link>
                     </div>
                   </div>
                 ) : (
@@ -955,12 +973,12 @@ export default function Account() {
               <div className="acct-section">
                 <div className="acct-section__head">
                   <div>
-                    <h2 className="acct-section__title">Payment methods</h2>
-                    <p className="acct-section__desc">Saved wallets for a faster checkout. We store the handle only — never a balance or PIN.</p>
+                    <h2 className="acct-section__title">{t("Payment methods", "وسائل الدفع")}</h2>
+                    <p className="acct-section__desc">{t("Saved wallets for a faster checkout. We store the handle only — never a balance or PIN.", "محافظ محفوظة لإتمام الشراء بسرعة. نخزّن الرقم أو العنوان فقط — أبدًا الرصيد أو الرقم السري.")}</p>
                   </div>
                   {!pmFormOpen && (
                     <button className="btn btn--secondary" type="button" onClick={() => setPmFormOpen(true)}>
-                      Add method
+                      {t("Add method", "إضافة وسيلة")}
                     </button>
                   )}
                 </div>
@@ -982,34 +1000,34 @@ export default function Account() {
                 ) : pmData?.data?.length ? (
                   <div className="wallets">
                     {pmData.data.map((pm) => {
-                      const meta = PM_TYPES.find((t) => t.id === pm.type);
+                      const meta = PM_TYPES.find((pt) => pt.id === pm.type);
                       return (
                         <div key={pm.id} className={`wallet${pm.is_default ? " wallet--default" : ""}`}>
                           <div className="wallet__row">
                             <span className="wallet__icon" aria-hidden="true">{meta?.icon}</span>
                             <div className="wallet__info">
                               <span className="wallet__label">
-                                {pm.label || meta?.label || "Wallet"}
-                                {pm.is_default && <span className="acct-badge">Default</span>}
+                                {pm.label || (meta ? t(meta.label, meta.label_ar) : t("Wallet", "محفظة"))}
+                                {pm.is_default && <span className="acct-badge">{t("Default", "افتراضي")}</span>}
                               </span>
                               <span className="wallet__handle">
-                                {meta?.label} · {maskHandle(pm.type, pm.handle)}
+                                {meta && t(meta.label, meta.label_ar)} · {maskHandle(pm.type, pm.handle)}
                               </span>
                             </div>
                           </div>
                           <div className="wallet__actions">
                             {!pm.is_default && (
                               <button className="acct-link-btn" type="button" onClick={() => makePmDefault(pm.id)}>
-                                Set default
+                                {t("Set default", "تعيين كافتراضي")}
                               </button>
                             )}
                             <span className="wallet__spacer" />
-                            <button className="acct-icon-btn" type="button" onClick={() => openEditPm(pm)} aria-label="Edit payment method">
+                            <button className="acct-icon-btn" type="button" onClick={() => openEditPm(pm)} aria-label={t("Edit payment method", "تعديل وسيلة الدفع")}>
                               <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
                                 <path d="M14.5 2.5a2 2 0 0 1 2.83 2.83L7 15.67 3 17l1.33-4L14.5 2.5z" strokeLinejoin="round" />
                               </svg>
                             </button>
-                            <button className="acct-icon-btn acct-icon-btn--danger" type="button" onClick={() => { if (confirm("Delete this payment method?")) removePm(pm.id); }} aria-label="Delete payment method">
+                            <button className="acct-icon-btn acct-icon-btn--danger" type="button" onClick={() => { if (confirm(t("Delete this payment method?", "هل تريد حذف وسيلة الدفع هذه؟"))) removePm(pm.id); }} aria-label={t("Delete payment method", "حذف وسيلة الدفع")}>
                               <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
                                 <path d="M3 5h14M8 5V3h4v2M6 5l1 12h6l1-12" strokeLinecap="round" strokeLinejoin="round" />
                               </svg>
@@ -1023,7 +1041,7 @@ export default function Account() {
                   !pmFormOpen && (
                     <button type="button" className="acct-blank" onClick={() => setPmFormOpen(true)}>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M12 5v14M5 12h14" strokeLinecap="round" /></svg>
-                      <span>Add your first wallet for faster checkout</span>
+                      <span>{t("Add your first wallet for faster checkout", "أضف أول محفظة لإتمام الشراء بسرعة")}</span>
                     </button>
                   )
                 )}
@@ -1033,7 +1051,7 @@ export default function Account() {
                     <div className="panel__body">
                       <div className="form-grid">
                         <div className="field">
-                          <label className="field__label" htmlFor="pm-type">Type</label>
+                          <label className="field__label" htmlFor="pm-type">{t("Type", "النوع")}</label>
                           <div className="select-field">
                             <select
                               id="pm-type"
@@ -1041,34 +1059,37 @@ export default function Account() {
                               value={pmForm.type}
                               onChange={(e) => setPmForm((f) => ({ ...f, type: e.target.value }))}
                             >
-                              {PM_TYPES.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
+                              {PM_TYPES.map((pt) => <option key={pt.id} value={pt.id}>{t(pt.label, pt.label_ar)}</option>)}
                             </select>
                             <svg className="select-field__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
                           </div>
                         </div>
                         <div className="field">
                           <label className="field__label" htmlFor="pm-handle">
-                            {PM_TYPES.find((t) => t.id === pmForm.type)?.handleLabel} <span className="field__req">*</span>
+                            {(() => {
+                              const pt = PM_TYPES.find((x) => x.id === pmForm.type);
+                              return pt && t(pt.handleLabel, pt.handleLabel_ar);
+                            })()} <span className="field__req">*</span>
                           </label>
                           <input
                             id="pm-handle"
                             className="input"
                             value={pmForm.handle}
                             onChange={(e) => setPmForm((f) => ({ ...f, handle: e.target.value }))}
-                            placeholder={PM_TYPES.find((t) => t.id === pmForm.type)?.placeholder}
+                            placeholder={PM_TYPES.find((pt) => pt.id === pmForm.type)?.placeholder}
                             inputMode={pmForm.type === "vodafone_cash" ? "numeric" : "text"}
                             autoComplete="off"
                             required
                           />
                         </div>
                         <div className="field field--full">
-                          <label className="field__label" htmlFor="pm-label">Label (optional)</label>
+                          <label className="field__label" htmlFor="pm-label">{t("Label (optional)", "التسمية (اختياري)")}</label>
                           <input
                             id="pm-label"
                             className="input"
                             value={pmForm.label}
                             onChange={(e) => setPmForm((f) => ({ ...f, label: e.target.value }))}
-                            placeholder="e.g. My Vodafone line"
+                            placeholder={t("e.g. My Vodafone line", "مثال: خط فودافون الخاص بي")}
                           />
                         </div>
                         <div className="field--full addr-form__check">
@@ -1078,15 +1099,15 @@ export default function Account() {
                               checked={pmForm.is_default}
                               onChange={(e) => setPmForm((f) => ({ ...f, is_default: e.target.checked }))}
                             />
-                            Set as default payment method
+                            {t("Set as default payment method", "تعيين كوسيلة الدفع الافتراضية")}
                           </label>
                         </div>
                       </div>
                     </div>
                     <div className="panel__foot">
-                      <button className="btn btn--secondary" type="button" onClick={closePmForm}>Cancel</button>
+                      <button className="btn btn--secondary" type="button" onClick={closePmForm}>{t("Cancel", "إلغاء")}</button>
                       <button className={`btn btn--primary${pmSaving ? " is-loading" : ""}`} type="submit" disabled={pmSaving}>
-                        {pmSaving ? "" : editingPmId ? "Update method" : "Save method"}
+                        {pmSaving ? "" : editingPmId ? t("Update method", "تحديث الوسيلة") : t("Save method", "حفظ الوسيلة")}
                       </button>
                     </div>
                   </form>
@@ -1097,8 +1118,8 @@ export default function Account() {
               <div className="acct-section">
                 <div className="acct-section__head">
                   <div>
-                    <h2 className="acct-section__title acct-section__sub-title">Billing details</h2>
-                    <p className="acct-section__desc">The name, tax info and address printed on your invoices.</p>
+                    <h2 className="acct-section__title acct-section__sub-title">{t("Billing details", "بيانات الفوترة")}</h2>
+                    <p className="acct-section__desc">{t("The name, tax info and address printed on your invoices.", "الاسم والبيانات الضريبية والعنوان المطبوعة على فواتيرك.")}</p>
                   </div>
                 </div>
 
@@ -1110,7 +1131,7 @@ export default function Account() {
                   <div className="panel__body">
                     {addressesData?.data?.length > 0 && (
                       <div className="field field--full" style={{ marginBlockEnd: "var(--sp-5)" }}>
-                        <label className="field__label" htmlFor="bl-copy">Prefill from a saved address</label>
+                        <label className="field__label" htmlFor="bl-copy">{t("Prefill from a saved address", "التعبئة من عنوان محفوظ")}</label>
                         <div className="select-field">
                           <select
                             id="bl-copy"
@@ -1118,14 +1139,17 @@ export default function Account() {
                             value=""
                             onChange={(e) => fillBillingFromAddress(addressesData.data.find((a) => a.id === e.target.value))}
                           >
-                            <option value="">Choose an address…</option>
-                            {addressesData.data.map((a) => (
-                              <option key={a.id} value={a.id}>
-                                {(a.label || "Address")}
-                                {a.governorate ? ` — ${a.governorate.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}` : ""}
-                                {a.is_default ? " (default)" : ""}
-                              </option>
-                            ))}
+                            <option value="">{t("Choose an address…", "اختر عنوانًا…")}</option>
+                            {addressesData.data.map((a) => {
+                              const govMeta = GOVERNORATES.find((g) => g.slug === a.governorate);
+                              return (
+                                <option key={a.id} value={a.id}>
+                                  {(a.label || t("Address", "العنوان"))}
+                                  {govMeta ? ` — ${t(govMeta.en, govMeta.ar)}` : ""}
+                                  {a.is_default ? ` (${t("default", "افتراضي")})` : ""}
+                                </option>
+                              );
+                            })}
                           </select>
                           <svg className="select-field__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
                         </div>
@@ -1134,43 +1158,43 @@ export default function Account() {
 
                     <div className="form-grid">
                       <div className="field">
-                        <label className="field__label" htmlFor="bl-name">Full name</label>
-                        <input id="bl-name" className="input" value={billingForm.full_name} onChange={(e) => setBillingForm((f) => ({ ...f, full_name: e.target.value }))} autoComplete="name" placeholder="Recipient on the invoice" />
+                        <label className="field__label" htmlFor="bl-name">{t("Full name", "الاسم الكامل")}</label>
+                        <input id="bl-name" className="input" value={billingForm.full_name} onChange={(e) => setBillingForm((f) => ({ ...f, full_name: e.target.value }))} autoComplete="name" placeholder={t("Recipient on the invoice", "اسم المستلم على الفاتورة")} />
                       </div>
                       <div className="field">
-                        <label className="field__label" htmlFor="bl-company">Company (optional)</label>
-                        <input id="bl-company" className="input" value={billingForm.company} onChange={(e) => setBillingForm((f) => ({ ...f, company: e.target.value }))} placeholder="Company name" />
+                        <label className="field__label" htmlFor="bl-company">{t("Company (optional)", "الشركة (اختياري)")}</label>
+                        <input id="bl-company" className="input" value={billingForm.company} onChange={(e) => setBillingForm((f) => ({ ...f, company: e.target.value }))} placeholder={t("Company name", "اسم الشركة")} />
                       </div>
                       <div className="field">
-                        <label className="field__label" htmlFor="bl-tax">Tax ID (optional)</label>
-                        <input id="bl-tax" className="input" value={billingForm.tax_id} onChange={(e) => setBillingForm((f) => ({ ...f, tax_id: e.target.value }))} inputMode="numeric" placeholder="Tax registration number" />
+                        <label className="field__label" htmlFor="bl-tax">{t("Tax ID (optional)", "الرقم الضريبي (اختياري)")}</label>
+                        <input id="bl-tax" className="input" value={billingForm.tax_id} onChange={(e) => setBillingForm((f) => ({ ...f, tax_id: e.target.value }))} inputMode="numeric" placeholder={t("Tax registration number", "رقم التسجيل الضريبي")} />
                       </div>
                       <div className="field">
-                        <label className="field__label" htmlFor="bl-gov">Governorate</label>
+                        <label className="field__label" htmlFor="bl-gov">{t("Governorate", "المحافظة")}</label>
                         <div className="select-field">
                           <select id="bl-gov" className="select" value={billingForm.governorate} onChange={(e) => setBillingForm((f) => ({ ...f, governorate: e.target.value }))}>
-                            <option value="">Select governorate</option>
+                            <option value="">{t("Select governorate", "اختر المحافظة")}</option>
                             {GOVERNORATES.map((g) => (
-                              <option key={g} value={g.toLowerCase().replace(/\s+/g, "-")}>{g}</option>
+                              <option key={g.slug} value={g.slug}>{t(g.en, g.ar)}</option>
                             ))}
                           </select>
                           <svg className="select-field__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
                         </div>
                       </div>
                       <div className="field">
-                        <label className="field__label" htmlFor="bl-city">City / Area (optional)</label>
-                        <input id="bl-city" className="input" value={billingForm.city} onChange={(e) => setBillingForm((f) => ({ ...f, city: e.target.value }))} placeholder="City or district" />
+                        <label className="field__label" htmlFor="bl-city">{t("City / Area (optional)", "المدينة / المنطقة (اختياري)")}</label>
+                        <input id="bl-city" className="input" value={billingForm.city} onChange={(e) => setBillingForm((f) => ({ ...f, city: e.target.value }))} placeholder={t("City or district", "المدينة أو الحي")} />
                       </div>
                       <div className="field field--full">
-                        <label className="field__label" htmlFor="bl-street">Billing address</label>
-                        <input id="bl-street" className="input" value={billingForm.street} onChange={(e) => setBillingForm((f) => ({ ...f, street: e.target.value }))} placeholder="Street, building, floor…" />
+                        <label className="field__label" htmlFor="bl-street">{t("Billing address", "عنوان الفوترة")}</label>
+                        <input id="bl-street" className="input" value={billingForm.street} onChange={(e) => setBillingForm((f) => ({ ...f, street: e.target.value }))} placeholder={t("Street, building, floor…", "الشارع، المبنى، الطابق…")} />
                       </div>
                     </div>
                   </div>
                   <div className="panel__foot">
-                    <span className="panel__foot-note">Shown on every invoice you download.</span>
+                    <span className="panel__foot-note">{t("Shown on every invoice you download.", "يظهر على كل فاتورة تحمّلها.")}</span>
                     <button className={`btn btn--primary${billingSaving ? " is-loading" : ""}`} type="submit" disabled={billingSaving}>
-                      {billingSaving ? "" : "Save billing details"}
+                      {billingSaving ? "" : t("Save billing details", "حفظ بيانات الفوترة")}
                     </button>
                   </div>
                 </form>
@@ -1180,8 +1204,8 @@ export default function Account() {
               <div className="acct-section">
                 <div className="acct-section__head">
                   <div>
-                    <h2 className="acct-section__title acct-section__sub-title">Billing history</h2>
-                    <p className="acct-section__desc">Every order and its invoice, in one place.</p>
+                    <h2 className="acct-section__title acct-section__sub-title">{t("Billing history", "سجل الفواتير")}</h2>
+                    <p className="acct-section__desc">{t("Every order and its invoice, in one place.", "كل طلب وفاتورته، في مكان واحد.")}</p>
                   </div>
                 </div>
 
@@ -1205,10 +1229,10 @@ export default function Account() {
                         <path d="M15 14h10M15 20h10M15 26h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                       </svg>
                     </span>
-                    <h3 className="acct-empty__title">No invoices yet</h3>
-                    <p className="acct-empty__sub">Your invoices appear here the moment your first order is placed.</p>
+                    <h3 className="acct-empty__title">{t("No invoices yet", "لا توجد فواتير بعد")}</h3>
+                    <p className="acct-empty__sub">{t("Your invoices appear here the moment your first order is placed.", "تظهر فواتيرك هنا بمجرد وضع طلبك الأول.")}</p>
                     <div className="acct-empty__actions">
-                      <Link className="btn btn--primary" to="/shop/perfumes">Start shopping</Link>
+                      <Link className="btn btn--primary" to="/shop/perfumes">{t("Start shopping", "ابدأ التسوق")}</Link>
                     </div>
                   </div>
                 ) : (
@@ -1216,13 +1240,13 @@ export default function Account() {
                     <table className="bill-table">
                       <thead>
                         <tr>
-                          <th>Invoice</th>
-                          <th>Date</th>
-                          <th className="bill-table__num">Items</th>
-                          <th>Method</th>
-                          <th>Status</th>
-                          <th className="bill-table__num">Amount</th>
-                          <th aria-label="Actions" />
+                          <th>{t("Invoice", "الفاتورة")}</th>
+                          <th>{t("Date", "التاريخ")}</th>
+                          <th className="bill-table__num">{t("Items", "المنتجات")}</th>
+                          <th>{t("Method", "الطريقة")}</th>
+                          <th>{t("Status", "الحالة")}</th>
+                          <th className="bill-table__num">{t("Amount", "المبلغ")}</th>
+                          <th aria-label={t("Actions", "إجراءات")} />
                         </tr>
                       </thead>
                       <tbody>
@@ -1247,15 +1271,15 @@ export default function Account() {
                   <p className="acct-idcard__name">{profileForm.full_name || user.email?.split("@")[0]}</p>
                   <p className="acct-idcard__email">{user.email}</p>
                 </div>
-                {memberSince && <span className="acct-idcard__since">Since {memberSince}</span>}
+                {memberSince && <span className="acct-idcard__since">{t(`Since ${memberSince}`, `منذ ${memberSince}`)}</span>}
               </div>
 
               {/* Personal info */}
               <div className="acct-section">
                 <div className="acct-section__head">
                   <div>
-                    <h2 className="acct-section__title acct-section__sub-title">Personal information</h2>
-                    <p className="acct-section__desc">How we address you, and where to reach you about an order.</p>
+                    <h2 className="acct-section__title acct-section__sub-title">{t("Personal information", "المعلومات الشخصية")}</h2>
+                    <p className="acct-section__desc">{t("How we address you, and where to reach you about an order.", "كيف نخاطبك، وكيف نتواصل معك بخصوص طلب ما.")}</p>
                   </div>
                 </div>
                 <form
@@ -1266,18 +1290,18 @@ export default function Account() {
                   <div className="panel__body">
                     <div className="form-grid">
                   <div className="field">
-                    <label className="field__label" htmlFor="pf-name">Full name</label>
+                    <label className="field__label" htmlFor="pf-name">{t("Full name", "الاسم الكامل")}</label>
                     <input
                       id="pf-name"
                       className="input"
                       value={profileForm.full_name}
                       onChange={(e) => setProfileForm((f) => ({ ...f, full_name: e.target.value }))}
                       autoComplete="name"
-                      placeholder="Your name"
+                      placeholder={t("Your name", "اسمك")}
                     />
                   </div>
                   <div className="field">
-                    <label className="field__label" htmlFor="pf-gender">Gender</label>
+                    <label className="field__label" htmlFor="pf-gender">{t("Gender", "الجنس")}</label>
                     <div className="select-field">
                       <select
                         id="pf-gender"
@@ -1285,15 +1309,15 @@ export default function Account() {
                         value={profileForm.gender}
                         onChange={(e) => setProfileForm((f) => ({ ...f, gender: e.target.value }))}
                       >
-                        <option value="">Select</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
+                        <option value="">{t("Select", "اختر")}</option>
+                        <option value="male">{t("Male", "ذكر")}</option>
+                        <option value="female">{t("Female", "أنثى")}</option>
                       </select>
                       <svg className="select-field__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
                     </div>
                   </div>
                   <div className="field">
-                    <label className="field__label" htmlFor="pf-dob">Date of birth</label>
+                    <label className="field__label" htmlFor="pf-dob">{t("Date of birth", "تاريخ الميلاد")}</label>
                     <input
                       id="pf-dob"
                       className="input"
@@ -1310,7 +1334,7 @@ export default function Account() {
                       type="submit"
                       disabled={profileSaving}
                     >
-                      {profileSaving ? "" : "Save changes"}
+                      {profileSaving ? "" : t("Save changes", "حفظ التغييرات")}
                     </button>
                   </div>
                 </form>
@@ -1327,12 +1351,12 @@ export default function Account() {
               <div className="acct-section">
                 <div className="acct-section__head">
                   <div>
-                    <h2 className="acct-section__title">Addresses</h2>
-                    <p className="acct-section__desc">Save where you want your fragrances delivered. Your default is used first at checkout.</p>
+                    <h2 className="acct-section__title">{t("Addresses", "العناوين")}</h2>
+                    <p className="acct-section__desc">{t("Save where you want your fragrances delivered. Your default is used first at checkout.", "احفظ أين تريد توصيل عطورك. عنوانك الافتراضي يُستخدم أولًا عند الدفع.")}</p>
                   </div>
                   {addresses.length > 0 && (
                     <button className="btn btn--secondary" type="button" onClick={() => setAddrFormOpen(true)}>
-                      Add address
+                      {t("Add address", "إضافة عنوان")}
                     </button>
                   )}
                 </div>
@@ -1357,15 +1381,17 @@ export default function Account() {
                         <circle cx="18" cy="14" r="4" stroke="currentColor" strokeWidth="1.5" />
                       </svg>
                     </span>
-                    <h3 className="acct-empty__title">No addresses saved</h3>
-                    <p className="acct-empty__sub">Add a delivery address once and checkout becomes a single tap — pin it on the map or detect it automatically.</p>
+                    <h3 className="acct-empty__title">{t("No addresses saved", "لا توجد عناوين محفوظة")}</h3>
+                    <p className="acct-empty__sub">{t("Add a delivery address once and checkout becomes a single tap — pin it on the map or detect it automatically.", "أضف عنوان توصيل مرة واحدة ليصبح الدفع بضغطة واحدة — حدده على الخريطة أو اكتشفه تلقائيًا.")}</p>
                     <div className="acct-empty__actions">
-                      <button className="btn btn--primary" type="button" onClick={() => setAddrFormOpen(true)}>Add address</button>
+                      <button className="btn btn--primary" type="button" onClick={() => setAddrFormOpen(true)}>{t("Add address", "إضافة عنوان")}</button>
                     </div>
                   </div>
                 ) : (
                   <div className="addr-cards">
-                    {addresses.map((addr) => (
+                    {addresses.map((addr) => {
+                      const govMeta = GOVERNORATES.find((g) => g.slug === addr.governorate);
+                      return (
                       <div key={addr.id} className={`addr${addr.is_default ? " addr--default" : ""}`}>
                         {addr.latitude != null && addr.longitude != null ? (
                           <div className="addr__map"><AddrCardMap lat={addr.latitude} lon={addr.longitude} /></div>
@@ -1376,12 +1402,12 @@ export default function Account() {
                         )}
                         <div className="addr__content">
                           <div className="addr__head">
-                            <span className="addr__label">{addr.label || "Address"}</span>
-                            {addr.is_default && <span className="acct-badge">Default</span>}
+                            <span className="addr__label">{addr.label || t("Address", "العنوان")}</span>
+                            {addr.is_default && <span className="acct-badge">{t("Default", "افتراضي")}</span>}
                           </div>
                           <div className="addr__lines">
                             {addr.governorate && (
-                              <span>{addr.governorate.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}</span>
+                              <span>{govMeta ? t(govMeta.en, govMeta.ar) : addr.governorate.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}</span>
                             )}
                             {addr.street && <span>{addr.street}</span>}
                             {addr.phone && <span className="addr__phone">{addr.phone}</span>}
@@ -1389,16 +1415,16 @@ export default function Account() {
                           <div className="addr__actions">
                             {!addr.is_default && (
                               <button className="acct-link-btn" type="button" onClick={() => makeDefault(addr.id)}>
-                                Set default
+                                {t("Set default", "تعيين كافتراضي")}
                               </button>
                             )}
                             <span className="addr__spacer" />
-                            <button className="acct-icon-btn" type="button" onClick={() => openEditAddr(addr)} aria-label="Edit address">
+                            <button className="acct-icon-btn" type="button" onClick={() => openEditAddr(addr)} aria-label={t("Edit address", "تعديل العنوان")}>
                               <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
                                 <path d="M14.5 2.5a2 2 0 0 1 2.83 2.83L7 15.67 3 17l1.33-4L14.5 2.5z" strokeLinejoin="round" />
                               </svg>
                             </button>
-                            <button className="acct-icon-btn acct-icon-btn--danger" type="button" onClick={() => { if (confirm("Delete this address?")) removeAddress(addr.id); }} aria-label="Delete address">
+                            <button className="acct-icon-btn acct-icon-btn--danger" type="button" onClick={() => { if (confirm(t("Delete this address?", "هل تريد حذف هذا العنوان؟"))) removeAddress(addr.id); }} aria-label={t("Delete address", "حذف العنوان")}>
                               <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
                                 <path d="M3 5h14M8 5V3h4v2M6 5l1 12h6l1-12" strokeLinecap="round" strokeLinejoin="round" />
                               </svg>
@@ -1406,7 +1432,8 @@ export default function Account() {
                           </div>
                         </div>
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
 
@@ -1420,10 +1447,10 @@ export default function Account() {
                 <div className="pw-modal__card addr-modal__card">
                   <div className="addr-modal__head">
                     <div>
-                      <h2 className="pw-modal__title" id="addr-modal-title">{editingAddrId ? "Edit address" : "New address"}</h2>
-                      <p className="pw-modal__sub">Search a place, drop a pin on the map, or detect your location.</p>
+                      <h2 className="pw-modal__title" id="addr-modal-title">{editingAddrId ? t("Edit address", "تعديل العنوان") : t("New address", "عنوان جديد")}</h2>
+                      <p className="pw-modal__sub">{t("Search a place, drop a pin on the map, or detect your location.", "ابحث عن مكان، أو حدد نقطة على الخريطة، أو اكتشف موقعك.")}</p>
                     </div>
-                    <button className="acct-icon-btn" type="button" onClick={closeAddrForm} aria-label="Close">
+                    <button className="acct-icon-btn" type="button" onClick={closeAddrForm} aria-label={t("Close", "إغلاق")}>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ width: "1.1rem", height: "1.1rem" }}><path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" /></svg>
                     </button>
                   </div>
@@ -1431,17 +1458,17 @@ export default function Account() {
                     <div className="addr-modal__scroll">
                     <div className="form-grid">
                     <div className="field">
-                      <label className="field__label" htmlFor="af-label">Label</label>
+                      <label className="field__label" htmlFor="af-label">{t("Label", "التسمية")}</label>
                       <input
                         id="af-label"
                         className="input"
                         value={addrForm.label}
                         onChange={(e) => setAddrForm((f) => ({ ...f, label: e.target.value }))}
-                        placeholder="Home, Work, Parents…"
+                        placeholder={t("Home, Work, Parents…", "المنزل، العمل، بيت الأهل…")}
                       />
                     </div>
                     <div className="field">
-                      <label className="field__label" htmlFor="af-phone">Phone (optional)</label>
+                      <label className="field__label" htmlFor="af-phone">{t("Phone (optional)", "الهاتف (اختياري)")}</label>
                       <input
                         id="af-phone"
                         className="input"
@@ -1454,7 +1481,7 @@ export default function Account() {
                     </div>
                     <div className="field">
                       <label className="field__label" htmlFor="af-gov">
-                        Governorate <span className="field__req">*</span>
+                        {t("Governorate", "المحافظة")} <span className="field__req">*</span>
                       </label>
                       <div className="select-field">
                         <select
@@ -1464,9 +1491,9 @@ export default function Account() {
                           onChange={(e) => setAddrForm((f) => ({ ...f, governorate: e.target.value }))}
                           required
                         >
-                          <option value="">Select governorate</option>
+                          <option value="">{t("Select governorate", "اختر المحافظة")}</option>
                           {GOVERNORATES.map((g) => (
-                            <option key={g} value={g.toLowerCase().replace(/\s+/g, "-")}>{g}</option>
+                            <option key={g.slug} value={g.slug}>{t(g.en, g.ar)}</option>
                           ))}
                         </select>
                         <svg className="select-field__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
@@ -1474,14 +1501,14 @@ export default function Account() {
                     </div>
                     <div className="field field--full">
                       <label className="field__label" htmlFor="af-street">
-                        Street address <span className="field__req">*</span>
+                        {t("Street address", "عنوان الشارع")} <span className="field__req">*</span>
                       </label>
                       <input
                         id="af-street"
                         className="input"
                         value={addrForm.street}
                         onChange={(e) => setAddrForm((f) => ({ ...f, street: e.target.value }))}
-                        placeholder="Street, building, floor…"
+                        placeholder={t("Street, building, floor…", "الشارع، المبنى، الطابق…")}
                         required
                       />
                     </div>
@@ -1490,20 +1517,20 @@ export default function Account() {
                       <div className="locpick__panel">
                         <p className="locpick__title">
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" /></svg>
-                          Search any location
+                          {t("Search any location", "ابحث عن أي موقع")}
                         </p>
-                        <p className="locpick__hint">Type a landmark, street, or area</p>
+                        <p className="locpick__hint">{t("Type a landmark, street, or area", "اكتب معلمًا، شارعًا، أو منطقة")}</p>
                         <input
                           id="loc-search"
                           className="input"
                           type="search"
                           value={locSearch}
                           onChange={(e) => searchLocation(e.target.value)}
-                          placeholder="e.g. Cairo Tower, Maadi, Heliopolis…"
+                          placeholder={t("e.g. Cairo Tower, Maadi, Heliopolis…", "مثال: برج القاهرة، المعادي، مصر الجديدة…")}
                           autoComplete="off"
                         />
                         {locSearching && (
-                          <p style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginBlockStart: "var(--sp-1)" }}>Searching…</p>
+                          <p style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginBlockStart: "var(--sp-1)" }}>{t("Searching…", "جارٍ البحث…")}</p>
                         )}
                         {locResults.length > 0 && (
                           <ul className="loc-results">
@@ -1518,13 +1545,13 @@ export default function Account() {
                           </ul>
                         )}
                       </div>
-                      <div className="locpick__or"><span>or</span></div>
+                      <div className="locpick__or"><span>{t("or", "أو")}</span></div>
                       <div className="locpick__panel">
                         <p className="locpick__title">
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3" /><path d="M12 2v3m0 14v3M2 12h3m14 0h3" /><circle cx="12" cy="12" r="9" strokeDasharray="2 4" /></svg>
-                          Use my current location
+                          {t("Use my current location", "استخدم موقعي الحالي")}
                         </p>
-                        <p className="locpick__hint">Let the browser detect where you are</p>
+                        <p className="locpick__hint">{t("Let the browser detect where you are", "دع المتصفح يكتشف مكانك")}</p>
                         <button
                           type="button"
                           className={`btn btn--ghost locate-btn${gpsLoading ? " is-loading" : ""}`}
@@ -1532,13 +1559,13 @@ export default function Account() {
                           disabled={gpsLoading}
                         >
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3" /><path d="M12 2v3m0 14v3M2 12h3m14 0h3" /><circle cx="12" cy="12" r="9" strokeDasharray="2 4" /></svg>
-                          {gpsLoading ? "Detecting…" : "Detect my location"}
+                          {gpsLoading ? t("Detecting…", "جارٍ الاكتشاف…") : t("Detect my location", "اكتشف موقعي")}
                         </button>
                         {gpsCoords && (
                           <div className="gps-pin">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z" /><circle cx="12" cy="10" r="3" /></svg>
                             <span>{gpsCoords.lat.toFixed(6)}°, {gpsCoords.lon.toFixed(6)}°</span>
-                            <a className="gps-pin__link" href={`https://www.openstreetmap.org/?mlat=${gpsCoords.lat}&mlon=${gpsCoords.lon}&zoom=16`} target="_blank" rel="noopener noreferrer">View on map</a>
+                            <a className="gps-pin__link" href={`https://www.openstreetmap.org/?mlat=${gpsCoords.lat}&mlon=${gpsCoords.lon}&zoom=16`} target="_blank" rel="noopener noreferrer">{t("View on map", "عرض على الخريطة")}</a>
                           </div>
                         )}
                       </div>
@@ -1557,21 +1584,21 @@ export default function Account() {
                           checked={addrForm.is_default}
                           onChange={(e) => setAddrForm((f) => ({ ...f, is_default: e.target.checked }))}
                         />
-                        Set as default delivery address
+                        {t("Set as default delivery address", "تعيين كعنوان التوصيل الافتراضي")}
                       </label>
                     </div>
                     </div>
                     </div>
                     <div className="addr-modal__foot">
                       <button className="btn btn--secondary" type="button" onClick={closeAddrForm}>
-                        Cancel
+                        {t("Cancel", "إلغاء")}
                       </button>
                       <button
                         className={`btn btn--primary${addrSaving ? " is-loading" : ""}`}
                         type="submit"
                         disabled={addrSaving}
                       >
-                        {addrSaving ? "" : editingAddrId ? "Update address" : "Save address"}
+                        {addrSaving ? "" : editingAddrId ? t("Update address", "تحديث العنوان") : t("Save address", "حفظ العنوان")}
                       </button>
                     </div>
                   </form>
@@ -1587,11 +1614,11 @@ export default function Account() {
               <div className="acct-section">
                 <div className="acct-section__head">
                   <div>
-                    <h2 className="acct-section__title">Wishlist</h2>
-                    <p className="acct-section__desc">The fragrances you&apos;ve saved to revisit — your personal collection.</p>
+                    <h2 className="acct-section__title">{t("Wishlist", "المفضلة")}</h2>
+                    <p className="acct-section__desc">{t("The fragrances you've saved to revisit — your personal collection.", "العطور التي حفظتها للرجوع إليها — مجموعتك الخاصة.")}</p>
                   </div>
                   {wishlistLoaded && wishlistItems.length > 0 && (
-                    <span className="dash-panel__count">{wishlistItems.length} saved</span>
+                    <span className="dash-panel__count">{t(`${wishlistItems.length} saved`, `${wishlistItems.length} محفوظ`)}</span>
                   )}
                 </div>
 
@@ -1616,27 +1643,26 @@ export default function Account() {
                         />
                       </svg>
                     </span>
-                    <h3 className="wl-empty__title">Your collection awaits</h3>
+                    <h3 className="wl-empty__title">{t("Your collection awaits", "مجموعتك في انتظارك")}</h3>
                     <p className="wl-empty__sub">
-                      Every TIBR fragrance carries a story. Save the ones that move you,
-                      and they&apos;ll be waiting here — ready whenever you are.
+                      {t("Every TIBR fragrance carries a story. Save the ones that move you, and they'll be waiting here — ready whenever you are.", "كل عطر من تِبْر يحمل قصة. احفظ ما يلامس مشاعرك، وسيكون في انتظارك هنا — جاهزًا وقتما تشاء.")}
                     </p>
                     <div className="wl-empty__actions">
                       <Link className="btn btn--primary" to="/shop/perfumes">
-                        Explore fragrances
+                        {t("Explore fragrances", "استكشف العطور")}
                       </Link>
                       <Link className="btn btn--secondary" to="/">
-                        Discover the house
+                        {t("Discover the house", "اكتشف البيت")}
                       </Link>
                     </div>
                   </div>
 
                   {(recoLoading || recoProducts.length > 0) && (
-                    <section className="wl-reco" aria-label="Recommended fragrances">
+                    <section className="wl-reco" aria-label={t("Recommended fragrances", "عطور مقترحة")}>
                       <div className="wl-reco__head">
-                        <h4 className="wl-reco__title">You might fall for</h4>
+                        <h4 className="wl-reco__title">{t("You might fall for", "قد يعجبك")}</h4>
                         <Link className="wl-reco__link" to="/shop/perfumes">
-                          Browse all
+                          {t("Browse all", "تصفح الكل")}
                           <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
                             <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                           </svg>
@@ -1681,7 +1707,7 @@ export default function Account() {
         className={`inv-modal-backdrop${invoiceOrder ? " is-open" : ""}`}
         role="dialog"
         aria-modal="true"
-        aria-label="Invoice"
+        aria-label={t("Invoice", "الفاتورة")}
         onClick={(e) => { if (e.target === e.currentTarget) setInvoiceOrder(null); }}
       >
         <div className="inv-modal__card">
@@ -1691,9 +1717,9 @@ export default function Account() {
                 <path d="M5 8V3h10v5M5 14H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-1" strokeLinejoin="round" />
                 <path d="M5 12h10v5H5z" strokeLinejoin="round" />
               </svg>
-              Print / Save PDF
+              {t("Print / Save PDF", "طباعة / حفظ PDF")}
             </button>
-            <button className="btn btn--ghost" type="button" onClick={() => setInvoiceOrder(null)} aria-label="Close">
+            <button className="btn btn--ghost" type="button" onClick={() => setInvoiceOrder(null)} aria-label={t("Close", "إغلاق")}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ width: "1.2rem", height: "1.2rem" }}><path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" /></svg>
             </button>
           </div>

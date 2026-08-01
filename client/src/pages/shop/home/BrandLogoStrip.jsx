@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useT } from "@/stores/lang";
 
 // Real brands TIBR carries. No logo image assets yet — styled wordmarks for
 // now; drop a `logo` (image path) into any entry below to swap in a real
@@ -13,9 +14,10 @@ const BRANDS = [
 ];
 
 export default function BrandLogoStrip() {
+  const t = useT();
   return (
-    <section className="brand-strip-container" aria-label="Brands we carry">
-      <h2 className="brand-strip__header">Famous brands</h2>
+    <section className="brand-strip-container" aria-label={t("Brands we carry", "الماركات لدينا")}>
+      <h2 className="brand-strip__header">{t("Famous brands", "ماركات عالمية")}</h2>
       <div className="brand-strip">
         {BRANDS.map((b) => (
           <Link

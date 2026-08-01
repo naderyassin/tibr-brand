@@ -1,9 +1,11 @@
 import { createContext, useContext, useCallback, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useLang } from "@/stores/lang";
 
 const ToastCtx = createContext(null);
 
 export function ToastProvider({ children }) {
+  const dir = useLang((s) => s.dir);
   const [msg, setMsg] = useState(null);
   const timerRef = useRef(null);
 
@@ -20,6 +22,7 @@ export function ToastProvider({ children }) {
         {msg && (
           <motion.div
             className="store-toast is-open"
+            dir={dir}
             role="status"
             aria-live="polite"
             initial={{ opacity: 0, y: 60 }}

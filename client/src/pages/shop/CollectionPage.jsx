@@ -6,6 +6,7 @@ import { getProducts, getFacets } from "@/lib/api";
 import ProductCard from "@/components/catalog/ProductCard";
 import { ROUTE_PRESETS, FILTER_GROUPS, SORT_OPTIONS } from "@/lib/shopNav";
 import { label } from "@/lib/taxonomy";
+import { useLang, useT } from "@/stores/lang";
 
 function SkeletonCard() {
   return (
@@ -48,6 +49,8 @@ function getPageNumbers(currentPage, totalPages) {
  * component and no nav-specific column behind any of it.
  */
 export default function CollectionPage() {
+  const t = useT();
+  const lang = useLang((s) => s.lang);
   const [params, setParams] = useSearchParams();
   const { pathname } = useLocation();
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -63,7 +66,7 @@ export default function CollectionPage() {
     }));
   };
 
-  const preset = ROUTE_PRESETS[pathname] || { title: "Shop", filters: {} };
+  const preset = ROUTE_PRESETS[pathname] || { title: "Shop", title_ar: "المتجر", filters: {} };
 
   // Preset first, URL second — so /shop/men?line=inspired narrows within Men.
   const filters = useMemo(() => {
@@ -170,16 +173,16 @@ export default function CollectionPage() {
       if (!value) continue;
       if (key === "brand") {
         const b = (facets.brand || []).find((x) => x.slug === value);
-        chips.push({ key, label: b?.name_en || value });
+        chips.push({ key, label: (lang === "ar" ? b?.name_ar : b?.name_en) || b?.name_en || value });
       } else if (key === "q") {
         chips.push({ key, label: `“${value}”` });
       } else {
         const group = FILTER_GROUPS.find((g) => g.key === key);
-        chips.push({ key, label: group ? label(group.vocab, value) : value });
+        chips.push({ key, label: group ? label(group.vocab, value, lang) : value });
       }
     }
     return chips;
-  }, [params, facets]);
+  }, [params, facets, lang]);
 
   const removeFilter = (key) => {
     const next = new URLSearchParams(params);
@@ -198,36 +201,37 @@ export default function CollectionPage() {
     const brandSlug = params.get("brand");
     if (brandSlug) {
       const b = (facets.brand || []).find((x) => x.slug === brandSlug);
-      return b ? b.name_en : brandSlug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+      if (b) return (lang === "ar" ? b.name_ar : b.name_en) || b.name_en;
+      return brandSlug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
     }
 
     const audience = params.get("audience");
-    if (audience === "men") return "Men Fragrances";
-    if (audience === "women") return "Women Fragrances";
-    if (audience === "unisex") return "Unisex Fragrances";
+    if (audience === "men") return t("Men Fragrances", "عطور رجالي");
+    if (audience === "women") return t("Women Fragrances", "عطور نسائي");
+    if (audience === "unisex") return t("Unisex Fragrances", "عطور للجنسين");
 
     const classification = params.get("classification");
-    if (classification === "arabian") return "Gulf Fragrances";
+    if (classification === "arabian") return t("Gulf Fragrances", "عطور خليجية");
 
     for (const group of FILTER_GROUPS) {
       const val = params.get(group.key);
       if (val) {
-        return label(group.vocab, val);
+        return label(group.vocab, val, lang);
       }
     }
 
     const q = params.get("q");
-    if (q) return `Search: “${q}”`;
+    if (q) return t(`Search: “${q}”`, `بحث: "${q}"`);
 
-    return preset.title;
-  }, [preset, params, facets]);
+    return t(preset.title, preset.title_ar);
+  }, [preset, params, facets, lang, t]);
 
   return (
     <div className="store-container collection">
-      <nav className="breadcrumb" aria-label="Breadcrumb">
-        <Link to="/">Home</Link>
+      <nav className="breadcrumb" aria-label={t("Breadcrumb", "مسار التنقل")}>
+        <Link to="/">{t("Home", "الرئيسية")}</Link>
         <span className="breadcrumb__sep" aria-hidden="true">/</span>
-        <span aria-current="page">{preset.title.split(" —")[0]}</span>
+        <span aria-current="page">{t(preset.title, preset.title_ar)}</span>
       </nav>
 
       <header className="shop-header">
@@ -245,11 +249,14 @@ export default function CollectionPage() {
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
             <path d="M3 6h18M6 12h12M10 18h4" />
           </svg>
-          <span>Filter{activeCount > 0 ? ` (${activeCount})` : ""}</span>
+          <span>{t("Filter", "تصفية")}{activeCount > 0 ? ` (${activeCount})` : ""}</span>
         </button>
 
         <span className="collection-toolbar__count" role="status">
-          {isLoading ? "…" : `${displayedProducts.length} product${displayedProducts.length === 1 ? "" : "s"}`}
+          {isLoading ? "…" : t(
+            `${displayedProducts.length} product${displayedProducts.length === 1 ? "" : "s"}`,
+            `${displayedProducts.length} منتج`
+          )}
         </span>
 
         {activeChips.length > 0 && (
@@ -260,12 +267,12 @@ export default function CollectionPage() {
                 <span className="chip__x" aria-hidden="true">×</span>
               </button>
             ))}
-            <button type="button" className="chip chip--clear" onClick={clearAll}>Clear all</button>
+            <button type="button" className="chip chip--clear" onClick={clearAll}>{t("Clear all", "مسح الكل")}</button>
           </div>
         )}
 
         <div className="collection-toolbar__sort">
-          <label htmlFor="sort-select" className="sort-label">Sort by:</label>
+          <label htmlFor="sort-select" className="sort-label">{t("Sort by:", "ترتيب حسب:")}</label>
           <select
             id="sort-select"
             className="sort__select"
@@ -275,57 +282,60 @@ export default function CollectionPage() {
               next.set("sort", e.target.value);
               setParams(next, { replace: true });
             }}
-            aria-label="Sort"
+            aria-label={t("Sort", "ترتيب")}
           >
-            {SORT_OPTIONS.map((s) => <option key={s.slug} value={s.slug}>{s.label}</option>)}
+            {SORT_OPTIONS.map((s) => <option key={s.slug} value={s.slug}>{t(s.label, s.label_ar)}</option>)}
           </select>
         </div>
       </div>
 
       <div className={`filter-drawer${filtersOpen ? " is-open" : ""}`}>
         <div className="filter-drawer__scrim" onClick={() => setFiltersOpen(false)} aria-hidden="true" />
-        <aside className="filter-drawer__panel" role="dialog" aria-modal="true" aria-label="Filters">
+        <aside className="filter-drawer__panel" role="dialog" aria-modal="true" aria-label={t("Filters", "التصفية")}>
           <div className="filter-drawer__head">
-            <h2 className="filter-drawer__title">Filters</h2>
+            <h2 className="filter-drawer__title">{t("Filters", "التصفية")}</h2>
             <button
               type="button"
               className="filter-drawer__close"
               onClick={() => setFiltersOpen(false)}
-              aria-label="Close filters"
+              aria-label={t("Close filters", "إغلاق التصفية")}
             >
               ×
             </button>
           </div>
 
           <div className="filter-drawer__scroll" data-lenis-prevent>
-          <div className="filter-rail" aria-label="Filters">
+          <div className="filter-rail" aria-label={t("Filters", "التصفية")}>
           <div className="avail">
-            <span className="avail__label">Availability</span>
+            <span className="avail__label">{t("Availability", "التوفر")}</span>
             <button
               type="button"
               className={`toggle${availabilityOnly ? " is-on" : ""}`}
               onClick={() => setAvailabilityOnly(!availabilityOnly)}
               role="switch"
               aria-checked={availabilityOnly}
-              aria-label="Availability"
+              aria-label={t("Availability", "التوفر")}
             >
               <span className="toggle__handle" />
             </button>
           </div>
 
           <div className="filter-head">
-            <h2 className="filter-head__title">Filter:</h2>
+            <h2 className="filter-head__title">{t("Filter:", "تصفية:")}</h2>
             {activeCount > 0 && (
               <button type="button" className="filter-head__clear" onClick={clearAll}>
-                Clear ({activeCount})
+                {t(`Clear (${activeCount})`, `مسح (${activeCount})`)}
               </button>
             )}
           </div>
           <p className="count">
-            {isLoading ? "…" : `${displayedProducts.length} product${displayedProducts.length === 1 ? "" : "s"}`}
+            {isLoading ? "…" : t(
+              `${displayedProducts.length} product${displayedProducts.length === 1 ? "" : "s"}`,
+              `${displayedProducts.length} منتج`
+            )}
           </p>
 
-          <h3 className="price-title">Filter by price</h3>
+          <h3 className="price-title">{t("Filter by price", "التصفية حسب السعر")}</h3>
           <div className="slider">
             <div className="slider__rail" />
             <div
@@ -341,7 +351,7 @@ export default function CollectionPage() {
               max={priceBounds.max}
               value={minPrice}
               onChange={(e) => setMinPrice(Math.min(Number(e.target.value), maxPrice))}
-              aria-label="Minimum price"
+              aria-label={t("Minimum price", "الحد الأدنى للسعر")}
             />
             <input
               type="range"
@@ -349,7 +359,7 @@ export default function CollectionPage() {
               max={priceBounds.max}
               value={maxPrice}
               onChange={(e) => setMaxPrice(Math.max(Number(e.target.value), minPrice))}
-              aria-label="Maximum price"
+              aria-label={t("Maximum price", "الحد الأقصى للسعر")}
             />
           </div>
           <div className="price-inputs">
@@ -361,10 +371,10 @@ export default function CollectionPage() {
                 min={priceBounds.min}
                 max={maxPrice}
                 onChange={(e) => setMinPrice(Math.min(Number(e.target.value), maxPrice))}
-                aria-label="Min price value"
+                aria-label={t("Min price value", "الحد الأدنى للسعر")}
               />
             </div>
-            <span className="price-to">to</span>
+            <span className="price-to">{t("to", "إلى")}</span>
             <div className="price-box">
               <span className="price-box__cur">ج.م</span>
               <input
@@ -373,7 +383,7 @@ export default function CollectionPage() {
                 min={minPrice}
                 max={priceBounds.max}
                 onChange={(e) => setMaxPrice(Math.max(Number(e.target.value), minPrice))}
-                aria-label="Max price value"
+                aria-label={t("Max price value", "الحد الأقصى للسعر")}
               />
             </div>
           </div>
@@ -390,7 +400,7 @@ export default function CollectionPage() {
                     onClick={() => toggleGroup(group.key)}
                     aria-expanded={isOpen}
                   >
-                    <span>{group.label}</span>
+                    <span>{t(group.label, group.label_ar)}</span>
                     <span className="facet__chev" aria-hidden="true" />
                   </button>
                   <div className="facet__panel">
@@ -408,7 +418,7 @@ export default function CollectionPage() {
                               >
                                 <span className="opt__left">
                                   <span className={`opt__box${on ? " is-checked" : ""}`} />
-                                  <span>{label(group.vocab, v.slug)}</span>
+                                  <span>{label(group.vocab, v.slug, lang)}</span>
                                 </span>
                                 <span className="opt__count">{counts[v.slug] || 0}</span>
                               </button>
@@ -430,7 +440,7 @@ export default function CollectionPage() {
                   onClick={() => toggleGroup("brand")}
                   aria-expanded={!!expandedGroups.brand}
                 >
-                  <span>Brand</span>
+                  <span>{t("Brand", "الماركة")}</span>
                   <span className="facet__chev" aria-hidden="true" />
                 </button>
                 <div className="facet__panel">
@@ -448,7 +458,7 @@ export default function CollectionPage() {
                             >
                               <span className="opt__left">
                                 <span className={`opt__box${on ? " is-checked" : ""}`} />
-                                <span>{b.name_en}</span>
+                                <span>{(lang === "ar" ? b.name_ar : b.name_en) || b.name_en}</span>
                               </span>
                               <span className="opt__count">{b.count || 0}</span>
                             </button>
@@ -469,7 +479,10 @@ export default function CollectionPage() {
               className="filter-drawer__apply"
               onClick={() => setFiltersOpen(false)}
             >
-              {isLoading ? "View results" : `View ${displayedProducts.length} result${displayedProducts.length === 1 ? "" : "s"}`}
+              {isLoading ? t("View results", "عرض النتائج") : t(
+                `View ${displayedProducts.length} result${displayedProducts.length === 1 ? "" : "s"}`,
+                `عرض ${displayedProducts.length} نتيجة`
+              )}
             </button>
           </div>
         </aside>
@@ -488,28 +501,28 @@ export default function CollectionPage() {
                 <path d="M21 21l-4.3-4.3" />
                 <path d="M3 3l18 18" />
               </svg>
-              <h2 className="catalog-empty__title">Nothing matches those filters</h2>
-              <p className="catalog-empty__text">Try removing one, or clear them all.</p>
+              <h2 className="catalog-empty__title">{t("Nothing matches those filters", "لا يوجد ما يطابق هذه التصفية")}</h2>
+              <p className="catalog-empty__text">{t("Try removing one, or clear them all.", "جرّب إزالة أحدها، أو امسحها كلها.")}</p>
               {activeCount > 0 && (
-                <button type="button" className="btn btn--outline" onClick={clearAll}>Clear filters</button>
+                <button type="button" className="btn btn--outline" onClick={clearAll}>{t("Clear filters", "مسح التصفية")}</button>
               )}
             </motion.div>
           ) : (
             <>
-              <section className="catalog-grid" id="product-grid" aria-label={`${preset.title} list`}>
+              <section className="catalog-grid" id="product-grid" aria-label={t(`${preset.title} list`, `قائمة ${preset.title_ar}`)}>
                 {paginatedProducts.map((p, i) => (
                   <ProductCard key={p.id} product={p} index={i} />
                 ))}
               </section>
 
               {totalPages > 1 && (
-                <nav className="catalog-pagination" aria-label="Pagination">
+                <nav className="catalog-pagination" aria-label={t("Pagination", "ترقيم الصفحات")}>
                   <button
                     type="button"
                     className="pagination__btn pagination__prev"
                     disabled={page <= 1}
                     onClick={() => handlePageChange(page - 1)}
-                    aria-label="Previous page"
+                    aria-label={t("Previous page", "الصفحة السابقة")}
                   >
                     ‹
                   </button>
@@ -540,7 +553,7 @@ export default function CollectionPage() {
                     className="pagination__btn pagination__next"
                     disabled={page >= totalPages}
                     onClick={() => handlePageChange(page + 1)}
-                    aria-label="Next page"
+                    aria-label={t("Next page", "الصفحة التالية")}
                   >
                     ›
                   </button>

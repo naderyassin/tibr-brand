@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { SHOP_NAV } from "@/lib/shopNav";
 import { useAuth } from "@/stores/auth";
+import { useLang, useT } from "@/stores/lang";
 import { getProfile } from "@/lib/api";
 
 const CloseIcon = () => (
@@ -18,16 +19,17 @@ const WhatsAppIcon = () => (
 );
 
 const BASE_NAV_LINKS = [
-  ...SHOP_NAV.map((tab) => ({ to: tab.path, label: tab.label.split(" —")[0] })),
-  { to: "/about", label: "About" },
-  { to: "/account?tab=wishlist", label: "Wishlist" },
-  { to: "/account", label: "Account" },
+  ...SHOP_NAV.map((tab) => ({ to: tab.path, label: tab.label, label_ar: tab.label_ar })),
+  { to: "/about", label: "About", label_ar: "من نحن" },
+  { to: "/account?tab=wishlist", label: "Wishlist", label_ar: "المفضلة" },
+  { to: "/account", label: "Account", label_ar: "حسابي" },
 ];
 
 export default function MobileDrawer({ open, onClose }) {
-  // The drawer anchors at inset-inline-end: in RTL (the default) that's the
-  // LEFT edge, so its off-screen position flips sign with the direction.
-  const isRtl = typeof document !== "undefined" && document.documentElement.dir === "rtl";
+  const t = useT();
+  // The drawer anchors at inset-inline-end: in RTL that's the LEFT edge, so
+  // its off-screen position flips sign with the direction.
+  const isRtl = useLang((s) => s.dir === "rtl");
   const offscreenX = isRtl ? "-100%" : "100%";
   const token = useAuth((s) => s.token);
   const { data: profileData } = useQuery({
@@ -38,7 +40,7 @@ export default function MobileDrawer({ open, onClose }) {
   const mobileRole = profileData?.data?.role;
   const isAdmin = mobileRole === "admin" || mobileRole === "super_admin";
   const navLinks = isAdmin
-    ? [...BASE_NAV_LINKS, { to: "/admin", label: "Control Panel" }]
+    ? [...BASE_NAV_LINKS, { to: "/admin", label: "Control Panel", label_ar: "لوحة التحكم" }]
     : BASE_NAV_LINKS;
 
   useEffect(() => {
@@ -65,7 +67,7 @@ export default function MobileDrawer({ open, onClose }) {
           <motion.aside
             className="store-drawer is-open"
             id="drawer"
-            aria-label="Menu"
+            aria-label={t("Menu", "القائمة")}
             initial={{ x: offscreenX }}
             animate={{ x: 0 }}
             exit={{ x: offscreenX }}
@@ -73,26 +75,26 @@ export default function MobileDrawer({ open, onClose }) {
           >
             <div className="store-drawer__head">
               <span className="store-wordmark">Tibr<span className="dot">.</span></span>
-              <button className="store-iconbtn" id="drawer-close" type="button" aria-label="Close" onClick={onClose}>
+              <button className="store-iconbtn" id="drawer-close" type="button" aria-label={t("Close", "إغلاق")} onClick={onClose}>
                 <CloseIcon />
               </button>
             </div>
-            <nav className="store-drawer__nav" aria-label="Categories">
-              {navLinks.map(({ to, label }) => (
+            <nav className="store-drawer__nav" aria-label={t("Categories", "الأقسام")}>
+              {navLinks.map(({ to, label, label_ar }) => (
                 <NavLink
                   key={to}
                   className="store-drawer__link"
                   to={to}
                   onClick={onClose}
                 >
-                  {label}
+                  {t(label, label_ar)}
                 </NavLink>
               ))}
             </nav>
             <div className="store-drawer__foot">
               <a className="store-footer__whatsapp" href="https://wa.me/message/7IF766RWOGXAA1" target="_blank" rel="noopener noreferrer">
                 <WhatsAppIcon />
-                Chat on WhatsApp
+                {t("Chat on WhatsApp", "تواصل عبر واتساب")}
               </a>
             </div>
           </motion.aside>

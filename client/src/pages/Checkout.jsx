@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useCart } from "@/stores/cart";
 import { useAuth } from "@/stores/auth";
+import { useLang, useT } from "@/stores/lang";
 import {
   checkout as apiCheckout, checkoutCard, validateDiscount, getAutomaticDiscount,
   getPaymentMethods, getConfig, getProfile, getAddresses,
@@ -18,7 +19,7 @@ const maskHandle = (type, handle) => {
   return handle;
 };
 
-const fmt = (v) => `${Number(v ?? 0).toLocaleString()} EGP`;
+const fmt = (v, currency) => `${Number(v ?? 0).toLocaleString()} ${currency}`;
 const govTitle = (slug) => (slug || "").replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 const composeAddress = (addr) =>
   [addr?.street, govTitle(addr?.governorate)].filter(Boolean).join(", ");
@@ -27,7 +28,9 @@ const PAYMENT_METHODS = [
   {
     id: "card",
     label: "Debit / Credit Card",
+    label_ar: "بطاقة ائتمان / خصم",
     desc: "Visa · Mastercard · Meeza",
+    desc_ar: "فيزا · ماستركارد · ميزة",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <rect x="2" y="5" width="20" height="14" rx="2"/>
@@ -38,7 +41,9 @@ const PAYMENT_METHODS = [
   {
     id: "vodafone_cash",
     label: "Vodafone Cash",
+    label_ar: "فودافون كاش",
     desc: "Mobile wallet",
+    desc_ar: "محفظة إلكترونية",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <rect x="5" y="2" width="14" height="20" rx="2"/>
@@ -50,7 +55,9 @@ const PAYMENT_METHODS = [
   {
     id: "instapay",
     label: "InstaPay",
+    label_ar: "إنستاباي",
     desc: "Instant bank transfer",
+    desc_ar: "تحويل بنكي فوري",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>
@@ -60,7 +67,9 @@ const PAYMENT_METHODS = [
   {
     id: "cash_on_delivery",
     label: "Cash on Delivery",
+    label_ar: "الدفع عند الاستلام",
     desc: "Pay in cash when it arrives",
+    desc_ar: "ادفع نقدًا عند وصول الطلب",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <rect x="2" y="7" width="20" height="13" rx="2"/>
@@ -71,12 +80,15 @@ const PAYMENT_METHODS = [
 ];
 
 const TRUST = [
-  { t: "Cash on delivery across Egypt", i: <path d="M2 7h20v10H2zM6 12h.01M18 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0z" strokeLinecap="round" strokeLinejoin="round" /> },
-  { t: "Free shipping, always", i: <path d="M3 7h11v8H3zM14 10h4l3 3v2h-7M7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" strokeLinecap="round" strokeLinejoin="round" /> },
-  { t: "Your details stay private", i: <path d="M12 3l7 3v5c0 4.4-3 8.3-7 10-4-1.7-7-5.6-7-10V6l7-3zM9.5 12l1.8 1.8L15 10" strokeLinecap="round" strokeLinejoin="round" /> },
+  { t: "Cash on delivery across Egypt", t_ar: "الدفع عند الاستلام في جميع أنحاء مصر", i: <path d="M2 7h20v10H2zM6 12h.01M18 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0z" strokeLinecap="round" strokeLinejoin="round" /> },
+  { t: "Free shipping, always", t_ar: "شحن مجاني دائمًا", i: <path d="M3 7h11v8H3zM14 10h4l3 3v2h-7M7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" strokeLinecap="round" strokeLinejoin="round" /> },
+  { t: "Your details stay private", t_ar: "بياناتك تبقى خاصة", i: <path d="M12 3l7 3v5c0 4.4-3 8.3-7 10-4-1.7-7-5.6-7-10V6l7-3zM9.5 12l1.8 1.8L15 10" strokeLinecap="round" strokeLinejoin="round" /> },
 ];
 
 export default function Checkout() {
+  const t = useT();
+  const lang = useLang((s) => s.lang);
+  const currency = t("EGP", "ج.م");
   const items = useCart((s) => s.items);
   const clearCart = useCart((s) => s.clear);
   const token = useAuth((s) => s.token);
@@ -209,7 +221,7 @@ export default function Checkout() {
       setDiscount(res.data);
     } catch (err) {
       setDiscount(null);
-      setDiscountError(err.message || "This discount code isn't valid.");
+      setDiscountError(err.message || t("This discount code isn't valid.", "كود الخصم هذا غير صالح."));
     } finally {
       setApplyingDiscount(false);
     }
@@ -231,10 +243,10 @@ export default function Checkout() {
                 <path d="M16 16v-2a8 8 0 0 1 16 0v2" /><rect width="30" height="24" x="9" y="16" rx="3" />
               </svg>
             </span>
-            <h1 className="acct-empty__title">Your cart is empty</h1>
-            <p className="acct-empty__sub">There&apos;s nothing to check out yet. Browse the collection and add a fragrance first.</p>
+            <h1 className="acct-empty__title">{t("Your cart is empty", "سلتك فارغة")}</h1>
+            <p className="acct-empty__sub">{t("There's nothing to check out yet. Browse the collection and add a fragrance first.", "لا يوجد شيء لإتمام شرائه بعد. تصفّح المجموعة وأضف عطرًا أولاً.")}</p>
             <div className="acct-empty__actions">
-              <Link className="btn btn--primary" to="/shop/perfumes">Browse the store</Link>
+              <Link className="btn btn--primary" to="/shop/perfumes">{t("Browse the store", "تصفّح المتجر")}</Link>
             </div>
           </div>
         </div>
@@ -256,30 +268,32 @@ export default function Checkout() {
               <path d="M5 12.5l4.5 4.5L19 7.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
-          <h1 className="co-success__title">Order received</h1>
-          <p className="co-success__sub">Thank you. We&apos;ll confirm delivery with you over WhatsApp shortly.</p>
+          <h1 className="co-success__title">{t("Order received", "تم استلام طلبك")}</h1>
+          <p className="co-success__sub">{t("Thank you. We'll confirm delivery with you over WhatsApp shortly.", "شكرًا لك. سنؤكد التوصيل معك عبر واتساب قريبًا.")}</p>
 
           <div className="co-success__receipt">
             <div className="co-success__rrow">
-              <span className="co-success__rlabel">Order number</span>
+              <span className="co-success__rlabel">{t("Order number", "رقم الطلب")}</span>
               <span className="co-success__rref">#{success.checkout_reference?.slice(0, 8).toUpperCase()}</span>
             </div>
             <div className="co-success__rrow">
-              <span className="co-success__rlabel">Total</span>
-              <span className="co-success__rtotal">{fmt(success.total_amount)}</span>
+              <span className="co-success__rlabel">{t("Total", "الإجمالي")}</span>
+              <span className="co-success__rtotal">{fmt(success.total_amount, currency)}</span>
             </div>
           </div>
 
           {success.discount && (
             <p className="co-success__discount">
-              {success.discount.code || success.discount.title} applied
-              {success.discount.free_shipping ? " · free shipping" : ` · −${fmt(success.discount.amount)}`}
+              {t(
+                `${success.discount.code || success.discount.title} applied${success.discount.free_shipping ? " · free shipping" : ` · −${fmt(success.discount.amount, currency)}`}`,
+                `تم تطبيق ${success.discount.code || success.discount.title}${success.discount.free_shipping ? " · شحن مجاني" : ` · −${fmt(success.discount.amount, currency)}`}`
+              )}
             </p>
           )}
 
           <div className="co-success__actions">
-            <Link className="btn btn--primary" to="/account?tab=orders">View my orders</Link>
-            <Link className="btn btn--secondary" to="/shop/perfumes">Keep shopping</Link>
+            <Link className="btn btn--primary" to="/account?tab=orders">{t("View my orders", "عرض طلباتي")}</Link>
+            <Link className="btn btn--secondary" to="/shop/perfumes">{t("Keep shopping", "مواصلة التسوق")}</Link>
           </div>
         </motion.div>
       </div>
@@ -292,7 +306,7 @@ export default function Checkout() {
     e.preventDefault();
     setError(null);
     if (!form.customer_name || !form.customer_phone || !form.customer_address) {
-      setError("Please add your name, phone and delivery address.");
+      setError(t("Please add your name, phone and delivery address.", "أضف اسمك ورقم هاتفك وعنوان التوصيل."));
       setAddrEditing(true);
       return;
     }
@@ -314,14 +328,14 @@ export default function Checkout() {
           window.location.href = res.data.checkout_url;
           return;
         }
-        throw new Error("Could not start the card payment.");
+        throw new Error(t("Could not start the card payment.", "تعذّر بدء الدفع بالبطاقة."));
       }
 
       const res = await apiCheckout(payload, token);
       clearCart();
       setSuccess(res.data);
     } catch (err) {
-      setError(err.message || "Failed to place order.");
+      setError(err.message || t("Failed to place order.", "تعذّر تنفيذ الطلب."));
     } finally {
       setLoading(false);
     }
@@ -334,7 +348,7 @@ export default function Checkout() {
   return (
     <div className="store-container">
       <header className="co-head" style={{ paddingBlock: "var(--sp-5)" }}>
-        <h1 className="co-head__title">Checkout</h1>
+        <h1 className="co-head__title">{t("Checkout", "الدفع")}</h1>
       </header>
 
       <form className="co-layout" onSubmit={handleSubmit} noValidate>
@@ -344,11 +358,11 @@ export default function Checkout() {
             {/* Deliver to */}
             <section className="co-block">
               <div className="co-block__head co-block__head--bordered">
-                <span className="co-block__title">Delivery address</span>
+                <span className="co-block__title">{t("Delivery address", "عنوان التوصيل")}</span>
                 {hasSummaryAddress && (
                   <button type="button" className="co-block__link" onClick={() => setAddrEditing(true)}>
                     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="M14.5 2.5a2 2 0 0 1 2.83 2.83L7 15.67 3 17l1.33-4L14.5 2.5z" strokeLinejoin="round" /></svg>
-                    Edit
+                    {t("Edit", "تعديل")}
                   </button>
                 )}
               </div>
@@ -361,7 +375,7 @@ export default function Checkout() {
                     </span>
                     <div className="co-deliver__info">
                       <p className="co-deliver__label">
-                        Deliver to {selectedAddr?.label || form.customer_name || "you"}
+                        {t(`Deliver to ${selectedAddr?.label || form.customer_name || "you"}`, `التوصيل إلى ${selectedAddr?.label || form.customer_name || "عنوانك"}`)}
                       </p>
                       <p className="co-deliver__line">{form.customer_address}</p>
                       {form.customer_phone && <p className="co-deliver__line">{form.customer_name ? `${form.customer_name} · ` : ""}{form.customer_phone}</p>}
@@ -371,17 +385,17 @@ export default function Checkout() {
                   <>
                     {addresses.length > 0 && (
                       <div className="field field--full co-pick" style={{ marginBlockEnd: "var(--sp-4)" }}>
-                        <p className="co-pick__hint">Use a saved address</p>
+                        <p className="co-pick__hint">{t("Use a saved address", "استخدم عنوانًا محفوظًا")}</p>
                         <div className="select-field">
                           <select
                             className="select"
                             value={selectedAddrId || ""}
                             onChange={(e) => { const a = addresses.find((x) => x.id === e.target.value); if (a) applyAddress(a); }}
                           >
-                            <option value="">Choose an address…</option>
+                            <option value="">{t("Choose an address…", "اختر عنوانًا…")}</option>
                             {addresses.map((a) => (
                               <option key={a.id} value={a.id}>
-                                {(a.label || "Address")}{a.governorate ? ` — ${govTitle(a.governorate)}` : ""}{a.is_default ? " (default)" : ""}
+                                {(a.label || t("Address", "العنوان"))}{a.governorate ? ` — ${govTitle(a.governorate)}` : ""}{a.is_default ? ` (${t("default", "افتراضي")})` : ""}
                               </option>
                             ))}
                           </select>
@@ -392,20 +406,20 @@ export default function Checkout() {
 
                     <div className="form-grid">
                       <div className="field">
-                        <label className="field__label" htmlFor="co-name">Full name <span className="field__req">*</span></label>
+                        <label className="field__label" htmlFor="co-name">{t("Full name", "الاسم الكامل")} <span className="field__req">*</span></label>
                         <input id="co-name" className="input" type="text" value={form.customer_name} onChange={(e) => handleChange("customer_name", e.target.value)} autoComplete="name" required />
                       </div>
                       <div className="field">
-                        <label className="field__label" htmlFor="co-phone">Phone number <span className="field__req">*</span></label>
+                        <label className="field__label" htmlFor="co-phone">{t("Phone number", "رقم الهاتف")} <span className="field__req">*</span></label>
                         <input id="co-phone" className="input" type="tel" inputMode="numeric" value={form.customer_phone} onChange={(e) => handleChange("customer_phone", e.target.value)} autoComplete="tel" placeholder="01XXXXXXXXX" required />
                       </div>
                       <div className="field field--full">
-                        <label className="field__label" htmlFor="co-address">Delivery address <span className="field__req">*</span></label>
-                        <textarea id="co-address" className="textarea" value={form.customer_address} onChange={(e) => handleChange("customer_address", e.target.value)} required rows={3} placeholder="Street, building, floor, governorate…" />
+                        <label className="field__label" htmlFor="co-address">{t("Delivery address", "عنوان التوصيل")} <span className="field__req">*</span></label>
+                        <textarea id="co-address" className="textarea" value={form.customer_address} onChange={(e) => handleChange("customer_address", e.target.value)} required rows={3} placeholder={t("Street, building, floor, governorate…", "الشارع، المبنى، الدور، المحافظة…")} />
                       </div>
                       {form.customer_name && form.customer_phone && form.customer_address && (
                         <div className="field--full">
-                          <button type="button" className="btn btn--secondary" onClick={() => setAddrEditing(false)}>Use this address</button>
+                          <button type="button" className="btn btn--secondary" onClick={() => setAddrEditing(false)}>{t("Use this address", "استخدام هذا العنوان")}</button>
                         </div>
                       )}
                     </div>
@@ -417,12 +431,14 @@ export default function Checkout() {
             {/* Order / shipment */}
             <section className="co-block">
               <div className="co-block__head co-block__head--bordered">
-                <span className="co-block__title">Your order <span className="co-block__title-meta">{count} item{count !== 1 ? "s" : ""}</span></span>
+                <span className="co-block__title">{t("Your order", "طلبك")} <span className="co-block__title-meta">{t(`${count} item${count !== 1 ? "s" : ""}`, `${count} منتج`)}</span></span>
               </div>
               <div className="co-block__body">
                 <div className="co-ship">
                   {items.map((item) => {
-                    const name = item.product.en_name || item.product.ar_name;
+                    const name = lang === "ar"
+                      ? item.product.ar_name || item.product.en_name
+                      : item.product.en_name || item.product.ar_name;
                     const price = item.price ?? item.product.price ?? 0;
                     return (
                       <div key={item.key} className="co-ship-item">
@@ -433,9 +449,9 @@ export default function Checkout() {
                         )}
                         <div className="co-ship-info">
                           <p className="co-ship-name">{name}</p>
-                          <p className="co-ship-meta">{[item.size, `Qty ${item.qty}`].filter(Boolean).join(" · ")}</p>
+                          <p className="co-ship-meta">{[item.size, t(`Qty ${item.qty}`, `الكمية ${item.qty}`)].filter(Boolean).join(" · ")}</p>
                         </div>
-                        <span className="co-ship-price">{fmt(price * item.qty)}</span>
+                        <span className="co-ship-price">{fmt(price * item.qty, currency)}</span>
                       </div>
                     );
                   })}
@@ -446,15 +462,15 @@ export default function Checkout() {
             {/* Delivery */}
             <section className="co-block">
               <div className="co-block__head co-block__head--bordered">
-                <span className="co-block__title">Delivery</span>
+                <span className="co-block__title">{t("Delivery", "التوصيل")}</span>
               </div>
               <div className="co-block__body">
                 <div className="co-deliv-row">
                   <span className="co-deliv-row__left">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 7h11v8H3zM14 10h4l3 3v2h-7M7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg>
-                    Standard delivery · across Egypt
+                    {t("Standard delivery · across Egypt", "توصيل عادي · في جميع أنحاء مصر")}
                   </span>
-                  <span className="co-deliv-row__free">FREE</span>
+                  <span className="co-deliv-row__free">{t("FREE", "مجاني")}</span>
                 </div>
               </div>
             </section>
@@ -462,7 +478,7 @@ export default function Checkout() {
             {/* Pay with */}
             <section className="co-block">
               <div className="co-block__head co-block__head--bordered">
-                <span className="co-block__title">Pay with</span>
+                <span className="co-block__title">{t("Pay with", "الدفع باستخدام")}</span>
               </div>
               <div className="co-block__body">
                 <div className="co-pay">
@@ -473,8 +489,8 @@ export default function Checkout() {
                         <input type="radio" name="payment" value={m.id} checked={form.payment_method === m.id} onChange={() => handleChange("payment_method", m.id)} />
                         <span className="co-payopt__icon" aria-hidden="true">{m.icon}</span>
                         <span className="co-payopt__text">
-                          <span className="co-payopt__label">{m.label}</span>
-                          <span className="co-payopt__desc">{saved ? maskHandle(m.id, saved.handle) : m.desc}</span>
+                          <span className="co-payopt__label">{t(m.label, m.label_ar)}</span>
+                          <span className="co-payopt__desc">{saved ? maskHandle(m.id, saved.handle) : t(m.desc, m.desc_ar)}</span>
                         </span>
                         <span className="co-payopt__check" aria-hidden="true">
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12.5l4.5 4.5L19 7.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -490,11 +506,11 @@ export default function Checkout() {
         </div>
 
         {/* Payment summary sidebar */}
-        <aside className="panel osum" aria-label="Payment summary">
+        <aside className="panel osum" aria-label={t("Payment summary", "ملخص الدفع")}>
           <div className="osum__body">
             <h2 className="osum__title">
-              Payment summary
-              <span className="osum__title-meta">{count} item{count !== 1 ? "s" : ""}</span>
+              {t("Payment summary", "ملخص الدفع")}
+              <span className="osum__title-meta">{t(`${count} item${count !== 1 ? "s" : ""}`, `${count} منتج`)}</span>
             </h2>
 
             {/* Discount */}
@@ -505,7 +521,7 @@ export default function Checkout() {
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                     {discount.code}
                   </span>
-                  <button type="button" className="osum__applied-remove" onClick={handleRemoveDiscount}>Remove</button>
+                  <button type="button" className="osum__applied-remove" onClick={handleRemoveDiscount}>{t("Remove", "إزالة")}</button>
                 </div>
               ) : (
                 <>
@@ -519,7 +535,7 @@ export default function Checkout() {
                   )}
                   <div className="osum__promo">
                     <input
-                      className="input" type="text" placeholder="Discount code"
+                      className="input" type="text" placeholder={t("Discount code", "كود الخصم")}
                       value={discountInput}
                       onChange={(e) => { setDiscountInput(e.target.value); setDiscountError(null); }}
                       onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleApplyDiscount(); } }}
@@ -530,7 +546,7 @@ export default function Checkout() {
                       onClick={handleApplyDiscount}
                       disabled={applyingDiscount || !discountInput.trim()}
                     >
-                      {applyingDiscount ? "" : "Apply"}
+                      {applyingDiscount ? "" : t("Apply", "تطبيق")}
                     </button>
                   </div>
                 </>
@@ -542,22 +558,22 @@ export default function Checkout() {
 
             <dl className="osum__totals">
               <div className="osum__row">
-                <dt>Subtotal</dt>
+                <dt>{t("Subtotal", "الإجمالي الفرعي")}</dt>
                 <dd>
                   {effectiveDiscount && !effectiveDiscount.free_shipping && (
-                    <span className="osum__strike">{fmt(subtotal)}</span>
+                    <span className="osum__strike">{fmt(subtotal, currency)}</span>
                   )}
-                  {fmt(effectiveDiscount && !effectiveDiscount.free_shipping ? total : subtotal)}
+                  {fmt(effectiveDiscount && !effectiveDiscount.free_shipping ? total : subtotal, currency)}
                 </dd>
               </div>
               {effectiveDiscount && (
                 <div className="osum__row">
-                  <dt>Discount ({discount ? discount.code : autoDiscount.title})</dt>
-                  <dd className="osum__save">{effectiveDiscount.free_shipping ? "Free shipping" : `−${fmt(discountAmount)}`}</dd>
+                  <dt>{t(`Discount (${discount ? discount.code : autoDiscount.title})`, `الخصم (${discount ? discount.code : autoDiscount.title})`)}</dt>
+                  <dd className="osum__save">{effectiveDiscount.free_shipping ? t("Free shipping", "شحن مجاني") : `−${fmt(discountAmount, currency)}`}</dd>
                 </div>
               )}
-              <div className="osum__row"><dt>Shipping fee</dt><dd className="osum__free">Free</dd></div>
-              <div className="osum__row osum__row--total"><dt>Total</dt><dd>{fmt(total)}</dd></div>
+              <div className="osum__row"><dt>{t("Shipping fee", "رسوم الشحن")}</dt><dd className="osum__free">{t("Free", "مجاني")}</dd></div>
+              <div className="osum__row osum__row--total"><dt>{t("Total", "الإجمالي")}</dt><dd>{fmt(total, currency)}</dd></div>
             </dl>
 
             {error && (
@@ -572,14 +588,14 @@ export default function Checkout() {
               type="submit"
               disabled={loading}
             >
-              {loading ? "" : form.payment_method === "card" ? "Pay with card" : "Place order"}
+              {loading ? "" : form.payment_method === "card" ? t("Pay with card", "الدفع بالبطاقة") : t("Place order", "تأكيد الطلب")}
             </button>
 
             <ul className="osum__trust">
               {TRUST.map((x) => (
                 <li key={x.t}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">{x.i}</svg>
-                  {x.t}
+                  {t(x.t, x.t_ar)}
                 </li>
               ))}
             </ul>

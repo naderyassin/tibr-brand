@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getProducts } from "@/lib/api";
+import { useT } from "@/stores/lang";
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ#".split("");
 
@@ -12,6 +13,7 @@ function bucketOf(brand) {
 }
 
 export default function BrandDirectory() {
+  const t = useT();
   const { data, isLoading } = useQuery({
     queryKey: ["products", "all"],
     queryFn: () => getProducts(),
@@ -35,17 +37,17 @@ export default function BrandDirectory() {
 
   return (
     <div className="store-container brand-directory">
-      <nav className="breadcrumb" aria-label="Breadcrumb">
-        <Link to="/shop/fragrances">Shop</Link>
+      <nav className="breadcrumb" aria-label={t("Breadcrumb", "مسار التنقل")}>
+        <Link to="/shop/fragrances">{t("Shop", "المتجر")}</Link>
         <span className="breadcrumb__sep" aria-hidden="true">/</span>
-        <span aria-current="page">Shop by Brand</span>
+        <span aria-current="page">{t("Shop by Brand", "تسوق حسب الماركة")}</span>
       </nav>
 
       <header className="shop-header">
-        <h1 className="shop-header__title">Shop by Brand</h1>
+        <h1 className="shop-header__title">{t("Shop by Brand", "تسوق حسب الماركة")}</h1>
       </header>
 
-      <nav className="brand-directory__jump" aria-label="Jump to letter">
+      <nav className="brand-directory__jump" aria-label={t("Jump to letter", "الانتقال إلى حرف")}>
         {LETTERS.map((l) => {
           const on = activeLetters.includes(l);
           return on ? (
@@ -57,11 +59,11 @@ export default function BrandDirectory() {
       </nav>
 
       {isLoading ? (
-        <p className="brand-directory__note">Loading brands…</p>
+        <p className="brand-directory__note">{t("Loading brands…", "جارٍ تحميل الماركات…")}</p>
       ) : activeLetters.length === 0 ? (
         <div className="catalog-empty is-shown" role="status">
-          <h2 className="catalog-empty__title">No brands yet</h2>
-          <p className="catalog-empty__text">Brands appear here once products are tagged with a brand.</p>
+          <h2 className="catalog-empty__title">{t("No brands yet", "لا توجد ماركات بعد")}</h2>
+          <p className="catalog-empty__text">{t("Brands appear here once products are tagged with a brand.", "ستظهر الماركات هنا بمجرد ربط المنتجات بماركة.")}</p>
         </div>
       ) : (
         <div className="brand-directory__sections">

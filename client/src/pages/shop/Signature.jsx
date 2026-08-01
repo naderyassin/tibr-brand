@@ -481,7 +481,7 @@ export default function Signature() {
 
   return (
     <div className="finder-page store-container" dir={dir}>
-      <nav className="breadcrumb" aria-label="Breadcrumb">
+      <nav className="breadcrumb" aria-label={t("Breadcrumb", "مسار التنقل")}>
         <Link to="/shop">{t("Shop", "المتجر")}</Link>
         <span className="breadcrumb__sep" aria-hidden="true">/</span>
         <span aria-current="page">{t("Design Your Fragrance", "صمّم عطرك")}</span>

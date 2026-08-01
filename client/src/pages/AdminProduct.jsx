@@ -398,7 +398,7 @@ export default function AdminProduct() {
 
   const { mutate: updateProduct, isPending: updating } = useMutation({
     mutationFn: ({ id, body }) => adminUpdateProduct(id, body, token),
-    onSuccess: () => { toast("Product saved"); navigate("/admin"); },
+    onSuccess: () => { toast("Product saved"); qc.invalidateQueries({ queryKey: ["admin-products"] }); },
     onError: (e) => toast(e.message || "Failed to update product"),
   });
 

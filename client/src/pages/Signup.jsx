@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "@/stores/auth";
 import { useToast } from "@/components/ui/Toast";
+import { useT } from "@/stores/lang";
 
 export default function Signup() {
   const [name, setName] = useState("");
@@ -15,25 +16,26 @@ export default function Signup() {
   const signUp = useAuth((s) => s.signUp);
   const navigate = useNavigate();
   const toast = useToast();
+  const t = useT();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     if (password.length < 8) {
-      setError("Password must be at least 8 characters.");
+      setError(t("Password must be at least 8 characters.", "يجب أن تكون كلمة المرور 8 أحرف على الأقل."));
       return;
     }
     if (password !== confirm) {
-      setError("Passwords do not match.");
+      setError(t("Passwords do not match.", "كلمتا المرور غير متطابقتين."));
       return;
     }
     setLoading(true);
     try {
       await signUp(email, password, { full_name: name, phone });
-      toast("Account created! Check your email to confirm.");
+      toast(t("Account created! Check your email to confirm.", "تم إنشاء الحساب! تحقق من بريدك الإلكتروني للتأكيد."));
       navigate("/login");
     } catch (err) {
-      setError(err.message || "Failed to create account.");
+      setError(err.message || t("Failed to create account.", "فشل إنشاء الحساب."));
     } finally {
       setLoading(false);
     }
@@ -52,13 +54,13 @@ export default function Signup() {
             Tibr<span className="dot">.</span>
           </Link>
         </div>
-        <h1 className="auth__title">Create account</h1>
-        <p className="auth__sub">Join Tibr and discover Egyptian luxury.</p>
+        <h1 className="auth__title">{t("Create account", "إنشاء حساب")}</h1>
+        <p className="auth__sub">{t("Join Tibr and discover Egyptian luxury.", "انضم إلى تيبر واكتشف الفخامة المصرية.")}</p>
 
         <form className="auth__form" onSubmit={handleSubmit} noValidate>
           <div className="field">
             <label className="field__label" htmlFor="name">
-              Full name <span className="field__req" aria-hidden="true">*</span>
+              {t("Full name", "الاسم الكامل")} <span className="field__req" aria-hidden="true">*</span>
             </label>
             <input
               id="name"
@@ -73,7 +75,7 @@ export default function Signup() {
 
           <div className="field">
             <label className="field__label" htmlFor="phone">
-              Phone number <span className="field__req" aria-hidden="true">*</span>
+              {t("Phone number", "رقم الهاتف")} <span className="field__req" aria-hidden="true">*</span>
             </label>
             <input
               id="phone"
@@ -90,7 +92,7 @@ export default function Signup() {
 
           <div className="field">
             <label className="field__label" htmlFor="email">
-              Email <span className="field__req" aria-hidden="true">*</span>
+              {t("Email", "البريد الإلكتروني")} <span className="field__req" aria-hidden="true">*</span>
             </label>
             <input
               id="email"
@@ -105,7 +107,7 @@ export default function Signup() {
 
           <div className="field">
             <label className="field__label" htmlFor="password">
-              Password <span className="field__req" aria-hidden="true">*</span>
+              {t("Password", "كلمة المرور")} <span className="field__req" aria-hidden="true">*</span>
             </label>
             <input
               id="password"
@@ -116,12 +118,12 @@ export default function Signup() {
               autoComplete="new-password"
               required
             />
-            <p className="field__hint">At least 8 characters.</p>
+            <p className="field__hint">{t("At least 8 characters.", "8 أحرف على الأقل.")}</p>
           </div>
 
           <div className={`field${error ? " is-invalid" : ""}`}>
             <label className="field__label" htmlFor="confirm">
-              Confirm password <span className="field__req" aria-hidden="true">*</span>
+              {t("Confirm password", "تأكيد كلمة المرور")} <span className="field__req" aria-hidden="true">*</span>
             </label>
             <input
               id="confirm"
@@ -140,12 +142,12 @@ export default function Signup() {
             type="submit"
             disabled={loading}
           >
-            {loading ? "" : "Create account"}
+            {loading ? "" : t("Create account", "إنشاء حساب")}
           </button>
         </form>
 
         <p className="auth__switch">
-          Already have an account? <Link to="/login">Sign in</Link>
+          {t("Already have an account?", "لديك حساب بالفعل؟")} <Link to="/login">{t("Sign in", "تسجيل الدخول")}</Link>
         </p>
       </motion.div>
     </div>

@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useCart } from "@/stores/cart";
+import { useT } from "@/stores/lang";
 
 // Paymob redirects here after the hosted checkout with the transaction result in
 // the query string. This screen is a DISPLAY confirmation only — the order's real
 // paid/failed state is set by the server-to-server webhook (which verifies HMAC),
 // not by these params. On success we clear the cart and point to the orders list.
 export default function CheckoutCallback() {
+  const t = useT();
   const [params] = useSearchParams();
   const clearCart = useCart((s) => s.clear);
 
@@ -40,12 +42,12 @@ export default function CheckoutCallback() {
         </div>
 
         <h2 style={{ fontFamily: "var(--font-display)", fontSize: "var(--fs-h2)", color: "var(--ink)" }}>
-          {success ? "Payment received" : "Payment not completed"}
+          {success ? t("Payment received", "تم استلام الدفع") : t("Payment not completed", "لم تكتمل عملية الدفع")}
         </h2>
         <p style={{ color: "var(--muted)" }}>
           {success
-            ? "We're confirming your order now — it'll appear in your orders shortly."
-            : "Your card wasn't charged. You can try again or choose another payment method."}
+            ? t("We're confirming your order now — it'll appear in your orders shortly.", "نقوم بتأكيد طلبك الآن — سيظهر في طلباتك قريبًا.")
+            : t("Your card wasn't charged. You can try again or choose another payment method.", "لم يتم خصم أي مبلغ من بطاقتك. يمكنك المحاولة مرة أخرى أو اختيار وسيلة دفع أخرى.")}
         </p>
         {ref && (
           <p className="checkout-success__ref">#{ref.slice(0, 8).toUpperCase()}</p>
@@ -54,13 +56,13 @@ export default function CheckoutCallback() {
         <div style={{ display: "flex", gap: "var(--sp-3)", flexWrap: "wrap", justifyContent: "center" }}>
           {success ? (
             <>
-              <Link className="btn btn--primary" to="/account?tab=orders">View my orders</Link>
-              <Link className="btn btn--secondary" to="/shop/perfumes">Keep shopping</Link>
+              <Link className="btn btn--primary" to="/account?tab=orders">{t("View my orders", "عرض طلباتي")}</Link>
+              <Link className="btn btn--secondary" to="/shop/perfumes">{t("Keep shopping", "مواصلة التسوق")}</Link>
             </>
           ) : (
             <>
-              <Link className="btn btn--primary" to="/checkout">Try again</Link>
-              <Link className="btn btn--secondary" to="/cart">Back to cart</Link>
+              <Link className="btn btn--primary" to="/checkout">{t("Try again", "حاول مرة أخرى")}</Link>
+              <Link className="btn btn--secondary" to="/cart">{t("Back to cart", "العودة إلى السلة")}</Link>
             </>
           )}
         </div>

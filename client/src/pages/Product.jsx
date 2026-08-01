@@ -10,6 +10,7 @@ import { useCart } from "@/stores/cart";
 import { useAuth } from "@/stores/auth";
 import { useWishlist } from "@/stores/wishlist";
 import { useToast } from "@/components/ui/Toast";
+import { useLang, useT } from "@/stores/lang";
 
 const HeartIcon = () => (
   <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -26,6 +27,8 @@ const TruckIcon = () => (
 );
 
 export default function Product() {
+  const t = useT();
+  const lang = useLang((s) => s.lang);
   const [params] = useSearchParams();
   const id = params.get("id");
   const navigate = useNavigate();
@@ -86,16 +89,16 @@ export default function Product() {
     return (
       <div className="store-container">
         <div className="rb-empty" style={{ paddingTop: "4rem" }}>
-          <h2 className="rb-empty__title">Product not found</h2>
-          <Link className="btn btn--secondary" to="/shop/perfumes">Back to shop</Link>
+          <h2 className="rb-empty__title">{t("Product not found", "المنتج غير موجود")}</h2>
+          <Link className="btn btn--secondary" to="/shop/perfumes">{t("Back to shop", "العودة للمتجر")}</Link>
         </div>
       </div>
     );
   }
 
   const p = productData.data;
-  const name = p.en_name || p.ar_name;
-  const desc = p.en_desc || p.ar_desc;
+  const name = lang === "ar" ? p.ar_name || p.en_name : p.en_name || p.ar_name;
+  const desc = lang === "ar" ? p.ar_desc || p.en_desc : p.en_desc || p.ar_desc;
 
   // Sizes are VARIANTS: each has its own price and stock, so choosing a size
   // changes the price on the page and can be sold out on its own.
@@ -110,7 +113,7 @@ export default function Product() {
   const compareAt = activeVariant?.compare_at_price ?? null;
   const soldOut = activeVariant ? activeVariant.quantity < 1 : false;
 
-  const catLabel = p.brands?.name_en || "TIBR";
+  const catLabel = (lang === "ar" ? p.brands?.name_ar : p.brands?.name_en) || p.brands?.name_en || "TIBR";
   const catPath = p.brands?.slug ? `/shop/perfumes?brand=${p.brands.slug}` : "/shop/perfumes";
 
   const images = p.images?.length ? p.images : (p.image ? [p.image] : []);
@@ -129,21 +132,27 @@ export default function Product() {
 
   const handleAddToCart = () => {
     addItem(p, activeVariant, qty);
-    toast(<><strong>{name}</strong>{activeVariant ? ` (${activeVariant.size_label})` : ""} x{qty} added to cart</>);
+    toast(
+      <>
+        <strong>{name}</strong>
+        {activeVariant ? ` (${activeVariant.size_label})` : ""}{" "}
+        {t(`x${qty} added to cart`, `× ${qty} أُضيف إلى السلة`)}
+      </>
+    );
   };
 
   const isWishlisted = savedIds.has(p.id);
   const handleToggleWishlist = async () => {
     if (!token) {
-      toast("Sign in to save items to your wishlist");
+      toast(t("Sign in to save items to your wishlist", "سجّل الدخول لحفظ المنتجات في مفضلتك"));
       navigate("/login");
       return;
     }
     try {
       const nowSaved = await toggleWishlist(p, token);
-      toast(nowSaved ? "Added to wishlist" : "Removed from wishlist");
+      toast(nowSaved ? t("Added to wishlist", "أُضيف إلى المفضلة") : t("Removed from wishlist", "أُزيل من المفضلة"));
     } catch {
-      toast("Couldn't update your wishlist. Try again.");
+      toast(t("Couldn't update your wishlist. Try again.", "تعذّر تحديث المفضلة. حاول مرة أخرى."));
     }
   };
 
@@ -162,8 +171,8 @@ export default function Product() {
 
   return (
     <div className="store-container">
-      <nav className="breadcrumb" aria-label="Breadcrumb">
-        <Link to="/">Home</Link>
+      <nav className="breadcrumb" aria-label={t("Breadcrumb", "مسار التنقل")}>
+        <Link to="/">{t("Home", "الرئيسية")}</Link>
         <span className="breadcrumb__sep" aria-hidden="true">/</span>
         <Link to={catPath}>{catLabel}</Link>
         <span className="breadcrumb__sep" aria-hidden="true">/</span>
@@ -188,7 +197,7 @@ export default function Product() {
               >
                 <img
                   src={images[activeImgIndex] || images[0]}
-                  alt={`${name} - View ${(activeImgIndex || 0) + 1}`}
+                  alt={t(`${name} - View ${(activeImgIndex || 0) + 1}`, `${name} - عرض ${(activeImgIndex || 0) + 1}`)}
                   loading="eager"
                 />
               </motion.div>
@@ -199,7 +208,7 @@ export default function Product() {
               className="pdp__wish"
               type="button"
               aria-pressed={isWishlisted}
-              aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+              aria-label={isWishlisted ? t("Remove from wishlist", "إزالة من المفضلة") : t("Add to wishlist", "إضافة إلى المفضلة")}
               onClick={handleToggleWishlist}
             >
               <HeartIcon />
@@ -214,9 +223,9 @@ export default function Product() {
                   type="button"
                   className={`pdp__thumbnail ${idx === activeImgIndex ? "is-active" : ""}`}
                   onClick={() => setActiveImgIndex(idx)}
-                  aria-label={`View image ${idx + 1}`}
+                  aria-label={t(`View image ${idx + 1}`, `عرض الصورة ${idx + 1}`)}
                 >
-                  <img src={img} alt={`${name} - Thumbnail ${idx + 1}`} />
+                  <img src={img} alt={t(`${name} - Thumbnail ${idx + 1}`, `${name} - صورة مصغرة ${idx + 1}`)} />
                 </button>
               ))}
             </div>
@@ -228,22 +237,22 @@ export default function Product() {
             <p className="pdp__collection">{catLabel}</p>
             <h1 className="pdp__title">{name}</h1>
             {compareAt && Number(compareAt) > price && (
-              <p className="pdp__price-was">EGP {Number(compareAt).toLocaleString()}</p>
+              <p className="pdp__price-was">{t("EGP", "ج.م")} {Number(compareAt).toLocaleString()}</p>
             )}
             <p className="pdp__price">
-              EGP {Number(price).toLocaleString()}
+              {t("EGP", "ج.م")} {Number(price).toLocaleString()}
             </p>
           </motion.div>
 
           {variants.length > 0 && (
             <motion.div variants={itemVariants}>
-              <p className="pdp__field-label">Size</p>
+              <p className="pdp__field-label">{t("Size", "المقاس")}</p>
               <div className="size-options">
                 {variants.map((v) => (
                   <label
                     key={v.id}
                     className={`size-chip${v.quantity < 1 ? " is-sold-out" : ""}${activeVariant?.id === v.id ? " is-selected" : ""}`}
-                    title={v.quantity < 1 ? "Sold out" : `${v.price} EGP`}
+                    title={v.quantity < 1 ? t("Sold out", "نفدت الكمية") : t(`${v.price} EGP`, `${v.price} ج.م`)}
                   >
                     <input
                       type="radio"
@@ -262,7 +271,7 @@ export default function Product() {
 
           <motion.div variants={itemVariants} className="pdp__actions">
             <div className="pdp__qty-wrapper">
-              <span className="pdp__field-label pdp__qty-label">Quantity</span>
+              <span className="pdp__field-label pdp__qty-label">{t("Quantity", "الكمية")}</span>
               <div className="pdp__qty-selector">
                 <button
                   type="button"
@@ -290,7 +299,7 @@ export default function Product() {
               onClick={handleAddToCart}
               disabled={!activeVariant || soldOut}
             >
-              {soldOut ? "SOLD OUT" : "ADD TO CART"}
+              {soldOut ? t("SOLD OUT", "نفدت الكمية") : t("ADD TO CART", "أضف إلى السلة")}
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true" style={{flexShrink:0}}>
                 <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
@@ -298,17 +307,17 @@ export default function Product() {
           </motion.div>
 
           <motion.div variants={itemVariants} className="pdp__trust">
-            <span className="pdp__trust-item"><TruckIcon /> Cash on delivery across Egypt</span>
+            <span className="pdp__trust-item"><TruckIcon /> {t("Cash on delivery across Egypt", "الدفع عند الاستلام في جميع أنحاء مصر")}</span>
             <span className="pdp__trust-item">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> 
-              100% Authentic Guarantee
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              {t("100% Authentic Guarantee", "ضمان الأصالة 100%")}
             </span>
           </motion.div>
 
           <motion.div variants={itemVariants} className="pdp__accordions">
             {desc && (
               <details className="pdp-accordion" open>
-                <summary className="pdp-accordion__title">Description <span className="pdp-accordion__icon">+</span></summary>
+                <summary className="pdp-accordion__title">{t("Description", "الوصف")} <span className="pdp-accordion__icon">+</span></summary>
                 <div className="pdp-accordion__content">
                   <div className="pdp__desc pdp__desc--rich" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(desc) }} />
                 </div>
@@ -317,12 +326,12 @@ export default function Product() {
 
             {(p.top_notes || p.mid_notes || p.base_notes) && (
               <details className="pdp-accordion">
-                <summary className="pdp-accordion__title">Fragrance Notes <span className="pdp-accordion__icon">+</span></summary>
+                <summary className="pdp-accordion__title">{t("Fragrance Notes", "نوتات العطر")} <span className="pdp-accordion__icon">+</span></summary>
                 <div className="pdp-accordion__content">
                   <div className="pdp__notes">
-                    {p.top_notes && <div><p className="note__label">Top Notes</p><p className="note__val">{p.top_notes}</p></div>}
-                    {p.mid_notes && <div><p className="note__label">Heart Notes</p><p className="note__val">{p.mid_notes}</p></div>}
-                    {p.base_notes && <div><p className="note__label">Base Notes</p><p className="note__val">{p.base_notes}</p></div>}
+                    {p.top_notes && <div><p className="note__label">{t("Top Notes", "النوتات الأولى")}</p><p className="note__val">{p.top_notes}</p></div>}
+                    {p.mid_notes && <div><p className="note__label">{t("Heart Notes", "النوتات الوسطى")}</p><p className="note__val">{p.mid_notes}</p></div>}
+                    {p.base_notes && <div><p className="note__label">{t("Base Notes", "النوتات الأساسية")}</p><p className="note__val">{p.base_notes}</p></div>}
                   </div>
                 </div>
               </details>
@@ -330,7 +339,7 @@ export default function Product() {
 
             {reviewsData?.data?.length > 0 && (
               <details className="pdp-accordion">
-                <summary className="pdp-accordion__title">Reviews ({reviewsData.data.length}) <span className="pdp-accordion__icon">+</span></summary>
+                <summary className="pdp-accordion__title">{t(`Reviews (${reviewsData.data.length})`, `التقييمات (${reviewsData.data.length})`)} <span className="pdp-accordion__icon">+</span></summary>
                 <div className="pdp-accordion__content">
                   {reviewsData.data.slice(0, 3).map((r) => (
                     <div key={r.id} className="pdp__review">
@@ -347,13 +356,13 @@ export default function Product() {
 
       {relatedProducts.length > 0 && (
         <section className="product-rail pdp__recommended">
-          <h2 className="product-rail__title pdp__recommended-title">You May Also Like</h2>
+          <h2 className="product-rail__title pdp__recommended-title">{t("You May Also Like", "قد يعجبك أيضًا")}</h2>
           <div className="slider-wrapper">
             {showRailLeft && (
               <button
                 className="slider-arrow slider-arrow--left"
                 onClick={() => scrollRail("left")}
-                aria-label="Previous products"
+                aria-label={t("Previous products", "المنتجات السابقة")}
                 type="button"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -377,7 +386,7 @@ export default function Product() {
               <button
                 className="slider-arrow slider-arrow--right"
                 onClick={() => scrollRail("right")}
-                aria-label="Next products"
+                aria-label={t("Next products", "المنتجات التالية")}
                 type="button"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">

@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useT } from "@/stores/lang";
 import "./PromoTiles.css";
 
 export default function PromoTiles() {
+  const t = useT();
   const [copiedCode, setCopiedCode] = useState(null);
   const [toastMessage, setToastMessage] = useState(null);
 
@@ -9,13 +11,13 @@ export default function PromoTiles() {
     try {
       await navigator.clipboard.writeText(code);
       setCopiedCode(code);
-      showToast(`Code "${code}" copied to clipboard!`);
+      showToast(t(`Code "${code}" copied to clipboard!`, `تم نسخ الكود "${code}"!`));
       setTimeout(() => {
         setCopiedCode(null);
       }, 2000);
     } catch (err) {
       console.error("Failed to copy code: ", err);
-      showToast("Failed to copy code. Please copy manually.");
+      showToast(t("Failed to copy code. Please copy manually.", "تعذر نسخ الكود. الرجاء نسخه يدويًا."));
     }
   };
 
@@ -28,7 +30,7 @@ export default function PromoTiles() {
 
 
   return (
-    <section className="promo-tiles-container" aria-label="Savings">
+    <section className="promo-tiles-container" aria-label={t("Savings", "التوفير")}>
       <div className="promo-ambient-glow promo-glow-1"></div>
       <div className="promo-ambient-glow promo-glow-2"></div>
 

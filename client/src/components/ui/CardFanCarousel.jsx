@@ -327,7 +327,7 @@ export default function CardFanCarousel({ cards }) {
 
       {needsPagination && (
         <div className="fan-pagination">
-          <button className="fan-arrow-btn" onClick={() => cycle("left")} aria-label="Previous">
+          <button className="fan-arrow-btn" onClick={() => cycle("left")} aria-label={t("Previous", "السابق")}>
             {chevron("left")}
           </button>
           <div className="fan-dots">
@@ -335,7 +335,7 @@ export default function CardFanCarousel({ cards }) {
               <span key={i} className={`fan-dot ${i === centerIndex ? "is-active" : ""}`} />
             ))}
           </div>
-          <button className="fan-arrow-btn" onClick={() => cycle("right")} aria-label="Next">
+          <button className="fan-arrow-btn" onClick={() => cycle("right")} aria-label={t("Next", "التالي")}>
             {chevron("right")}
           </button>
         </div>

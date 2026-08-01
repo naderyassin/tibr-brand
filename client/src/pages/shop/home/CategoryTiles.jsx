@@ -1,30 +1,32 @@
 import { Link } from "react-router-dom";
 import { useDraggableScroll } from "@/hooks/useDraggableScroll";
+import { useT } from "@/stores/lang";
 import "./CategoryTiles.css";
 
 // Each tile is a saved filter query, not a route of its own — same contract as
 // the nav (docs/DATA-MODEL.md §5).
 const TILES = [
-  { key: "men",       label: "Men",      to: "/shop/perfumes?audience=men" },
-  { key: "women",     label: "Women",    to: "/shop/perfumes?audience=women" },
-  { key: "unisex",    label: "Unisex",   to: "/shop/perfumes?audience=unisex" },
-  { key: "sets",      label: "Sets",     to: "/shop/sets" },
-  { key: "arabian",   label: "Arabian",  to: "/shop/arabian" },
-  { key: "candles",   label: "Candles",  to: "/shop/candles" },
+  { key: "men",       label: "Men",      label_ar: "رجالي",   to: "/shop/perfumes?audience=men" },
+  { key: "women",     label: "Women",    label_ar: "نسائي",   to: "/shop/perfumes?audience=women" },
+  { key: "unisex",    label: "Unisex",   label_ar: "للجنسين", to: "/shop/perfumes?audience=unisex" },
+  { key: "sets",      label: "Sets",     label_ar: "أطقم",     to: "/shop/sets" },
+  { key: "arabian",   label: "Arabian",  label_ar: "خليجي",   to: "/shop/arabian" },
+  { key: "candles",   label: "Candles",  label_ar: "شموع",    to: "/shop/candles" },
 ];
 
 export default function CategoryTiles() {
   const { ref, onMouseDown, showLeftArrow, showRightArrow, scroll } = useDraggableScroll();
+  const t = useT();
 
   return (
-    <section className="shop-home-section" aria-label="Shop by category">
-      <h2 className="shop-home-section__title">Shop by Category</h2>
+    <section className="shop-home-section" aria-label={t("Shop by category", "تسوق حسب الفئة")}>
+      <h2 className="shop-home-section__title">{t("Shop by Category", "تسوق حسب الفئة")}</h2>
       <div className="slider-wrapper">
         {showLeftArrow && (
           <button
             className="slider-arrow slider-arrow--left"
             onClick={() => scroll("left")}
-            aria-label="Previous categories"
+            aria-label={t("Previous categories", "الفئات السابقة")}
             type="button"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -42,7 +44,7 @@ export default function CategoryTiles() {
               <div className="o2morny-category-image" draggable="false">
                 <img
                   src={`/categories/${tile.key}.png`}
-                  alt={tile.label}
+                  alt={t(tile.label, tile.label_ar)}
                   draggable="false"
                   onError={(e) => {
                     e.target.style.display = "none";
@@ -51,7 +53,7 @@ export default function CategoryTiles() {
                 />
               </div>
               <div className="o2morny-category-footer">
-                <span className="o2morny-category-title">{tile.label}</span>
+                <span className="o2morny-category-title">{t(tile.label, tile.label_ar)}</span>
               </div>
             </Link>
           ))}
@@ -60,7 +62,7 @@ export default function CategoryTiles() {
           <button
             className="slider-arrow slider-arrow--right"
             onClick={() => scroll("right")}
-            aria-label="Next categories"
+            aria-label={t("Next categories", "الفئات التالية")}
             type="button"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">

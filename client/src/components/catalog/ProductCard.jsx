@@ -4,6 +4,7 @@ import { CONCENTRATIONS, FAMILIES, label } from "@/lib/taxonomy";
 import { useAuth } from "@/stores/auth";
 import { useWishlist } from "@/stores/wishlist";
 import { useToast } from "@/components/ui/Toast";
+import { useLang, useT } from "@/stores/lang";
 import "./ProductCardNew.css";
 
 const HeartIcon = () => (
@@ -17,9 +18,9 @@ const HeartIcon = () => (
 
 /* "Citrus", "Citrus and Vanilla", "Citrus, Vanilla, Amber" — mirrors the
    reference's note phrasing. */
-function joinNotes(list) {
+function joinNotes(list, and) {
   if (list.length <= 1) return list[0] || "";
-  if (list.length === 2) return `${list[0]} and ${list[1]}`;
+  if (list.length === 2) return `${list[0]} ${and} ${list[1]}`;
   return list.join(", ");
 }
 
@@ -29,8 +30,13 @@ export default function ProductCard({ product, index = 0 }) {
   const isSaved = useWishlist((s) => s.ids.has(product.id));
   const toggleWishlist = useWishlist((s) => s.toggle);
   const toast = useToast();
+  const t = useT();
+  const lang = useLang((s) => s.lang);
 
-  const name = product.en_name || product.ar_name;
+  const name =
+    lang === "ar"
+      ? product.ar_name || product.en_name
+      : product.en_name || product.ar_name;
 
   // "From" price = the cheapest variant, so a range of sizes reads honestly.
   const variants = product.product_variants || product.variants || [];
@@ -60,10 +66,13 @@ export default function ProductCard({ product, index = 0 }) {
 
   // Descriptor line: "Eau de Parfum — Floral and Fruity Notes"
   const concLabel = product.concentration
-    ? label(CONCENTRATIONS, product.concentration)
+    ? label(CONCENTRATIONS, product.concentration, lang)
     : null;
-  const noteLabels = (product.families || []).map((f) => label(FAMILIES, f));
-  const notesText = noteLabels.length ? `${joinNotes(noteLabels)} Notes` : null;
+  const noteLabels = (product.families || []).map((f) => label(FAMILIES, f, lang));
+  const notesJoined = joinNotes(noteLabels, lang === "ar" ? "و" : "and");
+  const notesText = noteLabels.length
+    ? (lang === "ar" ? `نوتات ${notesJoined}` : `${notesJoined} Notes`)
+    : null;
   const descriptor = [concLabel, notesText].filter(Boolean).join(" — ");
 
 
@@ -72,15 +81,15 @@ export default function ProductCard({ product, index = 0 }) {
     e.preventDefault();
     e.stopPropagation();
     if (!token) {
-      toast("Sign in to save items to your wishlist");
+      toast(t("Sign in to save items to your wishlist", "سجّل الدخول لحفظ المنتجات في مفضلتك"));
       navigate("/login");
       return;
     }
     try {
       const nowSaved = await toggleWishlist(product, token);
-      toast(nowSaved ? "Added to wishlist" : "Removed from wishlist");
+      toast(nowSaved ? t("Added to wishlist", "أُضيف إلى المفضلة") : t("Removed from wishlist", "أُزيل من المفضلة"));
     } catch {
-      toast("Couldn't update your wishlist. Try again.");
+      toast(t("Couldn't update your wishlist. Try again.", "تعذّر تحديث المفضلة. حاول مرة أخرى."));
     }
   };
 
@@ -97,7 +106,7 @@ export default function ProductCard({ product, index = 0 }) {
         type="button"
         className="product-new__wish"
         aria-pressed={isSaved}
-        aria-label={isSaved ? "Remove from wishlist" : "Add to wishlist"}
+        aria-label={isSaved ? t("Remove from wishlist", "إزالة من المفضلة") : t("Add to wishlist", "إضافة إلى المفضلة")}
         onClick={handleToggleWishlist}
       >
         <HeartIcon />
@@ -108,7 +117,7 @@ export default function ProductCard({ product, index = 0 }) {
           {(onSale || product.is_bestseller) && (
             <div className="product-new__badges">
               {product.is_bestseller && (
-                <span className="product-new__badge product-new__badge--bestseller">Best Seller</span>
+                <span className="product-new__badge product-new__badge--bestseller">{t("Best Seller", "الأكثر مبيعًا")}</span>
               )}
               {onSale && (
                 <span className="product-new__badge product-new__badge--sale">-{discountPct}%</span>
@@ -137,17 +146,17 @@ export default function ProductCard({ product, index = 0 }) {
 
           <div className="product-new__price-row">
             <span className="product-new__price">
-              EGP {Number(fromPrice).toLocaleString()}
+              {t("EGP", "ج.م")} {Number(fromPrice).toLocaleString()}
             </span>
             {onSale && (
               <span className="product-new__price-was">
-                EGP {compareAt.toLocaleString()}
+                {t("EGP", "ج.م")} {compareAt.toLocaleString()}
               </span>
             )}
           </div>
 
           <div className={`product-new__action-pill${outOfStock ? " product-new__action-pill--oos" : ""}`}>
-            <span className="product-new__action-text">{outOfStock ? "Sold out" : "Add to cart"}</span>
+            <span className="product-new__action-text">{outOfStock ? t("Sold out", "نفدت الكمية") : t("Add to cart", "أضف إلى السلة")}</span>
           </div>
         </div>
       </Link>
