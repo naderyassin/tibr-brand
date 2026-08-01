@@ -125,6 +125,7 @@ export default function App() {
             <Route path="/shop/sets" element={<CollectionPage />} />
             <Route path="/shop/samples" element={<CollectionPage />} />
             <Route path="/shop/new-arrivals" element={<CollectionPage />} />
+            <Route path="/shop/tibr-house" element={<CollectionPage />} />
             <Route path="/shop/spotlight" element={<CollectionPage />} />
             <Route path="/shop/bestsellers" element={<CollectionPage />} />
             <Route path="/shop/offers" element={<CollectionPage />} />

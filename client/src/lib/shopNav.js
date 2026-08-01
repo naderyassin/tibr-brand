@@ -30,9 +30,12 @@ export const SHOP_NAV = [
         title_ar: "الفئة",
         items: [
           { slug: "men", path: "/shop/perfumes?audience=men", label: "Men Fragrances", label_ar: "عطور رجالي" },
+          { slug: "inspired", path: "/shop/perfumes?line=inspired", label: "Inspired Fragrances", label_ar: "عطور مستوحاة" },
           { slug: "women", path: "/shop/perfumes?audience=women", label: "Women Fragrances", label_ar: "عطور نسائي" },
           { slug: "unisex", path: "/shop/perfumes?audience=unisex", label: "Unisex Fragrances", label_ar: "عطور للجنسين" },
           { slug: "gulf", path: "/shop/perfumes?classification=arabian", label: "Gulf Fragrances", label_ar: "عطور خليجية" },
+          { ...sub(PRODUCT_TYPES, "set", "/shop/sets"), label: "Sets", label_ar: "أطقم" },
+          { ...sub(PRODUCT_TYPES, "sample", "/shop/samples"), label: "Samples", label_ar: "عينات" },
         ],
       },
     ],
@@ -55,23 +58,7 @@ export const SHOP_NAV = [
       },
     ],
   },
-  {
-    key: "sets",
-    label: "Sets & Samples",
-    label_ar: "أطقم وعينات",
-    path: "/shop/sets",
-    filters: {},
-    groups: [
-      {
-        title: "Product type",
-        title_ar: "نوع المنتج",
-        items: [
-          sub(PRODUCT_TYPES, "set", "/shop/sets"),
-          sub(PRODUCT_TYPES, "sample", "/shop/samples"),
-        ],
-      },
-    ],
-  },
+  { key: "tibr-house", label: "TIBR House", label_ar: "تيبر هاوس", path: "/shop/tibr-house", filters: { type: "tibr-house" } },
   { key: "brands", label: "Shop by Brand", label_ar: "تسوق حسب الماركة", path: "/shop/brands" },
   { key: "new-arrivals", label: "New Arrivals", label_ar: "وصل حديثًا", path: "/shop/new-arrivals" },
 ];
@@ -98,9 +85,10 @@ export const ROUTE_PRESETS = {
   "/shop/candles":        { title: "Candles",                title_ar: "الشموع",                 filters: { type: "candle" } },
   "/shop/bakhoor":        { title: "Bakhoor",                title_ar: "البخور",                 filters: { type: "bakhoor" } },
   "/shop/home-fragrance": { title: "Home & Ambience",        title_ar: "المنزل والأجواء",        filters: { type: "air-freshener" } },
-  "/shop/sets":           { title: "Sets & Bundles",         title_ar: "الأطقم والحزم",          filters: { type: "set" } },
-  "/shop/samples":        { title: "Samples & Travel",       title_ar: "العينات وأحجام السفر",   filters: { type: "sample" } },
+  "/shop/sets":           { title: "Sets",                   title_ar: "أطقم",                   filters: { type: "set" } },
+  "/shop/samples":        { title: "Samples",                title_ar: "عينات",                  filters: { type: "sample" } },
   "/shop/new-arrivals":   { title: "New Arrivals",           title_ar: "وصل حديثًا",             filters: {}, sort: "newest" },
+  "/shop/tibr-house":     { title: "TIBR House",             title_ar: "تيبر هاوس",              filters: { type: "tibr-house" } },
 
   // Admin-curated merchandising — the "View All" targets of the shop-home rails.
   "/shop/spotlight":      { title: "Spotlight",              title_ar: "مختارات",                filters: { spotlight: "1" } },

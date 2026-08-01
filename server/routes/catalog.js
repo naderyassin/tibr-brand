@@ -155,7 +155,7 @@ router.get("/api/products", async (req, res) => {
 const loadFacets = async () => {
   const { data, error } = await supabase
     .from("products")
-    .select("line, product_type, audience, classification, concentration, families, seasons, brands(slug, name_en, name_ar)")
+    .select("line, product_type, audience, classification, concentration, families, seasons, brands(slug, name_en, name_ar, logo_url)")
     .eq("status", "active");
 
   if (error) {

@@ -1,37 +1,34 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getProducts } from "@/lib/api";
-import { useT } from "@/stores/lang";
+import { getFacets } from "@/lib/api";
+import { useT, useLang } from "@/stores/lang";
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ#".split("");
 
 // Bucket a brand under its first letter (non A-Z → "#").
-function bucketOf(brand) {
-  const c = brand.trim().charAt(0).toUpperCase();
+function bucketOf(name) {
+  const c = name.trim().charAt(0).toUpperCase();
   return /[A-Z]/.test(c) ? c : "#";
 }
 
 export default function BrandDirectory() {
   const t = useT();
-  const { data, isLoading } = useQuery({
-    queryKey: ["products", "all"],
-    queryFn: () => getProducts(),
-  });
+  const lang = useLang((s) => s.lang);
+  const { data, isLoading } = useQuery({ queryKey: ["facets"], queryFn: getFacets });
+  const brands = data?.data?.brand ?? [];
 
   const groups = useMemo(() => {
     const map = {};
-    (data?.data ?? []).forEach((p) => {
-      if (!p.brand) return;
-      const letter = bucketOf(p.brand);
-      (map[letter] ||= new Set()).add(p.brand);
+    brands.forEach((b) => {
+      const name = (lang === "ar" ? b.name_ar : b.name_en) || b.name_en;
+      if (!name) return;
+      const letter = bucketOf(name);
+      (map[letter] ||= []).push({ ...b, displayName: name });
     });
-    const out = {};
-    Object.entries(map).forEach(([letter, set]) => {
-      out[letter] = [...set].sort((a, b) => a.localeCompare(b));
-    });
-    return out;
-  }, [data]);
+    Object.values(map).forEach((list) => list.sort((a, b) => a.displayName.localeCompare(b.displayName)));
+    return map;
+  }, [brands, lang]);
 
   const activeLetters = LETTERS.filter((l) => groups[l]?.length);
 
@@ -71,10 +68,11 @@ export default function BrandDirectory() {
             <section key={letter} id={`brand-${letter}`} className="brand-directory__section">
               <h2 className="brand-directory__letter">{letter}</h2>
               <ul className="brand-directory__list">
-                {groups[letter].map((brand) => (
-                  <li key={brand}>
-                    <Link to={`/shop/brands/${encodeURIComponent(brand)}`} className="brand-directory__brand">
-                      {brand}
+                {groups[letter].map((b) => (
+                  <li key={b.slug}>
+                    <Link to={`/shop/brands/${b.slug}`} className="brand-directory__brand">
+                      {b.displayName}
+                      <span className="brand-directory__count"> ({b.count})</span>
                     </Link>
                   </li>
                 ))}

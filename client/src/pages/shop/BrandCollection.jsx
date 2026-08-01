@@ -1,17 +1,8 @@
-import { useParams } from "react-router-dom";
-import CollectionPage from "./CollectionPage";
-import { useT } from "@/stores/lang";
+import { Navigate, useParams } from "react-router-dom";
 
+// /shop/brands/:brand is a pretty URL for the brand facet that CollectionPage
+// (the ONLY collection page, docs/DATA-MODEL.md §5) already filters by.
 export default function BrandCollection() {
-  const t = useT();
   const { brand } = useParams();
-  const decoded = decodeURIComponent(brand || "");
-  return (
-    <CollectionPage
-      title={decoded}
-      breadcrumb={`${t("Shop by Brand", "تسوق حسب الماركة")} / ${decoded}`}
-      sortDefault="newest"
-      predicate={(p) => String(p.brand || "").toLowerCase() === decoded.toLowerCase()}
-    />
-  );
+  return <Navigate to={`/shop/all?brand=${encodeURIComponent(brand)}`} replace />;
 }

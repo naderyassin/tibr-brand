@@ -12,6 +12,7 @@ const TILES = [
   { key: "sets",      label: "Sets",     label_ar: "أطقم",     to: "/shop/sets" },
   { key: "arabian",   label: "Arabian",  label_ar: "خليجي",   to: "/shop/arabian" },
   { key: "candles",   label: "Candles",  label_ar: "شموع",    to: "/shop/candles" },
+  { key: "tibr-house", label: "TIBR House", label_ar: "تيبر هاوس", to: "/shop/tibr-house" },
 ];
 
 export default function CategoryTiles() {

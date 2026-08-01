@@ -45,7 +45,7 @@ const normalizeProduct = (product) => {
 // (The old listing_type / fragrance_category / sample_type / perfume_classification
 // vocabularies are gone: they described columns that never existed in the DB.)
 const LINES = new Set(["original", "inspired", "signature"]);
-const PRODUCT_TYPES = new Set(["perfume", "candle", "air-freshener", "set", "sample", "bakhoor"]);
+const PRODUCT_TYPES = new Set(["perfume", "candle", "air-freshener", "set", "sample", "bakhoor", "tibr-house"]);
 const AUDIENCES = new Set(["men", "women", "unisex"]);
 const CLASSIFICATIONS = new Set(["designer", "niche", "arabian", "celebrity"]);
 const CONCENTRATIONS = new Set(["parfum", "edp", "edt", "edc", "attar", "mist"]);

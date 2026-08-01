@@ -22,6 +22,7 @@ export const PRODUCT_TYPES = [
   { slug: "set",           en: "Set / Bundle",        ar: "طقم" },
   { slug: "sample",        en: "Sample / Travel Size", ar: "عينة / حجم سفر" },
   { slug: "bakhoor",       en: "Bakhoor",             ar: "بخور" },
+  { slug: "tibr-house",    en: "TIBR House",          ar: "تيبر هاوس" },
 ];
 
 /** Required on every product — a candle is usually `unisex`. */

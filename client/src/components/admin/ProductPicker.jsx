@@ -21,7 +21,7 @@ export default function ProductPicker({ selectedIds, onChange, token }) {
 
   const q = query.trim().toLowerCase();
   const results = q
-    ? products.filter((p) => p.en_name?.toLowerCase().includes(q) || p.brand?.toLowerCase().includes(q))
+    ? products.filter((p) => p.en_name?.toLowerCase().includes(q) || p.brands?.name_en?.toLowerCase().includes(q))
     : products;
 
   const toggle = (id) =>
@@ -81,7 +81,7 @@ export default function ProductPicker({ selectedIds, onChange, token }) {
                 <span className="picker__row-info">
                   <span className="picker__row-name">{p.en_name}</span>
                   <span className="picker__row-meta">
-                    {[p.brand, p.en_price ? `${p.en_price} EGP` : null].filter(Boolean).join(" · ") || "—"}
+                    {[p.brands?.name_en, p.en_price ? `${p.en_price} EGP` : null].filter(Boolean).join(" · ") || "—"}
                   </span>
                 </span>
               </label>
