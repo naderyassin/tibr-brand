@@ -11,6 +11,7 @@ import {
   CSV_COLUMNS, CSV_COLUMN_LABELS, buildCsvTemplate, blankCsvRow,
   parseCsv, parseClipboard, buildProductPayload,
 } from "@/lib/csvImport";
+import { slugify } from "@/lib/taxonomy";
 
 const nextIdAfter = (products) =>
   (products || []).reduce((m, p) => {
@@ -131,12 +132,19 @@ export default function AdminProductImport() {
       try {
         if (brandName) {
           const key = brandName.toLowerCase();
-          let brand = createdBrandNames.get(key) || liveBrands.find((b) => b.name_en?.toLowerCase() === key);
+          let brand = createdBrandNames.get(key) || liveBrands.find((b) => b.name_en?.toLowerCase() === key || b.slug === slugify(brandName));
           if (!brand) {
-            const res = await adminCreateBrand({ name_en: brandName }, token);
-            brand = res.data;
-            createdBrandNames.set(key, brand);
-            liveBrands = [...liveBrands, brand];
+            try {
+              const res = await adminCreateBrand({ name_en: brandName }, token);
+              brand = res.data;
+              createdBrandNames.set(key, brand);
+              liveBrands = [...liveBrands, brand];
+            } catch (err) {
+              const freshBrandsRes = await adminGetBrands(token);
+              liveBrands = freshBrandsRes.data || liveBrands;
+              brand = liveBrands.find((b) => b.name_en?.toLowerCase() === key || b.slug === slugify(brandName));
+              if (!brand) throw err;
+            }
           }
           payload = { ...payload, brand_id: brand.id };
         }

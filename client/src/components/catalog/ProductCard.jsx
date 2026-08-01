@@ -148,13 +148,6 @@ export default function ProductCard({ product, index = 0 }) {
 
           <div className={`product-new__action-pill${outOfStock ? " product-new__action-pill--oos" : ""}`}>
             <span className="product-new__action-text">{outOfStock ? "Sold out" : "Add to cart"}</span>
-            {!outOfStock && (
-              <span className="product-new__arrow-wrap">
-                <svg className="product-new__arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-                  <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </span>
-            )}
           </div>
         </div>
       </Link>

@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -6,13 +6,86 @@ import { useAuth } from "@/stores/auth";
 import { adminGetProducts, adminDeleteProduct } from "@/lib/api";
 import { LINES, AUDIENCES, PRODUCT_TYPES, label } from "@/lib/taxonomy";
 
+function FilterDropdown({ label, options, active, onSelect }) {
+  const [open, setOpen] = useState(false);
+  const [rect, setRect] = useState(null);
+  const triggerRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const close = () => setOpen(false);
+    window.addEventListener("scroll", close, true);
+    window.addEventListener("resize", close);
+    return () => {
+      window.removeEventListener("scroll", close, true);
+      window.removeEventListener("resize", close);
+    };
+  }, [open]);
+
+  const activeLabel = options.find((o) => o.slug === active)?.label ?? "All";
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        className="btn btn--secondary admin-filter-btn"
+        onClick={() => {
+          if (triggerRef.current) setRect(triggerRef.current.getBoundingClientRect());
+          setOpen((prev) => !prev);
+        }}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+      >
+        <span>{label}: {activeLabel}</span>
+        <svg className="admin-filter-btn__chevron" width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+          <path d="M2.5 3.75L5 6.25L7.5 3.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </button>
+      {open && rect && createPortal(
+        <div className="admin-theme" style={{ display: "contents" }}>
+          <div className="admin-popover-scrim" onClick={() => setOpen(false)} aria-hidden="true" />
+          <ul
+            className="admin-popover"
+            style={{
+              position: "fixed",
+              top: `${rect.bottom + 6}px`,
+              right: `${Math.max(16, window.innerWidth - rect.right)}px`,
+              minWidth: `${Math.max(rect.width, 180)}px`,
+            }}
+            role="listbox"
+            aria-label={label}
+          >
+            {options.map((o) => (
+              <li key={o.slug} role="presentation">
+                <button
+                  type="button"
+                  className={`admin-popover__opt${active === o.slug ? " is-active" : ""}`}
+                  role="option"
+                  aria-selected={active === o.slug}
+                  onClick={() => {
+                    onSelect(o.slug);
+                    setOpen(false);
+                  }}
+                >
+                  <span>{o.label}</span>
+                  <span className="count">{o.count}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>,
+        document.body
+      )}
+    </>
+  );
+}
+
 export default function AdminProducts() {
   const { token } = useAuth();
   const qc = useQueryClient();
   const [category, setCategory] = useState("all");
-  const [filterOpen, setFilterOpen] = useState(false);
-  const [filterRect, setFilterRect] = useState(null);
-  const filterTriggerRef = useRef(null);
+  const [audience, setAudience] = useState("all");
   const [search, setSearch] = useState("");
 
   // Bulk operations state
@@ -40,6 +113,7 @@ export default function AdminProducts() {
   
   const products = allProducts
     .filter((p) => category === "all" || p[groupBy] === category)
+    .filter((p) => audience === "all" || p.audience === audience)
     .filter((p) => {
       if (!search.trim()) return true;
       const q = search.trim().toLowerCase();
@@ -58,12 +132,16 @@ export default function AdminProducts() {
       count: allProducts.filter((p) => p[groupBy] === t.slug).length,
     })),
   ];
-  const activeFilterLabel = filterOptions.find((o) => o.slug === category)?.label ?? "All";
-
-  const openFilter = () => {
-    if (filterTriggerRef.current) setFilterRect(filterTriggerRef.current.getBoundingClientRect());
-    setFilterOpen(true);
-  };
+  const categoryFiltered = allProducts.filter((p) => category === "all" || p[groupBy] === category);
+  const showAudienceFilter = groupBy === "product_type" && AUDIENCES.some((a) => categoryFiltered.some((p) => p.audience === a.slug));
+  const audienceFilterOptions = [
+    { slug: "all", label: "All", count: categoryFiltered.length },
+    ...AUDIENCES.map((a) => ({
+      slug: a.slug,
+      label: a.en,
+      count: categoryFiltered.filter((p) => p.audience === a.slug).length,
+    })),
+  ];
 
   // Checkbox Handlers
   const handleSelectAll = (e) => {
@@ -151,19 +229,20 @@ export default function AdminProducts() {
         <div className="admin-toolbar">
           <span style={{ color: "var(--muted)", fontSize: "var(--fs-sm)" }}>{products.length} products</span>
           {!isLoading && categories.length > 1 && (
-            <button
-              ref={filterTriggerRef}
-              type="button"
-              className="btn btn--secondary admin-filter-btn"
-              onClick={openFilter}
-              aria-haspopup="listbox"
-              aria-expanded={filterOpen}
-            >
-              <span>Filter: {activeFilterLabel}</span>
-              <svg className="admin-filter-btn__chevron" width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
-                <path d="M2.5 3.75L5 6.25L7.5 3.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
+            <FilterDropdown
+              label="Filter"
+              options={filterOptions}
+              active={category}
+              onSelect={(slug) => { setCategory(slug); setAudience("all"); setSelectedIds([]); }}
+            />
+          )}
+          {!isLoading && showAudienceFilter && (
+            <FilterDropdown
+              label="Gender"
+              options={audienceFilterOptions}
+              active={audience}
+              onSelect={(slug) => { setAudience(slug); setSelectedIds([]); }}
+            />
           )}
         </div>
 
@@ -220,7 +299,7 @@ export default function AdminProducts() {
               className="btn btn--secondary"
               style={{ marginBlockStart: "var(--sp-4)" }}
               type="button"
-              onClick={() => { setSearch(""); setCategory("all"); }}
+              onClick={() => { setSearch(""); setCategory("all"); setAudience("all"); }}
             >
               Clear filters
             </button>
@@ -345,43 +424,6 @@ export default function AdminProducts() {
         </div>
       )}
 
-      {filterOpen && filterRect && createPortal(
-        <>
-          <div className="admin-popover-scrim" onClick={() => setFilterOpen(false)} />
-          <ul
-            className="admin-popover"
-            style={{
-              position: "fixed",
-              top: `${filterRect.bottom + window.scrollY + 6}px`,
-              left: `${filterRect.left + window.scrollX}px`,
-              minWidth: `${filterRect.width}px`,
-              zIndex: 1000,
-            }}
-            role="listbox"
-            aria-label="Filter products"
-          >
-            {filterOptions.map((o) => (
-              <li key={o.slug} role="presentation">
-                <button
-                  type="button"
-                  className={`admin-popover__opt${category === o.slug ? " is-active" : ""}`}
-                  role="option"
-                  aria-selected={category === o.slug}
-                  onClick={() => {
-                    setCategory(o.slug);
-                    setFilterOpen(false);
-                    setSelectedIds([]); // Reset bulk select on filter change
-                  }}
-                >
-                  <span>{o.label}</span>
-                  <span className="count">{o.count}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </>,
-        document.body
-      )}
     </div>
   );
 }

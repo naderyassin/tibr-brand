@@ -237,7 +237,7 @@
   align-self: stretch;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 0.5rem;
   padding: 0.6rem 1.25rem;
   background: #1d1d1f; /* Black background before hover */
@@ -255,26 +255,9 @@
   letter-spacing: 0.02em;
 }
 
-.product-new__arrow-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.product-new__arrow {
-  color: currentColor;
-}
-
-
-
 .product-new:hover .product-new__action-pill {
   background: #2c2c2e;
   border-color: rgba(212, 175, 55, 0.45);
-}
-
-.product-new:hover .product-new__arrow-wrap {
-  transform: translateX(4px);
 }
 
 /* ── Sold-out state: solid grey pill with white text ───── */
@@ -503,7 +486,6 @@
   .product-new:hover .product-new__img { transform: none; }
   .product-new:hover .product-new__media { background-color: #fafafa; }
   .product-new:hover .product-new__action-pill { background: #1d1d1f; border-color: #1d1d1f; }
-  .product-new:hover .product-new__arrow-wrap { transform: none; }
   .product-new__action-pill:active { background: #2c2c2e; }
   .product-new__link:active .product-new__img { transform: scale(0.98); }
 
