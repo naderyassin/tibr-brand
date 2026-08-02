@@ -59,8 +59,12 @@ export default function Product() {
     enabled: !!id,
   });
 
+  // Key deliberately has no `id`: the request is the same for every product
+  // (the current one is filtered out client-side in relatedProducts). Keying
+  // it by id refetched the whole catalog on every product switch, which
+  // unmounted the 630px rail for ~4 frames and collapsed the page height.
   const { data: recommendedData } = useQuery({
-    queryKey: ["products-recommended", id],
+    queryKey: ["products-recommended"],
     queryFn: () => getProducts({}),
     enabled: !!productData?.data,
   });
@@ -179,7 +183,11 @@ export default function Product() {
         <span aria-current="page">{name}</span>
       </nav>
 
+      {/* Keyed on the loaded product, not the URL id: the id flips the instant
+          you click, but the previous product's data is still on screen until
+          the fetch lands. Keying on p.id runs the fade at the actual swap. */}
       <motion.article
+        key={p.id}
         className="pdp"
         variants={containerVariants}
         initial="hidden"

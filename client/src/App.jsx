@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, useLayoutEffect } from "react";
 import AppShell from "@/components/layout/AppShell";
 
 function StartAtHomeAndScroll() {
@@ -13,13 +13,50 @@ function StartAtHomeAndScroll() {
   }, []);
 
   // Scroll to top on every navigation change (including pagination query ?page=2).
-  useEffect(() => {
-    const lenis = window.__lenis;
-    if (lenis) lenis.scrollTo(0, { immediate: true, force: true });
-    else window.scrollTo(0, 0);
+  // useLayoutEffect, not useEffect: must run before the browser paints the new
+  // route's DOM, otherwise it paints one frame at the OLD scroll position (e.g.
+  // near the bottom/footer) before snapping to top — a visible footer flash.
+  useLayoutEffect(() => {
+    scrollTop();
   }, [pathname, search]);
 
+  // React Router wraps navigation in a transition: the URL changes on click but
+  // the new route commits ~3 frames later, so the effect above leaves the OLD
+  // page parked at its old scroll (usually the footer, since that's where the
+  // related-products links are) for ~50ms before snapping. Resetting on the
+  // click itself closes that window — the effect above still covers back/
+  // forward and programmatic navigate().
+  //
+  // Bubble phase, deliberately. A capture listener here fires before anything
+  // can cancel the click — so a drag-swallowed click in the product rail (see
+  // useDraggableScroll) would scroll to top without navigating. On bubble, a
+  // cancelled click never reaches us. No defaultPrevented guard for the same
+  // reason it must be bubble: React Router's Link calls preventDefault() on
+  // every click it handles, so that guard would skip real navigations.
+  useEffect(() => {
+    const onClick = (e) => {
+      if (e.button !== 0) return;
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const a = e.target.closest?.("a[href]");
+      if (!a || a.target === "_blank" || a.hasAttribute("download")) return;
+      const url = new URL(a.href, location.href);
+      if (url.origin !== location.origin) return;
+      // Same page (or a pure #hash jump) — nothing to reset.
+      if (url.pathname === location.pathname && url.search === location.search) return;
+      scrollTop();
+    };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
+  }, []);
+
   return null;
+}
+
+function scrollTop() {
+  // Lenis owns the scroll — a bare window.scrollTo is overridden on its next frame.
+  const lenis = window.__lenis;
+  if (lenis) lenis.scrollTo(0, { immediate: true, force: true });
+  else window.scrollTo(0, 0);
 }
 
 // Warms the lazy store-route chunks once the browser is idle after first

@@ -25,6 +25,12 @@ const queryClient = new QueryClient({
     queries: {
       staleTime: 1000 * 60 * 5,
       retry: 1,
+      // Deliberately NO `placeholderData: (prev) => prev` here. It was added to
+      // stop the page height collapsing between query keys (which flashed the
+      // footer), but it also meant a product switch rendered the PREVIOUS
+      // product — its image and all — until the new one arrived. The footer is
+      // handled properly now by `#main { min-block-size: 100svh }` in
+      // store/store.css, so showing stale data buys nothing and lies to the user.
     },
   },
 });

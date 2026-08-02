@@ -80,23 +80,27 @@ app.use(require("./routes/admin"));
 const clientDist = path.join(rootDir, "dist", "client");
 const indexPath = path.join(clientDist, "index.html");
 
-if (fs.existsSync(clientDist)) {
-  // index:false so this static middleware doesn't auto-serve index.html at
-  // "/" itself — the SPA fallback below does that with explicit no-cache.
-  app.use(express.static(clientDist, {
-    index: false,
-    setHeaders: (res, filePath) => {
-      // Everything Vite emits under assets/ is content-hashed → cache forever.
-      const isAssetFolder = filePath.includes("assets") || filePath.includes("assets/");
-      const isMediaOrFont = /\.(png|jpg|jpeg|gif|ico|svg|webp|avif|woff2?|ttf)$/i.test(filePath);
-      if (isAssetFolder || isMediaOrFont) {
-        res.setHeader("Cache-Control", CACHE_IMMUTABLE);
-      } else {
-        res.setHeader("Cache-Control", "no-cache");
-      }
+// Registered unconditionally: express.static falls through when the directory
+// doesn't exist, so gating this on a startup-time existsSync bought nothing and
+// cost a nasty failure mode — a server booted before the first build never
+// served assets again, while the SPA fallback below (which checks per request)
+// happily served an index.html pointing at those 404ing files. Blank page until
+// someone restarted the process.
+// index:false so this static middleware doesn't auto-serve index.html at
+// "/" itself — the SPA fallback below does that with explicit no-cache.
+app.use(express.static(clientDist, {
+  index: false,
+  setHeaders: (res, filePath) => {
+    // Everything Vite emits under assets/ is content-hashed → cache forever.
+    const isAssetFolder = filePath.includes("assets") || filePath.includes("assets/");
+    const isMediaOrFont = /\.(png|jpg|jpeg|gif|ico|svg|webp|avif|woff2?|ttf)$/i.test(filePath);
+    if (isAssetFolder || isMediaOrFont) {
+      res.setHeader("Cache-Control", CACHE_IMMUTABLE);
+    } else {
+      res.setHeader("Cache-Control", "no-cache");
     }
-  }));
-}
+  }
+}));
 
 // SPA fallback: every non-API, non-file GET gets index.html, and React Router
 // owns the path.
