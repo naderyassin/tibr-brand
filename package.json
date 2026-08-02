@@ -26,9 +26,7 @@
     "multer": "^2.1.1",
     "nodemailer": "^9.0.3",
     "pg": "^8.22.0",
-    "sharp": "^0.35.0",
-    "ssh2-sftp-client": "^12.1.1",
-    "ws": "^8.18.3"
+    "ssh2-sftp-client": "^12.1.1"
   },
   "keywords": [
     "perfume",
@@ -39,8 +37,7 @@
   "author": "TIBR",
   "license": "ISC",
   "devDependencies": {
-    "concurrently": "^9.2.3",
-    "puppeteer-core": "^25.1.0"
+    "concurrently": "^9.2.3"
   },
   "allowScripts": {
     "ssh2@1.17.0": true
