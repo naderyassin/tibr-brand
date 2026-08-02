@@ -1,7 +1,7 @@
 .about-page {
   background-color: #ffffff;
   color: #1a1a1a;
-  min-height: 100vh;
+  min-height: 100svh;
   position: relative;
   overflow: hidden;
   padding-bottom: 4rem;
@@ -15,7 +15,7 @@ body:has(.about-page) .store-header {
 /* 1. HERO SECTION (Full-Screen Image) */
 .about-hero {
   position: relative;
-  height: calc(100vh - 4.75rem);
+  height: calc(100svh - 4.75rem);
   min-height: 38rem;
   background-color: #0d0a07;
   overflow: hidden;

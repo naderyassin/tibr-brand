@@ -105,7 +105,7 @@ export default function MobileDrawer({ open, onClose }) {
               )}
             </nav>
             <div className="store-drawer__foot">
-              <a className="store-footer__whatsapp" href="https://wa.me/message/7IF766RWOGXAA1" target="_blank" rel="noopener noreferrer">
+              <a className="store-footer__whatsapp-pill" href="https://wa.me/message/7IF766RWOGXAA1" target="_blank" rel="noopener noreferrer">
                 <WhatsAppIcon />
                 {t("Chat on WhatsApp", "تواصل عبر واتساب")}
               </a>

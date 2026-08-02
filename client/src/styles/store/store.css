@@ -471,10 +471,28 @@ p, li { max-width: 68ch; }     /* readable measure */
   padding-block: var(--sp-3);
   border-block-end: 1px solid var(--line);
   transition: color var(--dur) var(--ease-out);
+  /* Logged-out Wishlist/Account render as <button> (they open the login modal)
+     while the rest are <a>. The global reset clears button background and
+     border but not text-align, so those two centred themselves out of the
+     column. Set it here so both element types line up. */
+  text-align: start;
 }
 .store-drawer__link:hover,
 .store-drawer__link[aria-current="page"] { color: var(--gold); }
 .store-drawer__foot { margin-block-start: auto; }
+/* The pill's own palette is built for the dark footer — white text on a
+   near-white drawer is an invisible label. Re-point it at the light tokens;
+   the green WhatsApp glyph carries over unchanged. */
+.store-drawer__foot .store-footer__whatsapp-pill {
+  color: var(--ink);
+  background: var(--surface);
+  border-color: var(--line);
+}
+.store-drawer__foot .store-footer__whatsapp-pill:hover {
+  color: var(--ink);
+  background: var(--surface-2);
+  border-color: var(--gold);
+}
 
 /* ============================ FOOTER ============================ */
 .store-footer {
@@ -712,30 +730,14 @@ p, li { max-width: 68ch; }     /* readable measure */
 @media (max-width: 56rem) {
   .store-header__inner {
     grid-template-columns: auto 1fr;
-    grid-template-areas:
-      "brand utils"
-      "nav nav";
-    row-gap: var(--sp-2);
+    grid-template-areas: "brand utils";
   }
 
   .store-wordmark { grid-area: brand; }
-  .store-nav {
-    grid-area: nav;
-    justify-self: stretch;
-    min-inline-size: 0;
-  }
-  .store-nav__list {
-    /* `safe center` keeps the leading links reachable when the strip
-       overflows; plain `center` would clip them past the scroll origin */
-    justify-content: center;
-    justify-content: safe center;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    padding-block-end: var(--sp-1);
-    scrollbar-width: none;
-  }
-  .store-nav__list::-webkit-scrollbar { display: none; }
+  /* The burger drawer already lists every SHOP_NAV tab plus About / Wishlist /
+     Account, so this second header row was duplicate navigation. Dropping it
+     gives back ~43px of a 812px screen. */
+  .store-nav { display: none; }
   .store-utils { grid-area: utils; flex-wrap: wrap; justify-content: end; }
   .store-burger {
     display: inline-grid;
@@ -2825,21 +2827,22 @@ p, li { max-width: 68ch; }     /* readable measure */
 .acct-nav__item--danger:hover { color: var(--danger); background: var(--danger-fill); }
 .acct-nav__item--danger svg { color: currentColor; }
 
-/* Mobile: horizontal scroll-snap tab strip */
+/* Mobile: wrapped tab group.
+   This was a horizontal scroll-snap strip with the scrollbar hidden, but the
+   six tabs total ~800px against a ~335px window: only Orders and Billing were
+   on screen, and Sign out sat ~470px past the edge with nothing to suggest the
+   list scrolled at all. Wrapping shows every destination instead of hinting
+   at four hidden ones. */
 @media (max-width: 55.99rem) {
   .acct-nav { flex-direction: row; min-inline-size: 0; max-inline-size: 100%; }
   .acct-nav__list {
     flex-direction: row;
+    flex-wrap: wrap;
     min-inline-size: 0;
-    overflow-x: auto;
     gap: var(--sp-2);
     padding-block-end: var(--sp-2);
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    scroll-snap-type: x proximity;
   }
-  .acct-nav__list::-webkit-scrollbar { display: none; }
-  .acct-nav__item { scroll-snap-align: start; padding-inline: var(--sp-4); }
+  .acct-nav__item { padding-inline: var(--sp-4); }
   .acct-nav__sep { display: none; }
   .acct-nav__signout { margin-inline-start: var(--sp-2); }
 }
@@ -5794,7 +5797,7 @@ body:has(.collection-page) .store-header.home-header.is-scrolled {
   .stepper__btn { inline-size: 2.75rem; block-size: 2.75rem; }
   .pdp__qty-btn { width: 2.75rem; height: 2.75rem; }
   .pdp__qty-selector { width: auto; min-width: 8rem; gap: 0.25rem; }
-  .breadcrumb a { padding-block: var(--sp-2); }
+  .breadcrumb a { padding-block: var(--sp-3); }
   .field.field--checkbox,
   .check { min-block-size: 2.75rem; }
   .field.field--checkbox input,
@@ -5802,9 +5805,43 @@ body:has(.collection-page) .store-header.home-header.is-scrolled {
   .product-rail__pill { min-block-size: 2.5rem; }
   .store-nav__link { padding-block: var(--sp-3); }
 
-  /* -- iOS zooms the page when a focused control is under 16px -- */
-  .input, .textarea, .select,
-  .variants__row .input { font-size: max(1rem, 1em) !important; }
+  /* Measured under 40px at 375px wide — these live in per-component CSS files
+     that load after this sheet, hence the !important on the wish button. */
+  .product-new__wish { inline-size: 2.75rem !important; block-size: 2.75rem !important; }
+  /* Wrapping lives on .catalog-pagination itself — it is a width problem, not
+     a touch one. Only the 44px cell sizing is coarse-pointer specific. */
+  .pagination__num,
+  .pagination__btn { min-inline-size: 2.75rem; min-block-size: 2.75rem; }
+  .filter-drawer__close,
+  .filter-trigger { min-inline-size: 2.75rem; min-block-size: 2.75rem; }
+  .store-footer__social-link,
+  .store-footer__newsletter-btn { min-inline-size: 2.75rem; min-block-size: 2.75rem; }
+  .shop-subnav__simple-link { min-block-size: 2.75rem; }
+  .opt { min-block-size: 2.75rem; }
+  /* 2rem square in the account address/billing/profile rows — and one of them
+     is "Delete address", which is the last control that should need a precise
+     tap. The icon stays 1rem; only the hit box grows. */
+  /* flex-shrink guard: the address-modal header is a flex row that squeezed
+     the Close button down to 17px even with an explicit inline-size. */
+  .acct-icon-btn { inline-size: 2.75rem; block-size: 2.75rem; flex-shrink: 0; }
+  /* The switch pill is 52x30 by design; stretching it to 44px would distort it,
+     so grow only the hit area. */
+  .toggle { position: relative; }
+  .toggle::after { content: ""; position: absolute; inset-block: -7px; inset-inline: 0; }
+  /* Wordmark text is 19px tall inside a 77px header — padding buys the tap
+     target out of space the header already has, so the bar does not grow. */
+  .store-wordmark { padding-block: 0.75rem; }
+
+  /* -- iOS zooms the page when a focused control is under 16px --
+     Matched on the elements, not a class allowlist: .auth-input (0.875rem) and
+     the catalog filter number/select controls carry their own classes and were
+     silently missed by the old .input/.textarea/.select list. */
+  input:not([type="checkbox"]):not([type="radio"]),
+  textarea,
+  select { font-size: max(1rem, 1em) !important; }
+  /* .sort__select sets `font-size: 12px !important`, which outranks the bare
+     element selector above — it has to be named to be beaten. */
+  .sort__select { font-size: 1rem !important; }
 }
 
 /* ============================ SLIDER ARROWS & WRAPPER ============================ */

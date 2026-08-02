@@ -1,7 +1,7 @@
 .perfume-page {
   background-color: #000000;
   color: #fff;
-  min-height: 100vh;
+  min-height: 100svh;
   font-family: var(--font-body);
 }
 

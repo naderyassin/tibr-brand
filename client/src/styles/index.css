@@ -396,6 +396,19 @@ body:has(.shop-subnav) .store-header {
 .shop-subnav__link:hover,
 .shop-subnav__link.is-active { color: var(--gold); border-block-end-color: var(--gold); }
 .shop-subnav__caret { inline-size: 0.85rem; block-size: 0.85rem; transition: transform var(--dur) var(--ease-out); }
+
+/* The strip is ~410px of tabs against a 375px phone — it has to wrap. It can't
+   scroll instead: the dropdowns are absolutely positioned inside each item, so
+   an `overflow-x` scroll container would clip them and kill category nav.
+   Must sit after `.shop-subnav__link` — same specificity, so source order
+   decides and an earlier block would lose the padding override. */
+@media (max-width: 30rem) {
+  .shop-subnav__list { flex-wrap: wrap; row-gap: 0; }
+  /* 0.7rem lands each row at 46px — over the 44px touch minimum without
+     spending 56px a row on a strip that already wraps to two. */
+  .shop-subnav__link { padding-block: 0.7rem; }
+
+}
 .shop-subnav__item:hover .shop-subnav__caret,
 .shop-subnav__item.is-open .shop-subnav__caret { transform: rotate(180deg); }
 
@@ -415,6 +428,7 @@ body:has(.shop-subnav) .store-header {
   box-shadow: var(--shadow-2);
   z-index: var(--z-sticky);
 }
+
 
 .shop-subnav__dropdown-cols {
   display: flex;
@@ -509,8 +523,22 @@ body:has(.shop-subnav) .store-header {
 
 /* Modifiers */
 .shop-subnav__dropdown--drilldown {
-  width: max-content; 
+  width: max-content;
   padding: 0;
+}
+
+/* Panels are a fixed width pinned to their tab's start edge, so any tab in the
+   right half of the strip threw its menu off screen (Home & Ambience opened to
+   385px against a 375px viewport). Taking the item out of the positioning
+   context re-anchors the panel to the sticky .shop-subnav, where inset-inline:0
+   spans the bar instead of overhanging.
+   `.shop-subnav__dropdown` is declared three times in this file (415, 517, and
+   the drilldown modifier above) — this has to sit after all of them, since they
+   share specificity and source order decides. */
+@media (max-width: 30rem) {
+  .shop-subnav__item { position: static; }
+  .shop-subnav__dropdown,
+  .shop-subnav__dropdown--drilldown { inset-inline: 0; width: auto; }
 }
 
 /* --- Flyout Layout --- */
