@@ -4,6 +4,7 @@ import Header from "./Header";
 import HomeHeader from "./HomeHeader";
 import MobileDrawer from "./MobileDrawer";
 import Footer from "./Footer";
+import AuthModal from "@/components/auth/AuthModal";
 import { ToastProvider } from "@/components/ui/Toast";
 import { useLang, useT } from "@/stores/lang";
 
@@ -95,6 +96,7 @@ export default function AppShell() {
         </Suspense>
       </main>
       {showFooter && <Footer />}
+      <AuthModal />
     </>
   );
 

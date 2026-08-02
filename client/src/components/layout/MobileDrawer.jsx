@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { SHOP_NAV } from "@/lib/shopNav";
 import { useAuth } from "@/stores/auth";
+import { useAuthModal } from "@/stores/authModal";
 import { useLang, useT } from "@/stores/lang";
 import { getProfile } from "@/lib/api";
 
@@ -32,6 +33,7 @@ export default function MobileDrawer({ open, onClose }) {
   const isRtl = useLang((s) => s.dir === "rtl");
   const offscreenX = isRtl ? "-100%" : "100%";
   const token = useAuth((s) => s.token);
+  const openLogin = useAuthModal((s) => s.openLogin);
   const { data: profileData } = useQuery({
     queryKey: ["profile", token],
     queryFn: () => getProfile(token),
@@ -80,16 +82,27 @@ export default function MobileDrawer({ open, onClose }) {
               </button>
             </div>
             <nav className="store-drawer__nav" aria-label={t("Categories", "الأقسام")}>
-              {navLinks.map(({ to, label, label_ar }) => (
-                <NavLink
-                  key={to}
-                  className="store-drawer__link"
-                  to={to}
-                  onClick={onClose}
-                >
-                  {t(label, label_ar)}
-                </NavLink>
-              ))}
+              {navLinks.map(({ to, label, label_ar }) =>
+                !token && to.startsWith("/account") ? (
+                  <button
+                    key={to}
+                    type="button"
+                    className="store-drawer__link"
+                    onClick={() => { onClose(); openLogin(); }}
+                  >
+                    {t(label, label_ar)}
+                  </button>
+                ) : (
+                  <NavLink
+                    key={to}
+                    className="store-drawer__link"
+                    to={to}
+                    onClick={onClose}
+                  >
+                    {t(label, label_ar)}
+                  </NavLink>
+                )
+              )}
             </nav>
             <div className="store-drawer__foot">
               <a className="store-footer__whatsapp" href="https://wa.me/message/7IF766RWOGXAA1" target="_blank" rel="noopener noreferrer">

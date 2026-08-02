@@ -40,6 +40,15 @@ export const useAuth = create((set) => ({
     return data;
   },
 
+  oauth: async (provider) => {
+    const supabase = await getSupabase();
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: `${window.location.origin}/account` },
+    });
+    if (error) throw error;
+  },
+
   signUp: async (email, password, meta = {}) => {
     const supabase = await getSupabase();
     const { data, error } = await supabase.auth.signUp({
