@@ -37,7 +37,19 @@ export const useLang = create((set, get) => ({
     } catch {
       /* ignore (private mode, etc.) */
     }
+    // Flipping `dir` also flips every [dir="rtl"] transform override (drawer
+    // closed-positions, icon mirroring, ...). Elements that are off-screen
+    // but still mounted (e.g. the shop filter drawer) have a transition on
+    // that transform, so without this they visibly slide across the whole
+    // viewport for the duration of the transition. Killing transitions for
+    // one frame around the flip keeps the position change instant.
+    document.documentElement.classList.add("lang-switching");
     set({ lang, dir: lang === "ar" ? "rtl" : "ltr" });
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.documentElement.classList.remove("lang-switching");
+      });
+    });
   },
   toggle: () => get().setLang(get().lang === "ar" ? "en" : "ar"),
 }));

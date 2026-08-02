@@ -4,6 +4,13 @@
  * Charcoal/ink surfaces, one refined-gold accent, OKLCH throughout.
  * ------------------------------------------------------------- */
 
+/* Suppressed for one frame around an AR/EN toggle — see stores/lang.js.
+   Without it, [dir]-flipped transforms (drawer closed-positions, icon
+   mirroring, ...) animate through their transition instead of snapping. */
+html.lang-switching * {
+  transition: none !important;
+}
+
 :root {
   /* ===========================================================
      COLOR — committed dark. One accent (gold) carries the brand.
