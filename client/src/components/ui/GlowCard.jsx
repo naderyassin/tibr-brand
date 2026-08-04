@@ -26,6 +26,8 @@ export default function GlowCard({
   width,
   height,
   customSize = false,
+  as: Component = "div",
+  ...rest
 }) {
   const cardRef = useRef(null);
   const innerRef = useRef(null);
@@ -101,14 +103,15 @@ export default function GlowCard({
   const sizeClass = customSize ? "" : SIZE_CLASS_MAP[size];
 
   return (
-    <div
+    <Component
       ref={cardRef}
       data-glow
       style={inlineStyle}
       className={`glow-card ${sizeClass} ${className}`}
+      {...rest}
     >
       <div ref={innerRef} data-glow className="glow-card__layer" />
       {children}
-    </div>
+    </Component>
   );
 }

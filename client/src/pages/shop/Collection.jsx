@@ -37,18 +37,21 @@ const SIGNATURE_PILLARS = [
     title: "Original",
     text: "No imitation, no shortcuts — every TIBR scent is composed from a blank canvas.",
     image: "/assets/images/promise_original.webp",
+    to: "/shop/brands",
   },
   {
     icon: Compass,
     title: "Inspired",
     text: "Rooted in a century of Egyptian perfumery, carried forward into the present.",
     image: "/assets/images/promise_inspired.webp",
+    to: "/shop/inspired",
   },
   {
     icon: Fingerprint,
     title: "Your Own Signature",
     text: "A fragrance that becomes unmistakably yours the moment it meets skin.",
     image: "/assets/images/promise_signature.webp",
+    to: null,
   },
 ];
 
@@ -65,7 +68,7 @@ const COLLECTIONS = [
 ];
 
 const PARALLAX_IMAGES = [
-  { src: "/assets/images/parallax/parallax_hero_bottle_tibr.jpg", alt: "TIBR luxury flacon, full profile" },
+  { src: "/assets/images/parallax/parallax_hero_bottle_tibr.png", alt: "TIBR luxury flacon, full profile" },
   { src: "/assets/images/parallax/parallax_amber_pour.webp", alt: "Golden amber elixir being poured" },
   { src: "/assets/images/parallax/parallax_ingredients.webp", alt: "Rare raw perfume ingredients" },
   { src: "/assets/images/parallax/parallax_cap_detail.webp", alt: "Machined metal cap, detail" },
@@ -367,9 +370,9 @@ export default function Collection() {
             <h2 className="col-scene-title is-large">TIBR</h2>
             <div className="col-scene-divider" />
             <p className="col-scene-desc">Begin your olfactory story today.</p>
-            <a className="col-btn" href="#collections">
+            <Link className="col-btn" to="/shop/perfumes">
               BEGIN THE JOURNEY
-            </a>
+            </Link>
           </div>
         </div>
       </ScrollSequence>
@@ -436,7 +439,13 @@ export default function Collection() {
           <div className="col-signature__grid">
             {SIGNATURE_PILLARS.map((p) => (
               <motion.div key={p.title} {...reveal}>
-                <GlowCard glowColor="purple" customSize className="col-signature-card">
+                <GlowCard
+                  glowColor="purple"
+                  customSize
+                  className="col-signature-card"
+                  as={p.to ? Link : "div"}
+                  to={p.to || undefined}
+                >
                   <div className="col-signature-card__image-wrap">
                     <img src={p.image} alt={p.title} loading="lazy" decoding="async" className="col-signature-card__image" />
                     <div className="col-signature-card__scrim" />
