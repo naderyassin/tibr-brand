@@ -168,6 +168,16 @@ export default function ShopNav() {
               </li>
             );
           })}
+          {/* Bespoke B2B fragrance. Not a SHOP_NAV tab — it's a page, not a
+              saved query over the taxonomy, so it's appended here instead. */}
+          <li className="shop-subnav__item">
+            <NavLink
+              to="/signature"
+              className={({ isActive }) => `shop-subnav__link${isActive ? " is-active" : ""}`}
+            >
+              {t("Your Signature", "بصمتك الخاصة")}
+            </NavLink>
+          </li>
         </ul>
       </div>
     </nav>

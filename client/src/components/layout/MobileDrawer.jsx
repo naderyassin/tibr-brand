@@ -22,6 +22,7 @@ const WhatsAppIcon = () => (
 const BASE_NAV_LINKS = [
   ...SHOP_NAV.map((tab) => ({ to: tab.path, label: tab.label, label_ar: tab.label_ar })),
   { to: "/about", label: "About", label_ar: "من نحن" },
+  { to: "/signature", label: "Your Signature", label_ar: "بصمتك الخاصة" },
   { to: "/account?tab=wishlist", label: "Wishlist", label_ar: "المفضلة" },
   { to: "/account", label: "Account", label_ar: "حسابي" },
 ];

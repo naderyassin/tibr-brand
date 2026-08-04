@@ -1,0 +1,111 @@
+/* بصمتك الخاصة — bespoke brand fragrance page. Portrait video, then copy. */
+
+.sigbrand {
+  padding-block: clamp(2rem, 1rem + 5vw, 5rem) clamp(3rem, 2rem + 6vw, 7rem);
+  display: grid;
+  justify-items: center;
+  gap: clamp(2rem, 1rem + 4vw, 3.5rem);
+  text-align: center;
+}
+
+/* No aspect-ratio and no fixed size on purpose. Both axes are `auto` with a max
+   on each, so the browser's replaced-element sizing shrinks the video to fit
+   whichever bound binds first while preserving its intrinsic ratio — the whole
+   clip is visible, never cropped, never letterboxed, whatever shape the file
+   is. Swapping in a landscape cut needs no CSS change. */
+.sigbrand__video {
+  display: block;
+  inline-size: auto;
+  block-size: auto;
+  max-inline-size: 100%;
+  max-block-size: min(78vh, 42rem);
+  border-radius: var(--r-lg, 1rem);
+  border: 1px solid var(--gold-line);
+  box-shadow: var(--shadow-2, 0 20px 60px rgb(0 0 0 / 0.25));
+  background: var(--surface);
+}
+
+/* 3 stacked lines: kicker, title, tagline — each its own line, centered,
+   the tagline deliberately shorter (smaller size, tighter tracking) than
+   the other two so it reads as a closing line, not a fourth heading. */
+.sigbrand__headline {
+  display: grid;
+  justify-items: center;
+}
+
+.sigbrand__headline-line { display: block; }
+
+.sigbrand__kicker {
+  font-size: var(--fs-sm);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-block-end: var(--sp-3);
+}
+
+.sigbrand__title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 1.2rem + 3.5vw, 3.5rem);
+  line-height: 1.15;
+  color: var(--ink);
+}
+
+.sigbrand__tag {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 0.9rem + 1vw, 1.5rem);
+  letter-spacing: 0.06em;
+  color: var(--gold);
+  margin-block-start: var(--sp-2);
+}
+
+.sigbrand__rule {
+  inline-size: 4rem;
+  block-size: 1px;
+  background: var(--gold);
+  margin: var(--sp-5) auto;
+}
+
+.sigbrand__body {
+  max-inline-size: 44rem;
+  font-size: clamp(1rem, 0.95rem + 0.35vw, 1.15rem);
+  line-height: 1.9;
+  color: var(--ink-2);
+}
+
+.sigbrand__body + .sigbrand__body { margin-block-start: var(--sp-4); }
+
+/* Lead sentence: forced onto one line, sized to its own content (not the
+   44rem cap above) so the line can be as wide as it needs. */
+.sigbrand__body--lead {
+  max-inline-size: none;
+  white-space: nowrap;
+}
+
+/* Sub sentence: width is set inline from JS to match the lead line's
+   rendered px width exactly, so it can only wrap inside those same
+   left/right bounds. The 44rem here is only the pre-JS/no-JS fallback. */
+.sigbrand__body--sub {
+  max-inline-size: 44rem;
+}
+
+/* A ~90-character sentence can't go on one line on a phone without
+   overflowing — let it wrap like before under that width. */
+@media (max-width: 34rem) {
+  .sigbrand__body--lead {
+    max-inline-size: 44rem;
+    white-space: normal;
+  }
+}
+
+.sigbrand__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-6);
+  border-radius: var(--r-pill, 999px);
+  background: var(--gold);
+  color: var(--on-gold);
+  font-weight: var(--fw-medium);
+  transition: background var(--dur) var(--ease-out);
+}
+.sigbrand__cta:hover { background: var(--gold-bright); }

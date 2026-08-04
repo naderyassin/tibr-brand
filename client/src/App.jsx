@@ -74,6 +74,7 @@ function PreloadStoreChunks() {
     const id = setTimeout(() => {
       import("@/pages/shop/AboutPage");
       import("@/pages/shop/Signature");
+      import("@/pages/shop/SignatureBrand");
       import("@/pages/shop/BrandDirectory");
       import("@/pages/shop/BrandCollection");
       import("@/pages/Blog");
@@ -101,6 +102,7 @@ import CollectionPage from "@/pages/shop/CollectionPage";
 
 const AboutPage = lazy(() => import("@/pages/shop/AboutPage"));
 const Signature = lazy(() => import("@/pages/shop/Signature"));
+const SignatureBrand = lazy(() => import("@/pages/shop/SignatureBrand"));
 const BrandDirectory = lazy(() => import("@/pages/shop/BrandDirectory"));
 const BrandCollection = lazy(() => import("@/pages/shop/BrandCollection"));
 const Blog = lazy(() => import("@/pages/Blog"));
@@ -168,6 +170,10 @@ export default function App() {
             <Route path="/shop/offers" element={<CollectionPage />} />
             <Route path="/shop/brands" element={<BrandDirectory />} />
             <Route path="/shop/brands/:brand" element={<BrandCollection />} />
+            {/* Bespoke B2B fragrance — not a filtered listing, and NOT the
+                /shop/signature scent quiz. Nested here only so the subnav that
+                links to it stays on screen once you're on the page. */}
+            <Route path="/signature" element={<SignatureBrand />} />
           </Route>
 
           <Route path="/about" element={<AboutPage />} />

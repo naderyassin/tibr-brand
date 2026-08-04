@@ -51,7 +51,7 @@ const SIGNATURE_PILLARS = [
     title: "Your Own Signature",
     text: "A fragrance that becomes unmistakably yours the moment it meets skin.",
     image: "/assets/images/promise_signature.webp",
-    to: null,
+    to: "/signature",
   },
 ];
 
