@@ -29,6 +29,13 @@ const SettingsIcon = () => (
     <circle cx="12" cy="12" r="3"/>
   </svg>
 );
+const SignOutIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+    <polyline points="16 17 21 12 16 7"/>
+    <line x1="21" y1="12" x2="9" y2="12"/>
+  </svg>
+);
 
 const NAVIGATION = [
   { label: "Home", label_ar: "الرئيسية", to: "/" },
@@ -42,6 +49,7 @@ export default function Header({ onMenuOpen }) {
   const items = useCart((s) => s.items);
   const count = items.reduce((n, i) => n + i.qty, 0);
   const token = useAuth((s) => s.token);
+  const signOut = useAuth((s) => s.signOut);
   const openLogin = useAuthModal((s) => s.openLogin);
   const t = useT();
   const lang = useLang((s) => s.lang);
@@ -111,6 +119,16 @@ export default function Header({ onMenuOpen }) {
             <Link className="store-iconbtn" to="/admin" aria-label={t("Control Panel", "لوحة التحكم")}>
               <SettingsIcon />
             </Link>
+          )}
+          {token && (
+            <button
+              className="store-iconbtn"
+              type="button"
+              onClick={signOut}
+              aria-label={t("Sign out", "تسجيل الخروج")}
+            >
+              <SignOutIcon />
+            </button>
           )}
           <Link className="store-iconbtn" to="/cart" aria-label={t("Cart", "السلة")}>
             <BagIcon />
