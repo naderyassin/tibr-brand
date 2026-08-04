@@ -6,6 +6,7 @@ const { supabase, createAuthedClient, createServiceClient } = require("../db");
 const { requireUser } = require("../middleware/auth");
 const { checkoutLimiter } = require("../middleware/rateLimit");
 const { PAYMENT_METHODS, buildOrderLines, saveOrder } = require("../services/orders");
+const { sendOrderConfirmation } = require("../services/whatsapp");
 const {
   evaluateCartDiscount,
   applyLineAdjustments,
@@ -172,6 +173,9 @@ router.post("/api/checkout", checkoutLimiter, requireUser, async (req, res) => {
         .eq("id", appliedDiscount.id);
     }
   }
+
+  // Best-effort — never blocks or fails checkout on a WhatsApp send error.
+  sendOrderConfirmation({ phone: customerPhone, name: customerName, orderId: data.id, total }).catch(() => {});
 
   res.status(201).json({
     data: {
@@ -407,6 +411,9 @@ router.post("/api/payments/paymob/webhook", async (req, res) => {
         .from("discounts").select("id, used_count").eq("code", order.discount_code).single();
       if (d) await serviceClient.from("discounts").update({ used_count: d.used_count + 1 }).eq("id", d.id);
     }
+    sendOrderConfirmation({
+      phone: order.customer_phone, name: order.customer_name, orderId: order.id, total: order.total
+    }).catch(() => {});
   } else if (!pending) {
     await serviceClient.from("orders").update({ payment_status: "failed" }).eq("id", order.id);
   }

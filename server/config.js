@@ -51,6 +51,18 @@ const smtpConfig = {
   configured: !!process.env.SMTP_HOST,
 };
 
+// ── WhatsApp order notifications (Meta Cloud API) — see docs/WHATSAPP.md ────
+// Business-initiated messages (an order confirmation the customer didn't ask
+// for in a live chat) require a pre-approved message template — free-form
+// text only works within 24h of the customer messaging the business number.
+const whatsappConfig = {
+  token: process.env.WHATSAPP_TOKEN || "",
+  phoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID || "",
+  templateName: process.env.WHATSAPP_TEMPLATE_NAME || "order_confirmation",
+  templateLang: process.env.WHATSAPP_TEMPLATE_LANG || "ar",
+  configured: !!(process.env.WHATSAPP_TOKEN && process.env.WHATSAPP_PHONE_NUMBER_ID),
+};
+
 // ── Product image storage (Hostinger SFTP) — see server/routes/admin.js ─────
 // Supabase Storage's 500MB bucket can't hold the full product image catalog,
 // so uploads go to the same box serving the storefront instead.
@@ -99,6 +111,7 @@ module.exports = {
   supabaseServiceRoleKey,
   otpConfig,
   smtpConfig,
+  whatsappConfig,
   sftpConfig,
   PRODUCT_IMAGES_DIR_NAME,
   productImagesAbsDir,
