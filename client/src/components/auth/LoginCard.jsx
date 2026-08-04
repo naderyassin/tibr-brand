@@ -5,6 +5,7 @@ import { useAuth } from "@/stores/auth";
 import { useToast } from "@/components/ui/Toast";
 import { ImageSlider } from "@/components/ui/ImageSlider";
 import { useT } from "@/stores/lang";
+import { getProfile } from "@/lib/api";
 
 const SLIDER_IMAGES = [
   "/categories/about_hero.png",
@@ -59,8 +60,30 @@ export default function LoginCard({ onSuccess, onNav, onSwitch }) {
     setError(null);
     setLoading(true);
     try {
-      await signIn(email, password);
-      toast(t("Welcome back!", "أهلاً بعودتك!"));
+      const auth = await signIn(email, password);
+      const token = auth?.session?.access_token;
+      let profileName = null;
+      let profileAvatar = null;
+
+      if (token) {
+        try {
+          const { data } = await getProfile(token);
+          profileName = data?.full_name || data?.email?.split("@")[0] || null;
+          profileAvatar = data?.avatar_url || null;
+        } catch {
+          // Profile fetch optional; continue with basic welcome
+        }
+      }
+
+      const isAr = document.documentElement.lang === "ar";
+      toast({
+        rich: true,
+        avatar: profileAvatar,
+        title: profileName
+          ? t(`Welcome back, ${profileName}!`, `أهلاً بعودتك، ${profileName}!`)
+          : t("Welcome back!", "أهلاً بعودتك!"),
+        subtitle: t("Ready to discover new scents.", "مستعد لاكتشاف عطور جديدة.")
+      }, 3500);
       onSuccess?.();
     } catch (err) {
       setError(err.message || t("Invalid email or password.", "البريد الإلكتروني أو كلمة المرور غير صحيحة."));

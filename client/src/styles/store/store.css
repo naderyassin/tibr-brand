@@ -1317,6 +1317,36 @@ p, li { max-width: 68ch; }     /* readable measure */
 .store-toast__icon svg { inline-size: 1.4rem; block-size: 1.4rem; }
 .store-toast__msg { font-size: var(--fs-sm); }
 .store-toast__msg strong { color: var(--gold); font-weight: var(--fw-semibold); }
+.store-toast.is-rich {
+  gap: var(--sp-4); padding: var(--sp-4) var(--sp-5);
+  background: linear-gradient(135deg, var(--surface-2) 0%, rgba(212, 175, 55, 0.02) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.1);
+}
+.store-toast__avatar {
+  inline-size: 3.5rem; block-size: 3.5rem;
+  border-radius: 50%; object-fit: cover; flex-shrink: 0;
+  border: 2px solid var(--gold);
+  background: var(--surface-1);
+}
+.store-toast__content {
+  display: flex; flex-direction: column; gap: var(--sp-1);
+}
+.store-toast__greeting {
+  display: flex; align-items: center; gap: var(--sp-2);
+  font-size: var(--fs-sm); font-weight: var(--fw-semibold);
+}
+.store-toast__checkmark {
+  display: grid; place-items: center;
+  inline-size: 1.25rem; block-size: 1.25rem;
+  background: var(--gold); color: var(--ink);
+  border-radius: 50%; flex-shrink: 0;
+}
+.store-toast__checkmark svg { inline-size: 0.75rem; block-size: 0.75rem; }
+.store-toast__title { color: var(--ink); }
+.store-toast__subtitle {
+  font-size: var(--fs-xs); color: var(--text-secondary);
+  margin: 0; line-height: 1.4;
+}
 
 /* ============================ GENERIC EMPTY STATE ============================ */
 .rb-empty {
